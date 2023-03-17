@@ -18,6 +18,7 @@ import {
 } from '~/components/onboarding/OrganizationInfoStep';
 
 import OnboardingIllustration from '~/components/onboarding/OnboardingIllustration';
+import { withTranslationProps } from '~/lib/props/with-translation-props';
 
 interface Data {
   organization: string;
@@ -115,12 +116,14 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   }
 
   const userData = await getUserData(user.uid);
+  const translationProps = await withTranslationProps(ctx);
 
   // if we cannot find the user's Firestore record
   // the user should go to the onboarding flow
   // so that the record wil be created after the end of the flow
   if (!userData) {
     return {
+      ...translationProps,
       props,
     };
   }
@@ -143,6 +146,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   }
 
   return {
+    ...translationProps,
     props,
   };
 }
