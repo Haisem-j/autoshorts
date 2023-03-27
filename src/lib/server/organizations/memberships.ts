@@ -8,6 +8,8 @@ import { Organization } from '~/lib/organizations/types/organization';
 
 import { getOrganizationById, getUserRefById } from '../queries';
 
+import { ORGANIZATIONS_COLLECTION, USERS_COLLECTION } from '~/lib/firestore-collections';
+
 import {
   throwNotFoundException,
   throwUnauthorizedException,
@@ -141,9 +143,9 @@ export async function acceptInviteToOrganization({
 
   const organizationId = invite.organization.id;
   const role = invite.role;
-  const userPath = `/users/${userId}`;
+  const userPath = `/${USERS_COLLECTION}/${userId}`;
 
-  const organizationRef = firestore.doc(`/organizations/${organizationId}`);
+  const organizationRef = firestore.doc(`/${ORGANIZATIONS_COLLECTION}/${organizationId}`);
   const userRef = firestore.doc(userPath);
 
   // update the organization members list
