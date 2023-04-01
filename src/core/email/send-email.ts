@@ -106,7 +106,7 @@ async function createEtherealTestAccount() {
   console.warn(`
     Configuration property "emailEtherealTestAccount" was not found! 
     Consider adding a fixed Ethereal account so that you don't need to update the credentials each time you use it.
-    To do so, please use the guide at https://makerkit.dev/docs/email
+    To do so, please use the guide at https://makerkit.dev/docs/next-fire/emails
   `);
 
   console.log(
