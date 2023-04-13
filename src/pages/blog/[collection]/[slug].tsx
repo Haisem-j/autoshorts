@@ -1,3 +1,5 @@
+import { GetStaticPropsContext } from 'next';
+
 import { useRouter } from 'next/router';
 import ErrorPage from 'next/error';
 
@@ -12,6 +14,8 @@ import {
 import PostType from '~/core/blog/types/post';
 import Post from '~/components/blog/Post';
 import { compileMdx } from '~/core/generic/compile-mdx';
+
+import i18nextConfig from '../../../../next-i18next.config';
 
 type Props = {
   post: PostType;
@@ -32,15 +36,16 @@ const PostPage = ({ post, morePosts, content }: Props) => {
 export default PostPage;
 
 type Params = {
-  params: {
-    slug: string;
-    collection: string;
-  };
+  slug: string;
+  collection: string;
 };
 
-export async function getStaticProps({ params }: Params) {
-  const { slug, collection } = params;
-  const { props } = await withTranslationProps();
+export async function getStaticProps({
+  params,
+  locale,
+}: GetStaticPropsContext) {
+  const { slug, collection } = params as Params;
+  const { props } = await withTranslationProps({ locale });
 
   const maxReadMorePosts = 6;
   const post = getPostBySlug(slug);
@@ -69,17 +74,22 @@ export async function getStaticProps({ params }: Params) {
 
 export function getStaticPaths() {
   const posts = getAllPosts();
+  const locales = i18nextConfig.i18n.locales;
+  const paths: object[] = [];
 
-  const paths = posts.map((post) => {
+  posts.forEach((post) => {
     const slug = post.slug;
     const collection = post.collection.name.toLowerCase();
 
-    return {
-      params: {
-        collection,
-        slug,
-      },
-    };
+    for (const locale of locales) {
+      paths.push({
+        params: {
+          collection,
+          slug,
+        },
+        locale,
+      });
+    }
   });
 
   return {

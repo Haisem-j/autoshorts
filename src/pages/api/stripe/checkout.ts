@@ -14,6 +14,7 @@ import { createStripeCheckout } from '~/lib/stripe/create-checkout';
 import { canChangeBilling } from '~/lib/organizations/permissions';
 import withCsrf from '~/core/middleware/with-csrf';
 import { getUserRoleByOrganization } from '~/lib/server/organizations/memberships';
+import configuration from '~/configuration';
 
 const SUPPORTED_METHODS: HttpMethod[] = ['POST'];
 
@@ -46,6 +47,15 @@ async function checkoutsSessionHandler(
     return redirectToErrorPage();
   }
 
+  const plan = getPlanByPriceId(priceId);
+
+  // check if the plan exists in the configuration.
+  if (!plan) {
+    console.warn(
+      `Plan not found for price ID "${priceId}". Did you forget to add it to the configuration? If the Price ID is incorrect, the checkout will be rejected. Please check the Stripe dashboard`
+    );
+  }
+
   // check the user's role has access to the checkout
   const canChangeBilling = await getUserCanAccessCheckout({
     organizationId,
@@ -73,6 +83,7 @@ async function checkoutsSessionHandler(
       organizationId,
       priceId,
       customerId,
+      trialPeriodDays: plan?.trialPeriodDays,
     });
 
     const portalUrl = getCheckoutPortalUrl(url, returnUrl);
@@ -136,6 +147,20 @@ function getCheckoutPortalUrl(portalUrl: string | null, returnUrl: string) {
   }
 
   return portalUrl as string;
+}
+
+function getPlanByPriceId(priceId: string) {
+  const products = configuration.stripe.products;
+
+  type Plan = (typeof products)[0]['plans'][0];
+
+  return products.reduce<Maybe<Plan>>((acc, product) => {
+    if (acc) {
+      return acc;
+    }
+
+    return product.plans.find(({ stripePriceId }) => stripePriceId === priceId);
+  }, undefined);
 }
 
 /**

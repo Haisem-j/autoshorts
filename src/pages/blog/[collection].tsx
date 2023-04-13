@@ -19,6 +19,7 @@ import Collection from '~/core/blog/types/collection';
 import Layout from '~/core/ui/Layout';
 import Container from '~/core/ui/Container';
 import If from '~/core/ui/If';
+import { GetStaticPropsContext } from 'next';
 
 type Props = {
   posts: Post[];
@@ -59,16 +60,19 @@ const CollectionPosts = ({ posts, collection }: Props) => {
 export default CollectionPosts;
 
 type Params = {
-  params: {
-    slug: string;
-    collection: string;
-  };
+  slug: string;
+  collection: string;
 };
 
-export async function getStaticProps({ params }: Params) {
-  const { props } = await withTranslationProps();
-  const collection = getCollectionByName(params.collection);
-  const posts = getPostsByCollection(params.collection);
+export async function getStaticProps({
+  params,
+  locale,
+}: GetStaticPropsContext) {
+  const { collection: collectionName } = params as Params;
+
+  const { props } = await withTranslationProps({ locale });
+  const collection = getCollectionByName(collectionName);
+  const posts = getPostsByCollection(collectionName);
 
   return {
     props: {

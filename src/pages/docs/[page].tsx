@@ -1,4 +1,5 @@
 import { PropsWithChildren } from 'react';
+import { GetStaticPropsContext } from 'next';
 
 import Head from 'next/head';
 import Link from 'next/link';
@@ -24,6 +25,7 @@ import SubHeading from '~/core/ui/SubHeading';
 
 import DocumentationPage from '../../core/docs/types/documentation-page';
 import PostHeadings from '~/components/blog/PostHeadings/PostHeadings';
+import i18nextConfig from '../../../next-i18next.config';
 
 type Page = {
   title: string;
@@ -70,7 +72,7 @@ const DocsPage = ({ page, docs, previousPage, nextPage }: Props) => {
               </div>
             </div>
 
-            <div className="mx-auto flex w-full flex-1 flex-col space-y-2 py-8 px-4 lg:max-w-4xl lg:px-0">
+            <div className="mx-auto flex w-full flex-1 flex-col space-y-2 px-4 py-8 lg:max-w-4xl lg:px-0">
               <Heading type={1}>
                 <span className={'dark:text-white'}>{page.label}</span>
               </Heading>
@@ -126,13 +128,15 @@ function PageLink({ page }: PropsWithChildren<{ page: DocumentationPage }>) {
 export default DocsPage;
 
 type Params = {
-  params: {
-    page: string;
-  };
+  page: string;
 };
 
-export const getStaticProps = async ({ params }: Params) => {
-  const currentPage = await getDocsPageBySlug(params.page);
+export const getStaticProps = async ({
+  params,
+  locale,
+}: GetStaticPropsContext) => {
+  const { page } = params as Params;
+  const currentPage = await getDocsPageBySlug(page);
   const currentPagePosition = currentPage?.position ?? 0;
 
   if (!currentPage) {
@@ -144,9 +148,7 @@ export const getStaticProps = async ({ params }: Params) => {
   const docs = getDocs();
 
   const directory =
-    docs.find((item) =>
-      item?.pages.some((page) => page.slug === params.page)
-    ) ?? null;
+    docs.find((item) => item?.pages.some(({ slug }) => slug === page)) ?? null;
 
   const getPageByIndex = (index: number) => {
     return (
@@ -159,7 +161,7 @@ export const getStaticProps = async ({ params }: Params) => {
   const nextPage = getPageByIndex(currentPagePosition + 1);
   const previousPage = getPageByIndex(currentPagePosition - 1);
 
-  const { props } = await withTranslationProps();
+  const { props } = await withTranslationProps({ locale });
 
   return {
     props: {
@@ -174,13 +176,18 @@ export const getStaticProps = async ({ params }: Params) => {
 
 export function getStaticPaths() {
   const docs = getDocsSlugs();
+  const locales = i18nextConfig.i18n.locales;
+  const paths: object[] = [];
 
-  const paths = docs.map((item) => {
-    return {
-      params: {
-        page: item,
-      },
-    };
+  docs.forEach((item) => {
+    for (const locale of locales) {
+      paths.push({
+        params: {
+          page: item,
+        },
+        locale,
+      });
+    }
   });
 
   return {
