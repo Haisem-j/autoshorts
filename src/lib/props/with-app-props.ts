@@ -48,6 +48,7 @@ export async function withAppProps(
       });
     }
 
+    const userId = metadata.uid;
     const isEmailVerified = metadata.emailVerified;
     const requireEmailVerification =
       configuration.auth.requireEmailVerification;
@@ -71,20 +72,19 @@ export async function withAppProps(
       return redirectToOnboarding();
     }
 
-    // we fetch the user record from Firestore
-    // which is a separate object from the auth metadata
-    const user = await getUserData(metadata.uid);
     const currentOrganizationId = ctx.req.cookies[ORGANIZATION_ID_COOKIE_NAME];
 
+    // we fetch the user and organization records from Firestore
+    // which is a separate object from the auth metadata
+    const [user, organization] = await Promise.all([
+      getUserData(userId),
+      getCurrentOrganization(userId, currentOrganizationId),
+    ]);
+
     // if the user wasn't found, redirect to the onboarding
-    if (!user) {
+    if (!user || !organization) {
       return redirectToOnboarding();
     }
-
-    const organization = await getCurrentOrganization(
-      user.id,
-      currentOrganizationId
-    );
 
     // check if the page we're trying to access requires
     // subscription to a specific plan

@@ -1,4 +1,4 @@
-import { GetStaticPropsContext } from 'next';
+import { GetStaticPathsResult, GetStaticPropsContext } from 'next';
 
 import { useRouter } from 'next/router';
 import ErrorPage from 'next/error';
@@ -75,7 +75,7 @@ export async function getStaticProps({
 export function getStaticPaths() {
   const posts = getAllPosts();
   const locales = i18nextConfig.i18n.locales;
-  const paths: object[] = [];
+  const paths: GetStaticPathsResult['paths'] = [];
 
   posts.forEach((post) => {
     const slug = post.slug;

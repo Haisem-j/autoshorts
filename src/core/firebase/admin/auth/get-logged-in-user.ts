@@ -16,5 +16,7 @@ export async function getLoggedInUser(ctx: GetServerSidePropsContext) {
     './get-user-from-session-cookie'
   );
 
-  return getUserFromSessionCookie(session);
+  const checkRevoked = false;
+
+  return getUserFromSessionCookie(session, checkRevoked);
 }

@@ -19,7 +19,8 @@ import Collection from '~/core/blog/types/collection';
 import Layout from '~/core/ui/Layout';
 import Container from '~/core/ui/Container';
 import If from '~/core/ui/If';
-import { GetStaticPropsContext } from 'next';
+import { GetStaticPathsResult, GetStaticPropsContext } from 'next';
+import i18nextConfig from '../../../next-i18next.config';
 
 type Props = {
   posts: Post[];
@@ -84,14 +85,20 @@ export async function getStaticProps({
 }
 
 export function getStaticPaths() {
-  const paths = getCollections().map((collection) => {
-    const collectionName = collection?.name.toLowerCase();
+  const locales = i18nextConfig.i18n.locales;
+  const paths: GetStaticPathsResult['paths'] = [];
 
-    return {
-      params: {
-        collection: collectionName,
-      },
-    };
+  getCollections().forEach((collection) => {
+    for (const locale of locales) {
+      const collectionName = collection?.name.toLowerCase();
+
+      paths.push({
+        params: {
+          collection: collectionName,
+        },
+        locale,
+      });
+    }
   });
 
   return {

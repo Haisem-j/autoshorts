@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react';
-import { GetStaticPropsContext } from 'next';
+import { GetStaticPathsResult, GetStaticPropsContext } from 'next';
 
 import Head from 'next/head';
 import Link from 'next/link';
@@ -177,7 +177,7 @@ export const getStaticProps = async ({
 export function getStaticPaths() {
   const docs = getDocsSlugs();
   const locales = i18nextConfig.i18n.locales;
-  const paths: object[] = [];
+  const paths: GetStaticPathsResult['paths'] = [];
 
   docs.forEach((item) => {
     for (const locale of locales) {
