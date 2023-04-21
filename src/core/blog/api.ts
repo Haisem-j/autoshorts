@@ -108,8 +108,23 @@ function getPostFieldsBySlug(
     }
 
     if (field === 'date') {
-      post[field] = new Date(data.date).toISOString();
-      continue;
+      try {
+        const date = new Date(data.date);
+
+        if (isNaN(date.getTime())) {
+          throw new Error('Invalid date');
+        }
+
+        post[field] = date.toISOString();
+
+        continue;
+      } catch (e) {
+        console.debug(e);
+
+        throw new Error(
+          `Error parsing date for post "${slug}". Please check the date format: "${data.date}"`
+        );
+      }
     }
 
     if (data[field]) {
