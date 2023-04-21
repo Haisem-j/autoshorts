@@ -203,8 +203,6 @@ export function getCollectionBySlug(slug: string) {
     return [item?.slug, item?.realSlug].includes(slug);
   });
 
-  console.log(JSON.stringify(collections));
-
   if (!collection) {
     throw new Error(
       `Collection with slug "${slug}" was not found. 
