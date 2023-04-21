@@ -5,7 +5,7 @@ const DEFAULT_LOCALE = process.env.DEFAULT_LOCALE || 'en';
 const config = {
   i18n: {
     defaultLocale: DEFAULT_LOCALE,
-    locales: [DEFAULT_LOCALE, 'it'],
+    locales: [DEFAULT_LOCALE],
   },
   fallbackLng: {
     default: [DEFAULT_LOCALE],
