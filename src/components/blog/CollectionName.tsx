@@ -14,7 +14,7 @@ function CollectionName({
   const size = logoSize ?? 16;
 
   const href = `/blog/[collection]`;
-  const hrefAs = `/blog/${collection.name.toLowerCase()}`;
+  const hrefAs = `/blog/${collection.slug}`;
 
   return (
     <Link href={href} as={hrefAs}>

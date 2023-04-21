@@ -19,7 +19,7 @@ const PostPreview = ({ post, preloadImage, imageHeight }: Props) => {
     post;
 
   const height = imageHeight ?? DEFAULT_IMAGE_HEIGHT;
-  const hrefAs = `/blog/${collection.name.toLowerCase()}/${slug}`;
+  const hrefAs = `/blog/${collection.slug}/${slug}`;
   const href = `/blog/[collection]/[slug]`;
 
   return (

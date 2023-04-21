@@ -10,7 +10,7 @@ import SiteHeader from '~/components/SiteHeader';
 import {
   getPostsByCollection,
   getCollections,
-  getCollectionByName,
+  getCollectionBySlug,
 } from '~/core/blog/api';
 
 import Post from '~/core/blog/types/post';
@@ -69,11 +69,11 @@ export async function getStaticProps({
   params,
   locale,
 }: GetStaticPropsContext) {
-  const { collection: collectionName } = params as Params;
+  const { collection: collectionSlug } = params as Params;
 
   const { props } = await withTranslationProps({ locale });
-  const collection = getCollectionByName(collectionName);
-  const posts = getPostsByCollection(collectionName);
+  const collection = getCollectionBySlug(collectionSlug);
+  const posts = getPostsByCollection(collectionSlug);
 
   return {
     props: {
@@ -90,11 +90,9 @@ export function getStaticPaths() {
 
   getCollections().forEach((collection) => {
     for (const locale of locales) {
-      const collectionName = collection?.name.toLowerCase();
-
       paths.push({
         params: {
-          collection: collectionName,
+          collection: collection.slug,
         },
         locale,
       });

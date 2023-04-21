@@ -79,7 +79,7 @@ export function getStaticPaths() {
 
   posts.forEach((post) => {
     const slug = post.slug;
-    const collection = post.collection.name.toLowerCase();
+    const collection = post.collection.slug;
 
     for (const locale of locales) {
       paths.push({

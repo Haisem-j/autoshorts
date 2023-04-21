@@ -12,7 +12,7 @@ function CollectionTag({
 }) {
   const size = logoSize ?? 16;
 
-  const hrefAs = `/blog/${collection.name.toLowerCase()}`;
+  const hrefAs = `/blog/${collection.slug}`;
   const href = `/blog/[collection]`;
 
   return (

@@ -33,24 +33,30 @@ const COLLECTIONS_DIRECTORY = `_collections`;
 
 const postsDirectory = join(process.cwd(), POSTS_DIRECTORY_NAME);
 
-const collections = readDirectory(COLLECTIONS_DIRECTORY)
-  .map((slug) => {
-    const path = join(process.cwd(), COLLECTIONS_DIRECTORY, slug);
+const collections = readDirectory(COLLECTIONS_DIRECTORY).reduce<
+  Array<{
+    data: Collection;
+    slug: string;
+    realSlug: string;
+  }>
+>((acc, slug) => {
+  const path = join(process.cwd(), COLLECTIONS_DIRECTORY, slug);
 
-    if (existsSync(path)) {
-      const json = readFileSync(path, 'utf-8');
+  if (existsSync(path)) {
+    const json = readFileSync(path, 'utf-8');
 
-      try {
-        const data = JSON.parse(json) as Collection;
-        const realSlug = slug.replace('.json', '');
+    try {
+      const data = JSON.parse(json) as Collection;
+      const realSlug = slug.replace('.json', '');
 
-        return { data, slug, realSlug };
-      } catch (e) {
-        return;
-      }
+      return [...acc, { data, slug, realSlug }];
+    } catch (e) {
+      return acc;
     }
-  })
-  .filter(Boolean);
+  }
+
+  return acc;
+}, []);
 
 export function getPostsSlugs() {
   return readDirectory(postsDirectory);
@@ -116,13 +122,10 @@ function getPostFieldsBySlug(
   return post as Post;
 }
 
-export function getPostsByCollection(collectionSlug: string) {
-  const collection = getCollectionBySlug(collectionSlug);
+export function getPostsByCollection(slug: string) {
+  const collection = getCollectionBySlug(slug);
 
-  return getAllPosts(
-    (item) =>
-      item.collection?.name.toLowerCase() === collection.name.toLowerCase()
-  );
+  return getAllPosts((item) => item.collection?.slug === collection.slug);
 }
 
 function getReadingTimeInMinutes(content: string, wpm = 225) {
@@ -184,13 +187,23 @@ export function getPostsByTag(tag: string) {
 }
 
 export function getCollections() {
-  return collections.map((item) => item?.data as Collection);
+  return collections.map((item) => {
+    const data = item?.data as Collection;
+    const slug = item?.realSlug;
+
+    return {
+      ...data,
+      slug,
+    };
+  });
 }
 
 export function getCollectionBySlug(slug: string) {
   const collection = collections.find((item) => {
     return [item?.slug, item?.realSlug].includes(slug);
   });
+
+  console.log(JSON.stringify(collections));
 
   if (!collection) {
     throw new Error(
@@ -204,12 +217,4 @@ export function getCollectionBySlug(slug: string) {
     ...collection.data,
     slug: collection.realSlug,
   };
-}
-
-export function getCollectionByName(collectionName: string) {
-  const collection = collections.find((item) => {
-    return item?.data?.name.toLowerCase() === collectionName.toLowerCase();
-  });
-
-  return collection?.data as Collection;
 }
