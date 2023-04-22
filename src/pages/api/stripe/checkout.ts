@@ -78,12 +78,17 @@ async function checkoutsSessionHandler(
   }
 
   try {
+    const trialPeriodDays =
+      plan && 'trialPeriodDays' in plan
+        ? (plan.trialPeriodDays as number)
+        : undefined;
+
     const { url } = await createStripeCheckout({
       returnUrl,
       organizationId,
       priceId,
       customerId,
-      trialPeriodDays: plan?.trialPeriodDays,
+      trialPeriodDays,
     });
 
     const portalUrl = getCheckoutPortalUrl(url, returnUrl);
