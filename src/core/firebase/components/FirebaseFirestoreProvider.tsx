@@ -1,10 +1,12 @@
 import { FirestoreProvider, useFirebaseApp } from 'reactfire';
+import { useMemo } from 'react';
 
 import {
-  enableIndexedDbPersistence,
   connectFirestoreEmulator,
   Firestore,
   initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
 } from 'firebase/firestore';
 
 import { isBrowser } from '~/core/generic/is-browser';
@@ -15,7 +17,11 @@ export default function FirebaseFirestoreProvider({
   useEmulator,
 }: React.PropsWithChildren<{ useEmulator?: boolean }>) {
   const app = useFirebaseApp();
-  const firestore = initializeFirestore(app, getFirestoreConfig());
+
+  const firestore = useMemo(
+    () => initializeFirestore(app, getFirestoreConfig()),
+    [app]
+  );
 
   const isEmulatorEnv = configuration.emulator ?? useEmulator;
 
@@ -33,15 +39,6 @@ export default function FirebaseFirestoreProvider({
     } catch (e) {
       // this may happen on re-renderings
     }
-  }
-
-  const enablePersistence =
-    isBrowser() && !didFirestoreInitialize(firestore) && !isTestEnv();
-
-  // We enable offline capabilities by caching Firestore in IndexedDB
-  // NB: if you don't want to cache results, please remove the next few lines
-  if (enablePersistence) {
-    executeSafely(() => enableIndexedDbPersistence(firestore));
   }
 
   return <FirestoreProvider sdk={firestore}>{children}</FirestoreProvider>;
@@ -94,11 +91,24 @@ function isTestEnv() {
  * Cypress. Otherwise, it will hang.
  */
 function getFirestoreConfig() {
-  return isTestEnv()
-    ? {
-        ssl: false,
-        host: '',
-        experimentalForceLongPolling: true,
-      }
-    : {};
+  if (!isBrowser()) {
+    return {};
+  }
+
+  const localCache = persistentLocalCache({
+    tabManager: persistentMultipleTabManager(),
+  });
+
+  if (isTestEnv()) {
+    return {
+      ssl: false,
+      host: '',
+      experimentalForceLongPolling: true,
+      localCache,
+    };
+  }
+
+  return {
+    localCache,
+  };
 }

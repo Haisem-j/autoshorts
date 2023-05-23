@@ -27,13 +27,13 @@ async function inviteMembersToOrganizationHandler(
   const queryParamsSchemaResult = getQueryParamsSchema().safeParse(query);
 
   if (!queryParamsSchemaResult.success) {
-    return throwBadRequestException();
+    return throwBadRequestException(queryParamsSchemaResult.error.message);
   }
 
   const bodySchemaResult = getBodySchema().safeParse(req.body);
 
   if (!bodySchemaResult.success) {
-    return throwBadRequestException();
+    return throwBadRequestException(bodySchemaResult.error.message);
   }
 
   const { id: organizationId } = queryParamsSchemaResult.data;
