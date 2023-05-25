@@ -18,9 +18,10 @@ export default function FirebaseFirestoreProvider({
 }: React.PropsWithChildren<{ useEmulator?: boolean }>) {
   const app = useFirebaseApp();
 
+  const firestoreConfig = useFirestoreConfig();
   const firestore = useMemo(
-    () => initializeFirestore(app, getFirestoreConfig()),
-    [app]
+    () => initializeFirestore(app, firestoreConfig),
+    [app, firestoreConfig]
   );
 
   const isEmulatorEnv = configuration.emulator ?? useEmulator;
@@ -90,25 +91,29 @@ function isTestEnv() {
  * @description The configuration below is needed to make Firestore work with
  * Cypress. Otherwise, it will hang.
  */
-function getFirestoreConfig() {
-  if (!isBrowser()) {
-    return {};
-  }
+function useFirestoreConfig() {
+  const localCache = useMemo(
+    () =>
+      isBrowser()
+        ? persistentLocalCache({
+            tabManager: persistentMultipleTabManager(),
+          })
+        : undefined,
+    []
+  );
 
-  const localCache = persistentLocalCache({
-    tabManager: persistentMultipleTabManager(),
-  });
+  return useMemo(() => {
+    if (isTestEnv()) {
+      return {
+        ssl: false,
+        host: '',
+        experimentalForceLongPolling: true,
+        localCache,
+      };
+    }
 
-  if (isTestEnv()) {
     return {
-      ssl: false,
-      host: '',
-      experimentalForceLongPolling: true,
       localCache,
     };
-  }
-
-  return {
-    localCache,
-  };
+  }, [localCache]);
 }
