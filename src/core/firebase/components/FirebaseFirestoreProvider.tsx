@@ -12,17 +12,26 @@ import {
 import { isBrowser } from '~/core/generic/is-browser';
 import configuration from '~/configuration';
 
+const localCache = isBrowser()
+  ? persistentLocalCache({
+      tabManager: persistentMultipleTabManager(),
+    })
+  : undefined;
+
+let firestore: Firestore;
+
 export default function FirebaseFirestoreProvider({
   children,
   useEmulator,
 }: React.PropsWithChildren<{ useEmulator?: boolean }>) {
   const app = useFirebaseApp();
-
   const firestoreConfig = useFirestoreConfig();
-  const firestore = useMemo(
-    () => initializeFirestore(app, firestoreConfig),
-    [app, firestoreConfig]
-  );
+
+  if (firestore) {
+    return <FirestoreProvider sdk={firestore}>{children}</FirestoreProvider>;
+  }
+
+  firestore = initializeFirestore(app, firestoreConfig);
 
   const isEmulatorEnv = configuration.emulator ?? useEmulator;
 
@@ -92,16 +101,6 @@ function isTestEnv() {
  * Cypress. Otherwise, it will hang.
  */
 function useFirestoreConfig() {
-  const localCache = useMemo(
-    () =>
-      isBrowser()
-        ? persistentLocalCache({
-            tabManager: persistentMultipleTabManager(),
-          })
-        : undefined,
-    []
-  );
-
   return useMemo(() => {
     if (isTestEnv()) {
       return {
@@ -115,5 +114,5 @@ function useFirestoreConfig() {
     return {
       localCache,
     };
-  }, [localCache]);
+  }, []);
 }
