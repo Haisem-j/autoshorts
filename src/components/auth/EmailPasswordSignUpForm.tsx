@@ -30,7 +30,7 @@ const EmailPasswordSignUpForm: React.FCC<{
     required: true,
     minLength: {
       value: 6,
-      message: t<string>(`auth:passwordLengthError`),
+      message: t(`auth:passwordLengthError`),
     },
   });
 
@@ -40,11 +40,11 @@ const EmailPasswordSignUpForm: React.FCC<{
     required: true,
     minLength: {
       value: 6,
-      message: t<string>(`auth:passwordLengthError`),
+      message: t(`auth:passwordLengthError`),
     },
     validate: (value) => {
       if (value !== passwordValue) {
-        return t<string>(`auth:passwordsDoNotMatch`);
+        return t(`auth:passwordsDoNotMatch`);
       }
 
       return true;

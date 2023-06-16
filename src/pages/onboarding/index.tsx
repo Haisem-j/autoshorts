@@ -135,14 +135,8 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const organization = await getCurrentOrganization(user.uid);
   const { onboarded } = user.customClaims;
 
-  // there are two cases when we redirect the user to the onboarding
-  // 1. if they have not been onboarded yet
-  // 2. if they end up with 0 organizations (for example, if they get removed)
-  //
-  // NB: you should remove this if you want to
-  // allow organization-less users within the application
   if (onboarded && organization) {
-    return redirectToAppHome();
+    return redirectToAppHome(ctx.locale);
   }
 
   return {
@@ -167,10 +161,13 @@ function redirectToSignIn() {
   };
 }
 
-function redirectToAppHome() {
+function redirectToAppHome(locale: string | undefined) {
+  const localePrefix = locale ? `/${locale}` : '';
+  const destination = `${localePrefix}${configuration.paths.appHome}`;
+
   return {
     redirect: {
-      destination: configuration.paths.appHome,
+      destination,
       permanent: false,
     },
   };
