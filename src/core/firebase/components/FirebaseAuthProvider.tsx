@@ -10,7 +10,6 @@ import {
 } from 'firebase/auth';
 
 import { isBrowser } from '~/core/generic/is-browser';
-import { useDestroySession } from '~/core/hooks/use-destroy-session';
 import { UserSession } from '~/core/session/types/user-session';
 
 export const FirebaseAuthStateListener: React.FCC<{
@@ -42,7 +41,6 @@ export default function FirebaseAuthProvider({
   setUserSession: Dispatch<Maybe<UserSession>>;
 }>) {
   const app = useFirebaseApp();
-  const { trigger: signOut } = useDestroySession();
   const userRef = useRef<Maybe<User>>();
 
   // make sure we're not using IndexedDB when SSR
@@ -77,16 +75,11 @@ export default function FirebaseAuthProvider({
       // (because userSession?.auth is defined) then we need to clear the
       // session cookie
       if (userRef.current) {
-        try {
-          // we need to delete the session cookie used for SSR
-          await signOut();
-        } finally {
-          setUserSession(undefined);
-          userRef.current = undefined;
-        }
+        setUserSession(undefined);
+        userRef.current = undefined;
       }
     },
-    [setUserSession, signOut, userSession?.data]
+    [setUserSession, userSession?.data],
   );
 
   return (
