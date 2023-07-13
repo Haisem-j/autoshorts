@@ -5,7 +5,6 @@ import { Trans } from 'next-i18next';
 
 import { isBrowser } from '~/core/generic/is-browser';
 import useClearFirestoreCache from '~/core/hooks/use-clear-firestore-cache';
-import { useDestroySession } from '~/core/hooks/use-destroy-session';
 import PageLoadingIndicator from '~/core/ui/PageLoadingIndicator';
 
 const AuthRedirectListener: React.FCC<{
@@ -13,7 +12,6 @@ const AuthRedirectListener: React.FCC<{
 }> = ({ children, whenSignedOut }) => {
   const auth = useAuth();
   const { status, data: signInCheck } = useSigninCheck({ suspense: true });
-  const { trigger: destroySession } = useDestroySession();
   const redirectUserAway = useRedirectUserAway();
   const clearCache = useClearFirestoreCache();
   const isSignInCheckDone = status === 'success';
@@ -52,8 +50,6 @@ const AuthRedirectListener: React.FCC<{
       }
 
       if (shouldLogOut) {
-        await destroySession();
-
         return redirectUserAway(whenSignedOut);
       }
     });
@@ -63,7 +59,6 @@ const AuthRedirectListener: React.FCC<{
   }, [
     auth,
     clearCache,
-    destroySession,
     isSignInCheckDone,
     redirectUserAway,
     status,

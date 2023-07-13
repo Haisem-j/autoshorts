@@ -32,7 +32,7 @@ const AppRouteLoadingIndicator = dynamic(
   () => import('~/core/ui/AppRouteLoadingIndicator'),
   {
     ssr: false,
-  }
+  },
 );
 
 const fontFamilySans = SansFont({
@@ -65,7 +65,7 @@ interface DefaultPageProps extends SSRConfig {
 }
 
 function App(
-  props: AppProps<DefaultPageProps> & { pageProps: DefaultPageProps }
+  props: AppProps<DefaultPageProps> & { pageProps: DefaultPageProps },
 ) {
   const { Component } = props;
   const pageProps = props.pageProps as DefaultPageProps;
@@ -106,13 +106,11 @@ function App(
           setUserSession={setUserSession}
           useEmulator={emulator}
         >
-          <FirebaseAnalyticsProvider>
-            <UserSessionContext.Provider
-              value={{ userSession, setUserSession }}
+          <UserSessionContext.Provider value={{ userSession, setUserSession }}>
+            <OrganizationContext.Provider
+              value={{ organization, setOrganization }}
             >
-              <OrganizationContext.Provider
-                value={{ organization, setOrganization }}
-              >
+              <FirebaseAnalyticsProvider>
                 <AppRouteLoadingIndicator />
 
                 <UiStateProvider state={pageProps.ui}>
@@ -121,9 +119,9 @@ function App(
                     <Component {...pageProps} />
                   </CsrfTokenContext.Provider>
                 </UiStateProvider>
-              </OrganizationContext.Provider>
-            </UserSessionContext.Provider>
-          </FirebaseAnalyticsProvider>
+              </FirebaseAnalyticsProvider>
+            </OrganizationContext.Provider>
+          </UserSessionContext.Provider>
         </FirebaseAuthProvider>
       </FirebaseAppCheckProvider>
     </FirebaseAppShell>
@@ -131,13 +129,13 @@ function App(
 }
 
 export default appWithTranslation<AppProps & { pageProps: DefaultPageProps }>(
-  App
+  App,
 );
 
 function UiStateProvider(
   props: React.PropsWithChildren<{
     state: Maybe<UIState>;
-  }>
+  }>,
 ) {
   const ui = props.state;
   const isCollapsed = ui?.sidebarState === 'collapsed';
