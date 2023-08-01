@@ -1,4 +1,6 @@
 import { useCallback, useEffect } from 'react';
+import { useRouter } from 'next/router';
+
 import { useAuth, useSigninCheck } from 'reactfire';
 import { parseCookies, destroyCookie } from 'nookies';
 import { Trans } from 'next-i18next';
@@ -115,18 +117,23 @@ function getExpiresAtCookie() {
 }
 
 function useRedirectUserAway() {
-  return useCallback((path: string) => {
-    const currentPath = window.location.pathname;
-    const isNotCurrentPage = currentPath !== path;
+  const router = useRouter();
 
-    // we then redirect the user to the page
-    // specified in the props of the component
-    if (isNotCurrentPage) {
-      clearAuthCookies();
+  return useCallback(
+    (path: string) => {
+      const currentPath = window.location.pathname;
+      const isNotCurrentPage = currentPath !== path;
 
-      window.location.assign(path);
-    }
-  }, []);
+      // we then redirect the user to the page
+      // specified in the props of the component
+      if (isNotCurrentPage) {
+        clearAuthCookies();
+
+        return router.push(path);
+      }
+    },
+    [router],
+  );
 }
 
 function clearAuthCookies() {
