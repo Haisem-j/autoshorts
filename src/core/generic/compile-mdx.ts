@@ -14,6 +14,8 @@ export async function compileMdx(markdown: string) {
 
   const code = await compile(markdown, {
     outputFormat: 'function-body',
+    development: false,
+    useDynamicImport: true,
     rehypePlugins: [rehypeHighlight, rehypeSlug, rehypeAutoLinkHeadings],
   });
 

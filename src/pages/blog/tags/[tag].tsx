@@ -10,9 +10,9 @@ import { getPostsByTag, getAllTags } from '~/core/blog/api';
 
 import Post from '~/core/blog/types/post';
 import Layout from '~/core/ui/Layout';
-import Hero from '~/core/ui/Hero';
 import Container from '~/core/ui/Container';
 import Footer from '~/components/Footer';
+import Heading from '~/core/ui/Heading';
 
 type Props = {
   posts: Post[];
@@ -30,8 +30,8 @@ const TagPage = ({ posts, tag }: Props) => {
       <SiteHeader />
 
       <Container>
-        <div className="flex justify-center">
-          <Hero>{tag}</Hero>
+        <div className="flex justify-center my-8">
+          <Heading>{tag}</Heading>
         </div>
 
         <div className="mt-8 md:mt-12">

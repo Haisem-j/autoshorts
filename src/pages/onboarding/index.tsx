@@ -17,7 +17,6 @@ import {
   OrganizationInfoStepData,
 } from '~/components/onboarding/OrganizationInfoStep';
 
-import OnboardingIllustration from '~/components/onboarding/OnboardingIllustration';
 import { withTranslationProps } from '~/lib/props/with-translation-props';
 
 interface Data {
@@ -39,7 +38,7 @@ const Onboarding = () => {
 
       setCurrentStep(1);
     },
-    []
+    [],
   );
 
   // prefetch application home route
@@ -57,41 +56,24 @@ const Onboarding = () => {
         <title key="title">Onboarding</title>
       </Head>
 
-      <div className={'flex flex-1 flex-col dark:bg-black-500'}>
-        <div className={'flex divide-x divide-gray-100 dark:divide-black-300'}>
-          <div
-            className={
-              'flex h-screen flex-1 flex-col items-center justify-center' +
-              ' w-full lg:w-6/12'
-            }
-          >
-            <div className={'absolute top-24 hidden lg:flex'}>
-              <Logo href={'/onboarding'} />
-            </div>
+      <div
+        className={
+          'flex h-screen flex-1 flex-col items-center justify-center' +
+          ' w-full space-y-24'
+        }
+      >
+        <Logo href={'/onboarding'} />
 
-            <div className={'w-9/12'}>
-              <If condition={currentStep === 0}>
-                <OrganizationInfoStep onSubmit={onFirstStepSubmitted} />
-              </If>
+        <div className={'w-full max-w-xl'}>
+          <If condition={currentStep === 0}>
+            <OrganizationInfoStep onSubmit={onFirstStepSubmitted} />
+          </If>
 
-              <If condition={currentStep === 1 && data}>
-                {(data) => (
-                  <CompleteOnboardingStep data={data} onComplete={onComplete} />
-                )}
-              </If>
-            </div>
-          </div>
-
-          <div
-            className={
-              'hidden w-6/12 flex-1 items-center bg-gray-50' +
-              ' justify-center dark:bg-black-400 lg:flex'
-            }
-          >
-            <div>
-              <OnboardingIllustration />
-            </div>
-          </div>
+          <If condition={currentStep === 1 && data}>
+            {(data) => (
+              <CompleteOnboardingStep data={data} onComplete={onComplete} />
+            )}
+          </If>
         </div>
       </div>
     </Layout>

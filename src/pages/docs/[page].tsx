@@ -64,7 +64,7 @@ const DocsPage = ({ page, docs, previousPage, nextPage }: Props) => {
             <div
               className={
                 'DocumentationSidebarContainer w-3/12 max-w-xs' +
-                ' hidden border-r border-gray-100 dark:border-black-400 lg:flex'
+                ' hidden border-r border-gray-100 dark:border-dark-800 lg:flex'
               }
             >
               <div className={'w-full flex-col space-y-2 px-6 py-8'}>
@@ -94,7 +94,7 @@ const DocsPage = ({ page, docs, previousPage, nextPage }: Props) => {
             <div
               className={
                 'DocumentationSidebarContainer hidden w-3/12 max-w-xs lg:flex' +
-                ' border-l border-gray-100 px-6 py-8 dark:border-black-400'
+                ' border-l border-gray-100 px-6 py-8 dark:border-dark-800'
               }
             >
               <PostHeadings headings={page.headings} />

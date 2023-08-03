@@ -1,7 +1,6 @@
 import dynamic from 'next/dynamic';
 
 import { useAuth } from 'reactfire';
-import { Transition } from '@headlessui/react';
 
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import { useUserSession } from '~/core/hooks/use-user-session';
@@ -31,38 +30,36 @@ const SiteHeader: React.FCC<{
   const signOutRequested = () => auth.signOut();
 
   return (
-    <div className={`w-full py-4 px-1 lg:px-6 ${fixed ? fixedClassName : ''}`}>
+    <div className={`w-full ${fixed ? fixedClassName : ''}`}>
       <Container>
-        <div className="flex flex-row items-center">
-          <div className={'flex items-center space-x-4 lg:space-x-8'}>
+        <div className="flex py-1.5 px-1 items-center border-b border-gray-50 dark:border-dark-800 justify-between">
+          <div className={'w-4/12'}>
             <Logo />
+          </div>
 
+          <div className={'w-4/12 hidden lg:flex justify-center'}>
             <SiteNavigation />
           </div>
 
-          <div className={'flex flex-1 items-center justify-end space-x-4'}>
-            <If condition={configuration.enableThemeSwitcher && !userSession?.auth}>
-              <div className={'flex items-center'}>
+          <div className={'flex items-center space-x-4 w-4/12 justify-end'}>
+            <If condition={configuration.enableThemeSwitcher}>
+              <div>
                 <DarkModeToggle />
               </div>
             </If>
 
-            <Transition
-              appear
-              show
-              enter="transition-opacity duration-500"
-              enterFrom="opacity-50"
-              enterTo="opacity-100"
-            >
-              <If condition={userSession?.auth} fallback={<AuthButtons />}>
-                {(user) => (
-                  <ProfileDropdown
-                    user={user}
-                    signOutRequested={signOutRequested}
-                  />
-                )}
-              </If>
-            </Transition>
+            <If condition={userSession?.auth} fallback={<AuthButtons />}>
+              {(user) => (
+                <ProfileDropdown
+                  user={user}
+                  signOutRequested={signOutRequested}
+                />
+              )}
+            </If>
+
+            <div className={'flex lg:hidden'}>
+              <SiteNavigation />
+            </div>
           </div>
         </div>
       </Container>

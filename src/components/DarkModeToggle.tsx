@@ -52,8 +52,9 @@ const DarkModeToggle = () => {
         <IconButton
           data-cy={'dark-mode-toggle'}
           className={
-            'flex items-center !rounded-full border-transparent shadow-sm transition-shadow' +
-            ' !bg-transparent hover:shadow-md'
+            'flex items-center !rounded-full border-transparent transition-shadow' +
+            ' !bg-transparent hover:shadow-xl dark:border-transparent' +
+            ' dark:shadow-primary-500/50'
           }
         >
           <span hidden>

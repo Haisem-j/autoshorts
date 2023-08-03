@@ -10,7 +10,6 @@ import Layout from '~/core/ui/Layout';
 import SiteHeader from '~/components/SiteHeader';
 import Container from '~/core/ui/Container';
 import Footer from '~/components/Footer';
-import Hero from '~/core/ui/Hero';
 import Heading from '~/core/ui/Heading';
 import GridList from '~/components/GridList';
 import SubHeading from '~/core/ui/SubHeading';
@@ -37,8 +36,8 @@ export default function Docs({
         </div>
 
         <Container>
-          <div className={'flex flex-col items-center'}>
-            <Hero>Documentation</Hero>
+          <div className={'flex flex-col items-center space-y-4 my-8'}>
+            <Heading type={1}>Documentation</Heading>
 
             <SubHeading>
               Explore our guides and examples to start building your app.
@@ -97,7 +96,7 @@ function TopicLink({
 }: React.PropsWithChildren<{ href: string }>) {
   return (
     <Link
-      className={`flex w-full flex-col rounded-xl bg-gray-50 px-5 py-6 transition-colors hover:bg-gray-100 active:bg-gray-200 dark:border-2 dark:border-black-500 dark:bg-black-400 dark:hover:border-black-300 dark:hover:bg-black-500 dark:active:bg-black-600`}
+      className={`flex w-full flex-col rounded-xl bg-gray-50 px-5 py-6 transition-colors hover:bg-gray-100 active:bg-gray-200 dark:border-2 dark:border-dark-900 dark:bg-dark-800 dark:hover:border-dark-700 dark:hover:bg-dark-900 dark:active:bg-dark-600`}
       href={href}
     >
       {children}

@@ -3,7 +3,7 @@ import '../styles/index.css';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
-import { Inter as SansFont, Manrope as HeadingFont } from 'next/font/google';
+import { Inter as SansFont } from 'next/font/google';
 
 import type { User as AuthUser } from 'firebase/auth';
 import { appWithTranslation, SSRConfig } from 'next-i18next';
@@ -43,13 +43,9 @@ const fontFamilySans = SansFont({
   weight: ['300', '400', '500', '600', '700', '800'],
 });
 
-const fontFamilyHeading = HeadingFont({
-  subsets: ['latin'],
-  variable: '--font-family-heading',
-  fallback: ['--font-family-sans'],
-  preload: true,
-  weight: ['400', '500'],
-});
+// replace the below with your heading
+// font of choice or leave as is
+const fontFamilyHeading = fontFamilySans;
 
 interface UIState {
   sidebarState: string;
@@ -139,7 +135,7 @@ function UiStateProvider(
 ) {
   const ui = props.state;
   const isCollapsed = ui?.sidebarState === 'collapsed';
-  const currentTheme = ui?.theme ?? null;
+  const currentTheme = ui?.theme ?? configuration.theme;
 
   const [collapsed, setCollapsed] = useCollapsible(isCollapsed);
   const [theme, setTheme] = useState(currentTheme);
@@ -157,7 +153,7 @@ function UiStateProvider(
  * Load selected theme
  * Do not add it as an effect to _app.tsx, the flashing is very visible
  */
-if (isBrowser() && configuration.enableThemeSwitcher) {
+if (isBrowser()) {
   loadSelectedTheme();
 }
 
@@ -170,7 +166,8 @@ function FontFamily() {
             ${fontFamilySans.style.fontFamily}, 'Segoe UI', 'Roboto', 'Ubuntu',
             'sans-serif';
 
-          --font-family-heading: ${fontFamilyHeading.style.fontFamily};
+          --font-family-heading: '-apple-system', 'BlinkMacSystemFont',
+            ${fontFamilyHeading.style.fontFamily};
         }
       `}
     </style>

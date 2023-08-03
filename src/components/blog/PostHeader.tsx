@@ -6,10 +6,10 @@ import Author from '~/components/blog/Author';
 
 import DateFormatter from './DateFormatter';
 import CoverImage from './CoverImage';
-import PostTitle from './PostTitle';
 import CollectionTag from './CollectionTag';
 import Tag from './Tag';
 import SubHeading from '~/core/ui/SubHeading';
+import Heading from '~/core/ui/Heading';
 
 type Props = {
   post: Post;
@@ -27,15 +27,13 @@ const PostHeader = ({ post }: Props) => {
 
   return (
     <>
-      <PostTitle>
-        <CollectionTag logoSize={22} collection={collection} />
+      <div className={'flex flex-col space-y-2 my-8'}>
+        <Heading type={1}>{title}</Heading>
 
-        {title}
-      </PostTitle>
+        <SubHeading>{excerpt}</SubHeading>
+      </div>
 
-      <SubHeading>{excerpt}</SubHeading>
-
-      <div className="mx-auto mb-4 mt-6 flex">
+      <div className="mx-auto mb-4 mt-4 flex">
         <div className="flex flex-row items-center space-x-2 text-sm text-gray-600 dark:text-gray-200">
           <If condition={post.author}>
             {(author) => <Author author={author} />}
@@ -61,7 +59,7 @@ const PostHeader = ({ post }: Props) => {
       </div>
 
       <If condition={displayImage && coverImage}>
-        <div className="relative mx-auto h-[378px] w-full justify-center">
+        <div className="relative mx-auto h-[350px] w-full justify-center">
           <CoverImage
             preloadImage={preloadImage}
             className="rounded-md"

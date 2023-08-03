@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import classNames from 'classnames';
+import classNames from 'clsx';
 
 const InputFile = forwardRef<
   React.ElementRef<'input'>,
@@ -18,7 +18,7 @@ const InputFile = forwardRef<
                 file:rounded-full file:border-0 file:bg-primary-500 file:py-2
                 file:px-4 file:text-sm file:font-semibold
                 file:text-white file:hover:bg-primary-600 file:active:bg-primary-700 dark:text-white`,
-        className
+        className,
       )}
     />
   );

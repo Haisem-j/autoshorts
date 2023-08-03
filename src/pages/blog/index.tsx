@@ -10,10 +10,10 @@ import Post from '~/core/blog/types/post';
 
 import { getAllPosts } from '~/core/blog/api';
 import Layout from '~/core/ui/Layout';
-import Hero from '~/core/ui/Hero';
 import Container from '~/core/ui/Container';
 import Footer from '~/components/Footer';
 import SubHeading from '~/core/ui/SubHeading';
+import Heading from '~/core/ui/Heading';
 
 type Props = {
   posts: Post[];
@@ -29,9 +29,9 @@ const Blog = ({ posts }: Props) => {
       <SiteHeader />
 
       <Container>
-        <div className={'flex flex-col space-y-8'}>
-          <div className={'flex flex-col items-center justify-center'}>
-            <Hero>Blog</Hero>
+        <div className={'flex flex-col space-y-8 my-8'}>
+          <div className={'flex flex-col items-center space-y-4'}>
+            <Heading>Blog</Heading>
 
             <SubHeading>
               Tutorials, Guides and Updates from the MakerKit team

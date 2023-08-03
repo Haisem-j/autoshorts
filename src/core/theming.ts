@@ -10,8 +10,10 @@ export const DARK_THEME_CLASSNAME = `dark`;
 export const LIGHT_THEME_CLASSNAME = `light`;
 export const SYSTEM_THEME_CLASSNAME = 'system';
 
+const DEFAULT_THEME = configuration.theme;
+
 export function getStoredTheme() {
-  return parseCookies(null)['theme'];
+  return parseCookies(null)['theme'] ?? DEFAULT_THEME;
 }
 
 export function setTheme(theme: string | null) {

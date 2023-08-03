@@ -28,7 +28,7 @@ const DEFAULT_OPTIONS = {
  */
 export async function withAppProps(
   ctx: GetServerSidePropsContext,
-  options: Partial<typeof DEFAULT_OPTIONS> = DEFAULT_OPTIONS
+  options: Partial<typeof DEFAULT_OPTIONS> = DEFAULT_OPTIONS,
 ) {
   const mergedOptions = getAppPropsOptions(ctx.locale, options);
   const { redirectPath, requirePlans } = mergedOptions;
@@ -122,7 +122,7 @@ export async function withAppProps(
     const csrfToken = await createCsrfCookie(ctx);
 
     const { props: translationProps } = await withTranslationProps(
-      mergedOptions
+      mergedOptions,
     );
 
     const ui = getUiProps(ctx);
@@ -194,7 +194,7 @@ async function getUserAuthMetadata(ctx: GetServerSidePropsContext) {
 
 function saveOrganizationInCookies(
   ctx: GetServerSidePropsContext,
-  organizationId: string
+  organizationId: string,
 ) {
   setCookie(ctx, ORGANIZATION_ID_COOKIE_NAME, organizationId, {
     path: '/',
@@ -229,7 +229,7 @@ function clearAuthenticationCookies(ctx: GetServerSidePropsContext) {
 
 function getAppPropsOptions(
   locale: string | undefined,
-  options: Partial<typeof DEFAULT_OPTIONS>
+  options: Partial<typeof DEFAULT_OPTIONS>,
 ) {
   const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
 

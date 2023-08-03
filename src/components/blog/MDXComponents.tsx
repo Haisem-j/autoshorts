@@ -1,26 +1,22 @@
 import Image from 'next/image';
-import classNames from 'classnames';
+import classNames from 'clsx';
 
 import Alert from '~/core/ui/Alert';
 import configuration from '~/configuration';
 
 import LazyRender from '~/core/ui/LazyRender';
 import ClientOnly from '~/core/ui/ClientOnly';
-import TweetEmbed from './TweetEmbed';
 
-const NextImage: React.FCC<StringObject & {
-  width: number;
-  height: number
-}> = (props) => {
+const NextImage: React.FCC<
+  StringObject & {
+    width: number;
+    height: number;
+  }
+> = (props) => {
   const className = classNames(props.class, `object-cover`);
 
   return (
-    <Image
-      className={className}
-      src={props.src}
-      alt={props.alt}
-      {...props}
-    />
+    <Image className={className} src={props.src} alt={props.alt} {...props} />
   );
 };
 
@@ -69,7 +65,6 @@ const Video: React.FCC<{
 const MDXComponents = {
   img: NextImage,
   a: ExternalLink,
-  TweetEmbed,
   Video,
   Alert,
   Image: NextImage,

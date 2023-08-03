@@ -1,5 +1,5 @@
 import React from 'react';
-import classNames from 'classnames';
+import classNames from 'clsx';
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 
 const Tooltip = ({ delayDuration = 0, ...props }) => (
@@ -24,16 +24,16 @@ const TooltipContent = React.forwardRef<
          data-[side=top]:slide-in-from-bottom-1
          data-[side=left]:slide-in-from-right-1
          data-[side=right]:slide-in-from-left-1 z-50 overflow-hidden
-         rounded-md bg-black-500/80 px-3 py-1.5 text-xs text-gray-100
-         shadow-md dark:bg-black-300/90`,
-      className
+         rounded-md bg-dark-900/80 px-3 py-1.5 text-xs text-gray-100
+         shadow-md dark:bg-dark-700/90`,
+      className,
     )}
     {...props}
   >
     {children}
 
     <TooltipPrimitive.Arrow
-      className={'fill-black-500/80 dark:fill-black-300/90'}
+      className={'fill-dark-900/80 dark:fill-dark-700/90'}
     />
   </TooltipPrimitive.Content>
 ));

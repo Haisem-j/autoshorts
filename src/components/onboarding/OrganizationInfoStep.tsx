@@ -26,7 +26,7 @@ export const OrganizationInfoStep: React.FCC<{
         organization,
       });
     },
-    [onSubmit]
+    [onSubmit],
   );
 
   return (
@@ -39,7 +39,7 @@ export const OrganizationInfoStep: React.FCC<{
         <SubHeading>Let&apos;s create your organization.</SubHeading>
       </div>
 
-      <div className={'flex flex-1 flex-col space-y-2'}>
+      <div className={'flex flex-1 flex-col space-y-4'}>
         <TextField>
           <TextField.Label>
             Your organization&apos;s name
@@ -55,7 +55,7 @@ export const OrganizationInfoStep: React.FCC<{
           <Button type={'submit'}>
             <span className={'flex items-center space-x-2'}>
               <span>Continue</span>
-              <ArrowRightIcon className={'h-5'} />
+              <ArrowRightIcon className={'h-4'} />
             </span>
           </Button>
         </div>

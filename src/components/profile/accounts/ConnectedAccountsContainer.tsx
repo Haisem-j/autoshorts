@@ -63,7 +63,7 @@ const ConnectedAccountsContainer = () => {
 
   const providerData = useMemo(
     () => user?.providerData ?? [],
-    [user?.providerData]
+    [user?.providerData],
   );
 
   const [providers, setProviders] = useState(providerData);
@@ -84,10 +84,10 @@ const ConnectedAccountsContainer = () => {
       });
 
       setProviders((providers) =>
-        providers.filter((provider) => provider.providerId !== providerId)
+        providers.filter((provider) => provider.providerId !== providerId),
       );
     },
-    [user, t]
+    [user, t],
   );
 
   const onLinkSuccess = useCallback(() => {
@@ -102,7 +102,7 @@ const ConnectedAccountsContainer = () => {
 
       toaster.error(message);
     },
-    [t]
+    [t],
   );
 
   const connectedProviders = useMemo(() => {
@@ -110,7 +110,7 @@ const ConnectedAccountsContainer = () => {
       return providers.some(
         (connectedProvider) =>
           connectedProvider.providerId ===
-          getFirebaseAuthProviderId(supportedProvider)
+          getFirebaseAuthProviderId(supportedProvider),
       );
     });
   }, [providers, supportedProviders]);
@@ -131,7 +131,7 @@ const ConnectedAccountsContainer = () => {
         const authCredential = await linkWithPopup(
           user,
           new AuthProviderClass(),
-          browserPopupRedirectResolver
+          browserPopupRedirectResolver,
         );
 
         const oAuthCredential =
@@ -146,7 +146,7 @@ const ConnectedAccountsContainer = () => {
         }
       }
     },
-    [onLinkError, onLinkSuccess, user]
+    [onLinkError, onLinkSuccess, user],
   );
 
   const onLinkRequested = useCallback(
@@ -168,7 +168,7 @@ const ConnectedAccountsContainer = () => {
           return linkPopupAuthProvider(provider as GenericOAuthProvider);
       }
     },
-    [linkPopupAuthProvider, user]
+    [linkPopupAuthProvider, user],
   );
 
   useEffect(() => {
@@ -196,7 +196,7 @@ const ConnectedAccountsContainer = () => {
 
         <div
           className={
-            'mt-4 flex flex-col divide-y divide-gray-50 dark:divide-black-400'
+            'mt-4 flex flex-col divide-y divide-gray-50 dark:divide-dark-800'
           }
         >
           {connectedProviders.map((provider, index) => {
@@ -343,41 +343,44 @@ function UnlinkAuthProviderButton({
   return (
     <div className={'flex items-center justify-between py-1'}>
       <div className={'flex items-center space-x-6'}>
-        <span className={'flex items-center space-x-4 font-medium'}>
+        <span className={'flex flex-1 items-center space-x-4 font-medium'}>
           <AuthProviderLogo firebaseProviderId={providerId} />
 
           <span
             className={
-              'flex items-center space-x-2 text-sm font-semibold' +
-              ' text-green-600 dark:text-green-500'
+              'flex flex-1 items-center space-x-2.5 text-sm font-medium'
             }
           >
+            <CheckCircleIcon
+              className={'h-5 text-green-600 dark:text-green-500'}
+            />
+
             <span>
               <Trans
                 i18nKey={`profile:connectedWithProvider`}
                 values={{ provider }}
               />
             </span>
-
-            <CheckCircleIcon className={'h-5'} />
           </span>
         </span>
       </div>
 
       <If condition={canUnlink}>
-        <Button
-          data-cy={'unlink-provider-button'}
-          data-provider={providerId}
-          className={'font-medium'}
-          color={'danger'}
-          variant={'flat'}
-          size={'small'}
-          onClick={onUnlink}
-        >
-          <span>
-            <Trans i18nKey={`profile:unlinkActionLabel`} />
-          </span>
-        </Button>
+        <div className={'flex justify-end'}>
+          <Button
+            data-cy={'unlink-provider-button'}
+            data-provider={providerId}
+            className={'font-medium'}
+            color={'danger'}
+            variant={'flat'}
+            size={'small'}
+            onClick={onUnlink}
+          >
+            <span>
+              <Trans i18nKey={`profile:unlinkActionLabel`} />
+            </span>
+          </Button>
+        </div>
       </If>
     </div>
   );
@@ -413,6 +416,7 @@ function ConfirmUnlinkAccountModal({
           <Modal.CancelButton onClick={() => setIsOpen(false)} />
 
           <Button
+            variant={'flat'}
             data-cy={'confirm-unlink-provider-button'}
             color={'danger'}
             onClick={onUnlink}

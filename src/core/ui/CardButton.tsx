@@ -13,7 +13,7 @@ const CardButton = forwardRef<
       className={
         'h-28 rounded-sm shadow dark:shadow-primary-500/30' +
         ' cursor-pointer transition-all hover:shadow-lg' +
-        ' ring-primary-500 active:bg-gray-50 dark:active:bg-black-300' +
+        ' ring-primary-500 active:bg-gray-50 dark:active:bg-dark-700' +
         ' dark:ring-primary-500/70'
       }
     >

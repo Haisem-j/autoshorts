@@ -37,7 +37,7 @@ const links = {
 const SiteNavigation = () => {
   return (
     <>
-      <div className={'hidden items-center space-x-0.5 lg:flex'}>
+      <div className={'hidden items-center lg:flex'}>
         <NavigationMenu>
           <NavigationMenuItem
             className={'flex lg:hidden'}

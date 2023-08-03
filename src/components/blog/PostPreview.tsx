@@ -12,7 +12,7 @@ type Props = {
   imageHeight?: string | number;
 };
 
-const DEFAULT_IMAGE_HEIGHT = 450;
+const DEFAULT_IMAGE_HEIGHT = 280;
 
 const PostPreview = ({ post, preloadImage, imageHeight }: Props) => {
   const { title, slug, coverImage, collection, date, readingTime, excerpt } =

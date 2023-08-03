@@ -1,9 +1,13 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useContext } from 'react';
+
 import { Trans } from 'next-i18next';
-import classNames from 'classnames';
+import classNames from 'clsx';
+import { cva } from 'cva';
 
 import { isRouteActive } from '~/core/is-route-active';
+import { NavigationMenuContext } from './NavigationMenuContext';
 
 interface Link {
   path: string;
@@ -21,27 +25,96 @@ const NavigationMenuItem: React.FCC<{
   disabled?: boolean;
   shallow?: boolean;
   className?: string;
-}> = ({ link, className, disabled, shallow, depth }) => {
+}> = ({ link, disabled, shallow, depth, ...props }) => {
   const router = useRouter();
   const active = isRouteActive(link.path, router.asPath, depth ?? 1);
+  const menuProps = useContext(NavigationMenuContext);
   const label = link.label ?? link.i18n;
 
+  const className = getNavigationMenuItemClassBuilder()({
+    active,
+    ...menuProps,
+  });
+
   return (
-    <div
-      className={classNames(`NavigationItem`, className ?? ``, {
-        [`NavigationItemActive`]: active,
-        [`NavigationItemNotActive`]: !active,
-      })}
+    <Link
+      className={classNames(className, props.className ?? ``)}
+      aria-disabled={disabled}
+      href={disabled ? '' : link.path}
+      shallow={shallow ?? active}
     >
-      <Link
-        aria-disabled={disabled}
-        href={disabled ? '' : link.path}
-        shallow={shallow ?? active}
-      >
+      <span className={'transition-transform duration-500'}>
         <Trans i18nKey={label} defaults={label} />
-      </Link>
-    </div>
+      </span>
+    </Link>
   );
 };
 
 export default NavigationMenuItem;
+
+function getNavigationMenuItemClassBuilder() {
+  return cva(
+    [
+      `p-1 lg:px-2.5 flex items-center justify-center font-semibold lg:justify-start rounded-md text-sm transition-colors active:[&>*]:translate-y-[2px]`,
+    ],
+    {
+      compoundVariants: [
+        // not active - shared
+        {
+          active: false,
+          className: `active:text-current text-gray-600 dark:text-gray-300
+        hover:text-current dark:hover:text-white`,
+        },
+        // active - shared
+        {
+          active: true,
+          className: `text-gray-800 dark:text-white`,
+        },
+        // active - pill
+        {
+          active: true,
+          pill: true,
+          className: `bg-gray-50 text-gray-600 text-current dark:bg-dark-800 dark:text-white`,
+        },
+        // not active - pill
+        {
+          active: false,
+          pill: true,
+          className: `hover:bg-gray-50 active:bg-gray-100 text-gray-500 dark:text-gray-300 dark:hover:bg-dark-800 dark:active:bg-dark-700`,
+        },
+        // not active - bordered
+        {
+          active: false,
+          bordered: true,
+          className: `hover:bg-gray-50 active:bg-gray-100 dark:active:bg-dark-700 dark:hover:bg-dark-800 transition-colors rounded-lg border-transparent`,
+        },
+        // active - bordered
+        {
+          active: true,
+          bordered: true,
+          className: `top-[0.4rem] border-b-[0.25rem] rounded-none border-primary-500 bg-transparent pb-[0.8rem] text-current dark:text-white`,
+        },
+        // active - secondary
+        {
+          active: true,
+          secondary: true,
+          className: `bg-transparent font-semibold`,
+        },
+      ],
+      variants: {
+        active: {
+          true: ``,
+        },
+        pill: {
+          true: `py-2`,
+        },
+        bordered: {
+          true: `relative h-10`,
+        },
+        secondary: {
+          true: ``,
+        },
+      },
+    },
+  );
+}

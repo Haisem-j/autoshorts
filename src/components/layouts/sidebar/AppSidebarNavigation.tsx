@@ -1,5 +1,6 @@
 import { Trans } from 'next-i18next';
 import { cva } from 'cva';
+import classNames from 'clsx';
 
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -9,7 +10,6 @@ import If from '~/core/ui/If';
 
 import { isRouteActive } from '~/core/is-route-active';
 import NAVIGATION_CONFIG from '../../../navigation.config';
-import classNames from 'classnames';
 
 function AppSidebarNavigation({
   collapsed,
@@ -77,8 +77,8 @@ function AppSidebarItem({
     <Link
       href={href}
       shallow={shallow ?? active}
-      className={classNames(className, {
-        'active group': active,
+      className={classNames(className, 'group', {
+        active: active,
       })}
     >
       {children}
@@ -91,7 +91,8 @@ export default AppSidebarNavigation;
 function getSidebarItemClassBuilder() {
   return cva(
     [
-      `flex w-full items-center rounded-md border-transparent text-sm font-medium text-gray-600 transition-colors duration-300`,
+      `flex w-full items-center rounded-md border-transparent text-sm font-medium text-gray-600 transition-colors duration-500
+      [&>*]:active:translate-y-[1px] [&>*]:active:transition-transform`,
     ],
     {
       variants: {
@@ -101,7 +102,7 @@ function getSidebarItemClassBuilder() {
         },
         active: {
           true: `bg-primary-50 font-medium text-current dark:bg-primary-300/10 dark:text-primary-contrast`,
-          false: `text-gray-600 ring-transparent hover:bg-gray-50 active:bg-gray-200 dark:bg-black-500 dark:text-gray-300 dark:hover:bg-black-400 dark:hover:text-white dark:active:bg-black-300 dark:active:bg-black-300`,
+          false: `text-gray-600 ring-transparent hover:bg-gray-50 active:bg-gray-200 dark:bg-dark-900 dark:text-gray-300 dark:hover:bg-dark-800/40 dark:hover:text-white dark:active:bg-dark-800`,
         },
       },
       compoundVariants: [
@@ -121,7 +122,7 @@ function getSidebarItemClassBuilder() {
           className: `text-gray-600 dark:text-primary-contrast`,
         },
       ],
-    }
+    },
   );
 }
 

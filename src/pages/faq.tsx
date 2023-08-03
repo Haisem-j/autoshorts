@@ -6,12 +6,12 @@ import { withTranslationProps } from '~/lib/props/with-translation-props';
 import configuration from '~/configuration';
 
 import Layout from '~/core/ui/Layout';
-import Hero from '~/core/ui/Hero';
 import Container from '~/core/ui/Container';
 import SubHeading from '~/core/ui/SubHeading';
 
 import Footer from '~/components/Footer';
 import SiteHeader from '../components/SiteHeader';
+import Heading from '~/core/ui/Heading';
 
 const DATA = [
   {
@@ -71,9 +71,9 @@ const Faq = () => {
       <SiteHeader />
 
       <Container>
-        <div className={'flex flex-col space-y-8'}>
-          <div className={'flex flex-col items-center'}>
-            <Hero>FAQ</Hero>
+        <div className={'flex flex-col space-y-8 my-8'}>
+          <div className={'flex flex-col items-center space-y-4'}>
+            <Heading type={1}>FAQ</Heading>
 
             <SubHeading>Frequently Asked Questions</SubHeading>
           </div>
@@ -108,7 +108,7 @@ function FaqItem({
   return (
     <details
       className={
-        'group border-b border-gray-100 px-2 py-4 dark:border-black-300'
+        'group border-b border-gray-100 px-2 py-4 dark:border-dark-800'
       }
     >
       <summary
@@ -116,8 +116,7 @@ function FaqItem({
       >
         <h2
           className={
-            'font-sans text-lg font-medium text-gray-700' +
-            ' hover:underline-none group-hover:underline' +
+            'font-sans text-lg font-medium text-gray-600 hover:text-gray-700' +
             ' cursor-pointer dark:text-gray-300 dark:hover:text-white'
           }
         >

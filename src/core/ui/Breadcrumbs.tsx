@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import ChevronRightIcon from '@heroicons/react/20/solid/ChevronRightIcon';
-import classNames from 'classnames';
+import classNames from 'clsx';
 
 import If from '~/core/ui/If';
 
@@ -53,8 +53,8 @@ const Breadcrumbs: React.FC<{
   return (
     <div
       className={classNames(
-        'flex space-x-2 rounded-lg bg-gray-50 px-6 py-4 dark:bg-black-400',
-        props.className
+        'flex space-x-2 rounded-lg bg-gray-50 px-6 py-4 dark:bg-dark-800',
+        props.className,
       )}
     >
       {items.map((segment, index) => {

@@ -25,7 +25,12 @@ const NotFoundPage = () => {
           }
         >
           <div className={'flex flex-col space-y-8'}>
-            <div className={'flex space-x-8 divide-x divide-gray-100'}>
+            <div
+              className={
+                'flex space-x-8 divide-x divide-gray-100' +
+                ' dark:divide-gray-700'
+              }
+            >
               <div>
                 <Heading type={1}>
                   <span

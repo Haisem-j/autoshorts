@@ -1,6 +1,11 @@
 import { LayoutStyle } from '~/core/layout-style';
 import { GoogleAuthProvider } from 'firebase/auth';
 
+enum Themes {
+  Light = 'light',
+  Dark = 'dark',
+}
+
 const configuration = {
   site: {
     name: 'Awesomely - Your SaaS Title',
@@ -46,6 +51,7 @@ const configuration = {
   emulator: process.env.NEXT_PUBLIC_EMULATOR === 'true',
   production: process.env.NODE_ENV === 'production',
   enableThemeSwitcher: true,
+  theme: Themes.Dark,
   paths: {
     signIn: '/auth/sign-in',
     signUp: '/auth/sign-up',

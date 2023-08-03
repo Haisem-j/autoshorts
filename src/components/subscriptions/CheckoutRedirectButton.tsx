@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic';
 import React from 'react';
 import ArrowRightIcon from '@heroicons/react/24/outline/ArrowRightIcon';
-import classNames from 'classnames';
+import classNames from 'clsx';
 
 import Button from '~/core/ui/Button';
 import configuration from '~/configuration';
@@ -45,7 +45,7 @@ const CheckoutRedirectButton: React.FCC<{
         <span className={'flex items-center space-x-2'}>
           <span>{children}</span>
 
-          <ArrowRightIcon className={'h-5'} />
+          <ArrowRightIcon className={'h-4'} />
         </span>
       </Button>
     </form>
@@ -59,7 +59,7 @@ function CheckoutFormData(
     organizationId: Maybe<string>;
     priceId: Maybe<string>;
     customerId: Maybe<string>;
-  }>
+  }>,
 ) {
   return (
     <>

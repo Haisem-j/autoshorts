@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as AvatarPrimivite from '@radix-ui/react-avatar';
-import classNames from 'classnames';
+import classNames from 'clsx';
 
 const Avatar = React.forwardRef<
   React.ElementRef<typeof AvatarPrimivite.Root>,
@@ -10,7 +10,7 @@ const Avatar = React.forwardRef<
     ref={ref}
     className={classNames(
       'relative flex h-8 w-8 shrink-0 overflow-hidden rounded-full',
-      className
+      className,
     )}
     {...props}
   />
@@ -39,7 +39,7 @@ const AvatarFallback = React.forwardRef<
     ref={ref}
     className={classNames(
       `flex h-full w-full items-center justify-center rounded-full bg-primary-500 font-semibold uppercase text-white`,
-      className
+      className,
     )}
     {...props}
   />

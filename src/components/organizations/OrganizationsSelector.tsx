@@ -47,10 +47,12 @@ const OrganizationsSelector: React.FCC<{ userId: string }> = ({ userId }) => {
       >
         <SelectTrigger
           data-cy={'organization-selector'}
-          className={'!bg-transparent'}
+          className={'!bg-transparent !h-9 w-full'}
         >
           <span
-            className={'max-w-[5rem] text-sm lg:max-w-[12rem] lg:text-base'}
+            className={
+              'min-w-[5rem] block text-sm lg:max-w-[12rem] lg:text-base'
+            }
           >
             <OrganizationItem organization={organization} />
 

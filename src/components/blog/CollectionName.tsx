@@ -1,4 +1,4 @@
-import cn from 'classnames';
+import cn from 'clsx';
 import Link from 'next/link';
 
 import Collection from '~/core/blog/types/collection';
@@ -22,7 +22,7 @@ function CollectionName({
         className={cn(
           'flex cursor-pointer flex-row items-center text-gray-600' +
             ' space-x-1 text-center dark:text-gray-300',
-          getCollectionClass(collection.name)
+          getCollectionClass(collection.name),
         )}
       >
         <CollectionImage collection={collection} size={size} />

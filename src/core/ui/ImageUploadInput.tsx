@@ -24,7 +24,7 @@ const IMAGE_SIZE = 22;
 const ImageUploadInput = forwardRef<React.ElementRef<'input'>, Props>(
   function ImageUploadInputComponent(
     { children, image, onClear, onInput, ...props },
-    forwardedRef
+    forwardedRef,
   ) {
     const localRef = useRef<HTMLInputElement>();
 
@@ -53,7 +53,7 @@ const ImageUploadInput = forwardRef<React.ElementRef<'input'>, Props>(
           onInput(e);
         }
       },
-      [onInput]
+      [onInput],
     );
 
     const imageRemoved: MouseEventHandler = useCallback(
@@ -73,7 +73,7 @@ const ImageUploadInput = forwardRef<React.ElementRef<'input'>, Props>(
           onClear();
         }
       },
-      [onClear]
+      [onClear],
     );
 
     const setRef = useCallback(
@@ -84,7 +84,7 @@ const ImageUploadInput = forwardRef<React.ElementRef<'input'>, Props>(
           forwardedRef(localRef.current);
         }
       },
-      [forwardedRef]
+      [forwardedRef],
     );
 
     useEffect(() => {
@@ -97,7 +97,7 @@ const ImageUploadInput = forwardRef<React.ElementRef<'input'>, Props>(
         tabIndex={0}
         className={`
         relative flex h-10 cursor-pointer rounded-md border border-dashed border-gray-200 bg-white py-2 px-3 outline-none ring-offset-1 transition-all hover:bg-gray-50 focus:ring-2
-        focus:ring-primary-200 dark:border-black-200 dark:bg-black-400 dark:hover:border-black-100 dark:focus:ring-primary-500/70 dark:focus:ring-offset-black-400`}
+        focus:ring-primary-200 dark:border-dark-600 dark:bg-dark-800 dark:hover:border-dark-900 dark:focus:ring-primary-500/70 dark:focus:ring-offset-dark-800`}
       >
         <input
           {...props}
@@ -113,7 +113,7 @@ const ImageUploadInput = forwardRef<React.ElementRef<'input'>, Props>(
           <div className={'flex'}>
             <If condition={!state.image}>
               <CloudArrowUpIcon
-                className={'h-5 text-gray-500 dark:text-black-100'}
+                className={'h-5 text-gray-500 dark:text-gray-500'}
               />
             </If>
 
@@ -169,6 +169,6 @@ const ImageUploadInput = forwardRef<React.ElementRef<'input'>, Props>(
         </div>
       </label>
     );
-  }
+  },
 );
 export default ImageUploadInput;
