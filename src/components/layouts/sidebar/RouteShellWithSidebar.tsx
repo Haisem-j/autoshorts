@@ -16,7 +16,11 @@ const RouteShellWithSidebar: React.FCC<{
         <AppSidebar />
       </div>
 
-      <div className={'relative mx-auto h-screen w-full overflow-y-auto'}>
+      <div
+        className={
+          'relative mx-auto h-screen w-full overflow-y-auto flex flex-col'
+        }
+      >
         <AppHeaderNoMenu>
           <div className={'w-full'}>
             <Heading type={5}>
@@ -25,7 +29,7 @@ const RouteShellWithSidebar: React.FCC<{
           </div>
         </AppHeaderNoMenu>
 
-        <div className={'p-3'}>{children}</div>
+        <div className={'p-3 flex flex-col flex-1'}>{children}</div>
       </div>
     </div>
   );
