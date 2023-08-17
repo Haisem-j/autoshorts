@@ -10,6 +10,7 @@ describe(`Sign Up`, () => {
 
   beforeEach(() => {
     cy.visit(`/auth/sign-up`);
+    cy.clearStorage();
   });
 
   describe(`given the user signs up with email/password`, () => {

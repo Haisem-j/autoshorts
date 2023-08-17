@@ -4,6 +4,5 @@
  * with advanced access (such as your own account)
  */
 export enum GlobalRole {
-  User,
-  SuperAdmin,
+  SuperAdmin = 'super-admin',
 }

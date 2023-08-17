@@ -2,7 +2,7 @@ import organizationPageObject from '../../support/organization.po';
 import configuration from '~/configuration';
 
 describe(`Change Organization`, () => {
-  const organizationName = `New Organization ${Math.random() * 100}`;
+  const organizationName = `org-${(Math.random() * 10).toFixed(2)}`;
   const originalOrganizationName = `Test`;
 
   const originalOrganizationId =
@@ -26,16 +26,13 @@ describe(`Change Organization`, () => {
       cy.visit(`/${originalOrganizationId}/dashboard`);
 
       organizationPageObject.assertCurrentOrganization(
-        originalOrganizationName
+        originalOrganizationName,
       );
     });
   });
 
-  // TODO: The tests below are failing after upgrading to Next.js to 13.3.0 but
-  //  works correctly in the browser. Will temporarily disable it until we can
-  //  figure out why it's failing.
   describe(`Given the user changes organization they do not belong to`, () => {
-    xit('they should be redirected to a 404', () => {
+    it('they should be redirected to a 404', () => {
       cy.signIn(configuration.paths.appHome);
 
       cy.visit(`/6/dashboard`, { failOnStatusCode: false });
@@ -44,7 +41,7 @@ describe(`Change Organization`, () => {
   });
 
   describe(`Given the user navigates to a non-existent URL`, () => {
-    xit('they should be redirected to a 404', () => {
+    it('they should be redirected to a 404', () => {
       cy.signIn(configuration.paths.appHome);
 
       cy.visit(`/1234`, { failOnStatusCode: false });

@@ -1,11 +1,25 @@
-import { GetServerSidePropsContext } from 'next';
+import {
+  GetServerSidePropsContext,
+  NextApiRequest,
+  NextApiResponse,
+} from 'next';
+
 import { parseCookies } from 'nookies';
+
+type Context = {
+  req: NextApiRequest;
+  res: NextApiResponse;
+};
 
 /**
  * @description Get the logged in user object using the session cookie
  * @param ctx
+ * @param checkRevoked
  */
-export async function getLoggedInUser(ctx: GetServerSidePropsContext) {
+export async function getLoggedInUser(
+  ctx: Context | GetServerSidePropsContext,
+  checkRevoked = false,
+) {
   const { session } = parseCookies(ctx);
 
   if (!session) {
@@ -15,8 +29,6 @@ export async function getLoggedInUser(ctx: GetServerSidePropsContext) {
   const { getUserFromSessionCookie } = await import(
     './get-user-from-session-cookie'
   );
-
-  const checkRevoked = false;
 
   return getUserFromSessionCookie(session, checkRevoked);
 }

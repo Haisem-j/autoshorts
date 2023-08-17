@@ -5,6 +5,7 @@ import authPo from '../../support/auth.po';
 describe(`Sign in`, () => {
   beforeEach(() => {
     cy.visit(`/auth/sign-in`);
+    cy.clearStorage();
   });
 
   describe(`given the user signs in with email/password`, () => {

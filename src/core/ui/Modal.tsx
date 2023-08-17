@@ -1,33 +1,63 @@
-import { Trans } from 'next-i18next';
-import XMarkIcon from '@heroicons/react/24/outline/XMarkIcon';
+import { Trans } from 'react-i18next';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import { Close as DialogPrimitiveClose } from '@radix-ui/react-dialog';
 
 import IconButton from '~/core/ui/IconButton';
 import If from '~/core/ui/If';
 import Button from '~/core/ui/Button';
-import { Dialog, DialogContent, DialogTitle } from '~/core/ui/Dialog';
 
-const Modal: React.FC<
-  React.PropsWithChildren<{
-    heading: string | JSX.Element;
-    isOpen: boolean;
-    setIsOpen: (isOpen: boolean) => unknown;
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from '~/core/ui/Dialog';
+
+type ControlledOpenProps = {
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => unknown;
+};
+
+type TriggerProps = {
+  Trigger?: React.ReactNode;
+};
+
+type Props = React.PropsWithChildren<
+  {
+    heading: string | React.ReactNode;
     closeButton?: boolean;
-  }>
-> & {
+  } & (ControlledOpenProps | TriggerProps)
+>;
+
+const Modal: React.FC<Props> & {
   CancelButton: typeof CancelButton;
-} = ({ isOpen, setIsOpen, closeButton, heading, children }) => {
+} = ({ closeButton, heading, children, ...props }) => {
+  const isControlled = 'isOpen' in props;
   const useCloseButton = closeButton ?? true;
+  const Trigger = ('Trigger' in props && props.Trigger) || null;
+
+  const DialogWrapper = (wrapperProps: React.PropsWithChildren) =>
+    isControlled ? (
+      <Dialog
+        open={props.isOpen}
+        onOpenChange={(open) => {
+          if (useCloseButton && !open) {
+            props.setIsOpen(false);
+          }
+        }}
+      >
+        {wrapperProps.children}
+      </Dialog>
+    ) : (
+      <Dialog>{wrapperProps.children}</Dialog>
+    );
 
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={(open) => {
-        if (useCloseButton && !open) {
-          setIsOpen(false);
-        }
-      }}
-    >
+    <DialogWrapper>
+      <If condition={Trigger}>
+        <DialogTrigger>{Trigger}</DialogTrigger>
+      </If>
+
       <DialogContent>
         <div className="h-full min-h-screen px-4 text-center">
           <span
@@ -52,7 +82,11 @@ const Modal: React.FC<
                   <IconButton
                     className={'absolute top-0 right-4 flex items-center'}
                     label={'Close Modal'}
-                    onClick={() => setIsOpen(false)}
+                    onClick={() => {
+                      if (isControlled) {
+                        props.setIsOpen(false);
+                      }
+                    }}
                   >
                     <XMarkIcon className={'h-6'} />
                     <span className="sr-only">Close</span>
@@ -63,7 +97,7 @@ const Modal: React.FC<
           </div>
         </div>
       </DialogContent>
-    </Dialog>
+    </DialogWrapper>
   );
 };
 

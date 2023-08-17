@@ -40,6 +40,8 @@ const organizationPageObject = {
     organizationPageObject.$currentOrganization().wait(100).click();
     organizationPageObject.$createOrganizationButton().click();
 
+    cy.wait(1000);
+
     organizationPageObject
       .$createOrganizationNameInput()
       .type(organizationName);

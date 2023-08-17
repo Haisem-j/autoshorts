@@ -7,6 +7,8 @@ describe(`Connect Accounts`, () => {
   const password = authPo.getDefaultUserPassword();
 
   function signIn() {
+    cy.clearStorage();
+
     cy.signIn(`/settings/profile/authentication`, {
       email: existingEmailAddress,
       password,
@@ -14,7 +16,7 @@ describe(`Connect Accounts`, () => {
   }
 
   describe(`email/password`, () => {
-    it('should be able to unlink/relink its account', () => {
+    it('should be able to unlink and relink its account', () => {
       signIn();
 
       profilePo.$getUnlinkProviderButton(EmailAuthProvider.PROVIDER_ID).click();

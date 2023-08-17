@@ -166,11 +166,19 @@ function redirectToLogin({
 }) {
   const cleanReturnUrl = getPathFromReturnUrl(returnUrl);
 
-  const queryParams = new URLSearchParams({
+  const params: StringObject = {
     returnUrl: cleanReturnUrl ?? '/',
-    needsEmailVerification: needsEmailVerification ? 'true' : 'false',
-    signOut: signOut ? 'true' : 'false',
-  });
+  };
+
+  if (needsEmailVerification) {
+    params.needsEmailVerification = 'true';
+  }
+
+  if (signOut) {
+    params.signOut = 'true';
+  }
+
+  const queryParams = new URLSearchParams();
 
   // we build the sign in URL
   // appending the "returnUrl" query parameter so that we can redirect the user

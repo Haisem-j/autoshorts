@@ -37,13 +37,17 @@ const authPageObject = {
   signUpWithEmailAndPassword(
     email: string,
     password: string,
-    repeatPassword?: string
+    repeatPassword?: string,
   ) {
-    cy.wait(50);
+    const delay = 50;
 
-    this.$getEmailInput().type(email);
-    this.$getPasswordInput().type(password);
-    this.$getRepeatPasswordInput().type(repeatPassword || password);
+    this.$getEmailInput().wait(delay).type(email);
+    this.$getPasswordInput().wait(delay).type(password);
+
+    this.$getRepeatPasswordInput()
+      .wait(delay)
+      .type(repeatPassword || password);
+
     this.$getSubmitButton().click();
   },
   signInProgrammatically(params: { email: string; password: string }) {
@@ -61,7 +65,7 @@ function getIdToken({ email, password }: { email: string; password: string }) {
       }
 
       return response.user.getIdToken();
-    }
+    },
   );
 }
 

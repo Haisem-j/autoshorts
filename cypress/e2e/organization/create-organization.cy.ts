@@ -1,7 +1,7 @@
 import organizationPageObject from '../../support/organization.po';
 
 describe(`Create Organization`, () => {
-  const organizationName = `New Organization`;
+  const organizationName = `org-${(Math.random() * 10).toFixed(2)}`;
 
   const defaultOrganizationId =
     organizationPageObject.getDefaultOrganizationId();
@@ -9,14 +9,7 @@ describe(`Create Organization`, () => {
   it('should be able to create a new organization', () => {
     cy.signIn(`/dashboard`);
 
-    organizationPageObject.$currentOrganization().click();
-    organizationPageObject.$createOrganizationButton().click();
-
-    organizationPageObject
-      .$createOrganizationNameInput()
-      .type(organizationName);
-
-    organizationPageObject.$confirmCreateOrganizationButton().click();
+    organizationPageObject.createOrganization(organizationName);
 
     organizationPageObject
       .$currentOrganization()
@@ -25,7 +18,7 @@ describe(`Create Organization`, () => {
     cy.getCookie('organizationId').should(
       'not.have.property',
       'value',
-      defaultOrganizationId
+      defaultOrganizationId,
     );
   });
 });

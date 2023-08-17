@@ -42,15 +42,14 @@ function LinkEmailPasswordModal({
 
   const user = auth.currentUser;
 
-  const { register, handleSubmit, watch, reset, formState } = useForm({
+  const { register, handleSubmit, getValues, reset } = useForm({
     defaultValues: {
       email: '',
       password: '',
       repeatPassword: '',
     },
+    shouldUseNativeValidation: true,
   });
-
-  const errors = formState.errors;
 
   const emailControl = register('email', { required: true });
 
@@ -62,8 +61,6 @@ function LinkEmailPasswordModal({
     },
   });
 
-  const passwordValue = watch(`password`);
-
   const repeatPasswordControl = register('repeatPassword', {
     required: true,
     minLength: {
@@ -71,7 +68,7 @@ function LinkEmailPasswordModal({
       message: t(`auth:passwordLengthError`),
     },
     validate: (value) => {
-      if (value !== passwordValue) {
+      if (value !== getValues('password')) {
         return t(`auth:passwordsDoNotMatch`);
       }
 
@@ -80,44 +77,35 @@ function LinkEmailPasswordModal({
   });
 
   const onSubmit = useCallback(
-    async (params: { email: string; password: string }) => {
+    async ({ email, password }: { email: string; password: string }) => {
       if (state.loading || !user) {
         return;
       }
 
       setLoading(true);
 
-      const authCredential = EmailAuthProvider.credential(
-        params.email,
-        params.password
-      );
+      const promise = new Promise<void>(async (resolve) => {
+        const authCredential = EmailAuthProvider.credential(email, password);
+        await linkWithCredential(user, authCredential);
 
-      const promise = new Promise<void>((resolve, reject) => {
-        return linkWithCredential(user, authCredential)
-          .then(async () => {
-            const newCredential = await signInWithCredential(
-              auth,
-              authCredential
-            );
+        const newCredential = await signInWithCredential(auth, authCredential);
 
-            // we need to re-create the server-side session, because for
-            // some reason Firebase expires the session cookie after linking
-            // a password
-            await sessionRequest(newCredential.user);
+        // we need to re-create the server-side session, because for
+        // some reason Firebase expires the session cookie after linking
+        // a password
+        await sessionRequest(newCredential.user);
 
-            resolve();
-          })
-          .catch((error) => {
-            if (isMultiFactorError(error)) {
-              setMultiFactorAuthError(error);
-              setIsOpen(false);
-              toaster.dismiss();
-            } else {
-              setError(error);
+        resolve();
+      }).catch((error) => {
+        if (isMultiFactorError(error)) {
+          setMultiFactorAuthError(error);
+          setIsOpen(false);
+          toaster.dismiss();
+        } else {
+          setError(error);
 
-              return reject();
-            }
-          });
+          return Promise.reject(error);
+        }
       });
 
       await toaster.promise(promise, {
@@ -141,14 +129,10 @@ function LinkEmailPasswordModal({
       auth,
       sessionRequest,
       setError,
-    ]
+    ],
   );
 
   useEffect(() => {
-    if (!isOpen) {
-      reset();
-    }
-
     return () => {
       reset();
     };
@@ -157,82 +141,71 @@ function LinkEmailPasswordModal({
   return (
     <>
       <Modal heading={`Link Password`} isOpen={isOpen} setIsOpen={setIsOpen}>
-        <form className={'w-full'} onSubmit={handleSubmit(onSubmit)}>
-          <div className={'flex-col space-y-2.5'}>
-            <TextField>
-              <TextField.Label>
-                <Trans i18nKey={'common:emailAddress'} />
+        <form
+          className={'w-full flex-col space-y-4'}
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          <TextField.Label>
+            <Trans i18nKey={'common:emailAddress'} />
 
-                <TextField.Input
-                  {...emailControl}
-                  data-cy={'email-input'}
-                  required
-                  type="email"
-                  placeholder={'your@email.com'}
-                />
-              </TextField.Label>
-            </TextField>
+            <TextField.Input
+              {...emailControl}
+              required
+              data-cy={'email-input'}
+              type="email"
+              placeholder={'your@email.com'}
+            />
+          </TextField.Label>
 
-            <TextField>
-              <TextField.Label>
-                <Trans i18nKey={'common:password'} />
+          <TextField.Label>
+            <Trans i18nKey={'common:password'} />
 
-                <TextField.Input
-                  {...passwordControl}
-                  data-cy={'password-input'}
-                  required
-                  type="password"
-                  placeholder={''}
-                />
+            <TextField.Input
+              {...passwordControl}
+              required
+              data-cy={'password-input'}
+              type="password"
+            />
 
-                <TextField.Hint>
-                  <Trans i18nKey={'auth:passwordHint'} />
-                </TextField.Hint>
+            <TextField.Hint>
+              <Trans i18nKey={'auth:passwordHint'} />
+            </TextField.Hint>
+          </TextField.Label>
 
-                <TextField.Error error={errors.password?.message} />
-              </TextField.Label>
-            </TextField>
+          <TextField>
+            <TextField.Label>
+              <Trans i18nKey={'auth:repeatPassword'} />
 
-            <TextField>
-              <TextField.Label>
-                <Trans i18nKey={'auth:repeatPassword'} />
+              <TextField.Input
+                {...repeatPasswordControl}
+                required
+                data-cy={'repeat-password-input'}
+                type="password"
+              />
+            </TextField.Label>
+          </TextField>
 
-                <TextField.Input
-                  {...repeatPasswordControl}
-                  data-cy={'repeat-password-input'}
-                  required
-                  type="password"
-                  placeholder={''}
-                />
-              </TextField.Label>
+          <If condition={state.error}>
+            {(error) => (
+              <AuthErrorMessage error={getFirebaseErrorCode(error)} />
+            )}
+          </If>
 
-              <TextField.Error error={errors.repeatPassword?.message} />
-            </TextField>
-
-            <If condition={state.error}>
-              {(error) => (
-                <AuthErrorMessage error={getFirebaseErrorCode(error)} />
-              )}
+          <Button
+            block
+            data-cy={'auth-submit-button'}
+            className={'w-full'}
+            color={'primary'}
+            type="submit"
+            loading={state.loading}
+          >
+            <If
+              condition={state.loading}
+              fallback={<Trans i18nKey={'profile:linkAccount'} />}
+            >
+              <Trans i18nKey={'profile:linkActionLoading'} />
             </If>
-
-            <div>
-              <Button
-                block
-                data-cy={'auth-submit-button'}
-                className={'w-full'}
-                color={'primary'}
-                type="submit"
-                loading={state.loading}
-              >
-                <If
-                  condition={state.loading}
-                  fallback={<Trans i18nKey={'profile:linkAccount'} />}
-                >
-                  <Trans i18nKey={'profile:linkActionLoading'} />
-                </If>
-              </Button>
-            </div>
-          </div>
+          </Button>
         </form>
       </Modal>
 

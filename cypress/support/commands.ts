@@ -36,7 +36,7 @@ Cypress.Commands.add(
   (redirectPath = '/', credentials = authPo.getDefaultUserCredentials()) => {
     cy.session([redirectPath, credentials.email, Math.random()], () => {
       cy.log(
-        `Signing in programmatically and redirecting to ${redirectPath} ...`
+        `Signing in programmatically and redirecting to ${redirectPath} ...`,
       );
 
       organizationPageObject.useDefaultOrganization();
@@ -47,7 +47,7 @@ Cypress.Commands.add(
 
     cy.visit(redirectPath);
     cy.wait(500);
-  }
+  },
 );
 
 Cypress.Commands.add(`clearStorage`, () => {

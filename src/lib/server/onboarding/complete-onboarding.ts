@@ -1,7 +1,6 @@
 import { getAuth } from 'firebase-admin/auth';
 
 import { MembershipRole } from '~/lib/organizations/types/membership-role';
-import { GlobalRole } from '~/core/session/types/global-role';
 
 import { getOrganizationsCollection, getUsersCollection } from '../collections';
 import getRestFirestore from '~/core/firebase/admin/get-rest-firestore';
@@ -41,10 +40,9 @@ export async function completeOnboarding({ userId, organizationName }: Params) {
     members: organizationMembers,
   });
 
-  // create user
-  batch.set(userRef, {
-    role: GlobalRole.User,
-  });
+  // Here we create the user's Firestore record
+  // You can add any additional properties to the user object
+  batch.set(userRef, {});
 
   await batch.commit();
 
