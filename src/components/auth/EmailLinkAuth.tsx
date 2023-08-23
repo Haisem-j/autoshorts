@@ -14,7 +14,7 @@ import Alert from '~/core/ui/Alert';
 
 import configuration from '~/configuration';
 
-const EmailLinkAuth: React.FC = () => {
+const EmailLinkAuth: React.FC<{ inviteCode?: string }> = ({ inviteCode }) => {
   const auth = useAuth();
   const { t } = useTranslation();
   const { state, setLoading, setData, setError } = useRequestState<void>();
@@ -26,7 +26,7 @@ const EmailLinkAuth: React.FC = () => {
       const target = event.currentTarget;
       const data = new FormData(target);
       const email = data.get('email') as string;
-      const url = getAuthUrl();
+      const url = getAuthUrl(inviteCode);
 
       setLoading(true);
 
@@ -53,7 +53,7 @@ const EmailLinkAuth: React.FC = () => {
         error: t(`auth:errors.link`),
       });
     },
-    [auth, t, setData, setError, setLoading]
+    [inviteCode, setLoading, auth, t, setData, setError],
   );
 
   if (state.success) {
@@ -100,11 +100,12 @@ const EmailLinkAuth: React.FC = () => {
   );
 };
 
-function getAuthUrl() {
+function getAuthUrl(inviteCode: Maybe<string>) {
   const origin = window.location.origin;
   const path = configuration.paths.emailLinkSignIn;
+  const queryParams = inviteCode ? `?inviteCode=${inviteCode}` : '';
 
-  return [origin, path].join('');
+  return [origin, path, queryParams].join('');
 }
 
 function storeEmailInStorage(email: string) {

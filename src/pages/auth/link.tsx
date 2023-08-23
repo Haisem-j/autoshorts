@@ -15,6 +15,7 @@ import {
 import { withAuthProps } from '~/lib/props/with-auth-props';
 import If from '~/core/ui/If';
 import Button from '~/core/ui/Button';
+import Spinner from '~/core/ui/Spinner';
 
 import { isBrowser } from '~/core/generic/is-browser';
 import { useRequestState } from '~/core/hooks/use-request-state';
@@ -24,9 +25,13 @@ import MultiFactorAuthChallengeModal from '~/components/auth/MultiFactorAuthChal
 import { isMultiFactorError } from '~/core/firebase/utils/is-multi-factor-error';
 import AuthPageLayout from '~/components/auth/AuthPageLayout';
 
-import configuration from '~/configuration';
 import { getFirebaseErrorCode } from '~/core/firebase/utils/get-firebase-error-code';
-import Spinner from '~/core/ui/Spinner';
+import useAddMemberToOrganization from '~/lib/organizations/hooks/use-add-member-to-organization';
+import { getInviteByCode } from '~/lib/server/organizations/memberships';
+import { MembershipInvite } from '~/lib/organizations/types/membership-invite';
+
+import configuration from '~/configuration';
+import createCsrfToken from '~/core/generic/create-csrf-token';
 
 // this is the key we use for storing the email locally
 // so we can verify it is the same
@@ -34,7 +39,9 @@ const EMAIL_LOCAL_STORAGE_KEY = 'emailForSignIn';
 
 const { onboarding, appHome } = configuration.paths;
 
-const EmailLinkAuthPage: React.FC = () => {
+const EmailLinkAuthPage: React.FC<{
+  invite: Maybe<MembershipInvite>;
+}> = ({ invite }) => {
   const auth = useAuth();
   const router = useRouter();
   const requestExecutedRef = useRef<boolean>();
@@ -46,6 +53,10 @@ const EmailLinkAuthPage: React.FC = () => {
   const [sessionRequest, sessionRequestState] = useCreateServerSideSession();
 
   const loading = sessionRequestState.loading || sessionRequestState.loading;
+  const organizationId = invite?.organization.id || '';
+
+  const { trigger: addMemberToOrganization, isMutating: isInvitingMember } =
+    useAddMemberToOrganization(organizationId);
 
   const redirectToAppHome = useCallback(() => {
     return router.push(appHome);
@@ -56,13 +67,28 @@ const EmailLinkAuthPage: React.FC = () => {
       // we can create the session and store a cookie to make SSR work
       await sessionRequest(user);
 
+      // if we found an invite code, we try add the member to the organization
+      if (invite) {
+        try {
+          await addMemberToOrganization({ code: invite.code });
+        } catch (e) {
+          setError('');
+        }
+      }
+
       // let's clear the email from the storage
       clearEmailFromStorage();
 
       // redirect user to the home page
       await redirectToAppHome();
     },
-    [redirectToAppHome, sessionRequest]
+    [
+      addMemberToOrganization,
+      invite,
+      redirectToAppHome,
+      sessionRequest,
+      setError,
+    ],
   );
 
   // preload routes that may be used to redirect the user next
@@ -128,7 +154,7 @@ const EmailLinkAuthPage: React.FC = () => {
 
   return (
     <AuthPageLayout heading={``}>
-      <If condition={loading}>
+      <If condition={loading || isInvitingMember}>
         <LoadingState />
       </If>
 
@@ -194,5 +220,28 @@ function getOriginHref() {
 export default EmailLinkAuthPage;
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
-  return await withAuthProps(ctx);
+  const authProps = await withAuthProps(ctx);
+  const code = ctx.query.inviteCode as Maybe<string>;
+
+  if (!code) {
+    return authProps;
+  }
+
+  // if we have an invite code in the query, we fetch and return it
+  const inviteRef = await getInviteByCode(code);
+  const invite = inviteRef?.data();
+
+  if (invite) {
+    const csrfToken = await createCsrfToken(ctx);
+
+    return {
+      props: {
+        ...authProps,
+        invite,
+        csrfToken,
+      },
+    };
+  }
+
+  return authProps;
 }

@@ -56,7 +56,7 @@ const InvitePage = (
   props: PropsWithChildren<{
     session: Maybe<User>;
     invite: Invite;
-  }>
+  }>,
 ) => {
   const auth = useAuth();
   const router = useRouter();
@@ -82,7 +82,7 @@ const InvitePage = (
     const body = { code: invite.code };
 
     const promise = addMemberToOrganization(body).then(() =>
-      redirectToHomePage()
+      redirectToHomePage(),
     );
 
     await toaster.promise(promise, {
@@ -237,7 +237,7 @@ const InvitePage = (
         </If>
 
         <If condition={configuration.auth.providers.emailLink}>
-          <EmailLinkAuth />
+          <EmailLinkAuth inviteCode={invite.code} />
         </If>
       </If>
     </AuthPageLayout>
@@ -271,7 +271,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
         {
           code,
         },
-        `User navigated to invite page, but it wasn't found. Redirecting to home page...`
+        `User navigated to invite page, but it wasn't found. Redirecting to home page...`,
       );
 
       return notFound();
@@ -307,7 +307,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     logger.debug(e);
 
     logger.error(
-      `Error encountered while fetching invite. Redirecting to home page...`
+      `Error encountered while fetching invite. Redirecting to home page...`,
     );
 
     return redirectToHomePage();
