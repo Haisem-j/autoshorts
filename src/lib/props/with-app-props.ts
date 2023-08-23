@@ -121,9 +121,8 @@ export async function withAppProps(
 
     const csrfToken = await createCsrfCookie(ctx);
 
-    const { props: translationProps } = await withTranslationProps(
-      mergedOptions,
-    );
+    const { props: translationProps } =
+      await withTranslationProps(mergedOptions);
 
     const ui = getUiProps(ctx);
 
@@ -178,7 +177,7 @@ function redirectToLogin({
     params.signOut = 'true';
   }
 
-  const queryParams = new URLSearchParams();
+  const queryParams = new URLSearchParams(params);
 
   // we build the sign in URL
   // appending the "returnUrl" query parameter so that we can redirect the user
