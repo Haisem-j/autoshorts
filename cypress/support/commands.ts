@@ -27,36 +27,38 @@
 import authPo from './auth.po';
 import organizationPageObject from './organization.po';
 
-Cypress.Commands.add('cyGet', (name: string) => {
-  return cy.get(createCySelector(name));
-});
+export default function registerCypressCommands() {
+  Cypress.Commands.add('cyGet', (name: string) => {
+    return cy.get(createCySelector(name));
+  });
 
-Cypress.Commands.add(
-  'signIn',
-  (redirectPath = '/', credentials = authPo.getDefaultUserCredentials()) => {
-    cy.session([redirectPath, credentials.email, Math.random()], () => {
-      cy.log(
-        `Signing in programmatically and redirecting to ${redirectPath} ...`,
-      );
+  Cypress.Commands.add(
+    'signIn',
+    (redirectPath = '/', credentials = authPo.getDefaultUserCredentials()) => {
+      cy.session([redirectPath, credentials.email, Math.random()], () => {
+        cy.log(
+          `Signing in programmatically and redirecting to ${redirectPath} ...`,
+        );
 
-      organizationPageObject.useDefaultOrganization();
-      authPo.signInProgrammatically(credentials);
+        organizationPageObject.useDefaultOrganization();
+        authPo.signInProgrammatically(credentials);
 
-      cy.log(`Successfully signed in`);
-    });
+        cy.log(`Successfully signed in`);
+      });
 
-    cy.visit(redirectPath);
-    cy.wait(500);
-  },
-);
+      cy.visit(redirectPath);
+      cy.wait(500);
+    },
+  );
 
-Cypress.Commands.add(`clearStorage`, () => {
-  indexedDB.deleteDatabase('firebaseLocalStorageDb');
-});
+  Cypress.Commands.add(`clearStorage`, () => {
+    indexedDB.deleteDatabase('firebaseLocalStorageDb');
+  });
 
-Cypress.Commands.add(`signOutSession`, () => {
-  cy.request(`POST`, `/api/session/sign-out`);
-});
+  Cypress.Commands.add(`signOutSession`, () => {
+    cy.request(`POST`, `/api/session/sign-out`);
+  });
+}
 
 export function createCySelector(name: string) {
   return `[data-cy="${name}"]`;
