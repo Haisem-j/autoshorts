@@ -4,7 +4,7 @@ import { StripeWebhooks } from '~/core/stripe/stripe-webhooks.enum';
 const stripe = new StripeLib.Stripe(`sk_test_12345`, {
   host: `localhost`,
   port: 12111,
-  apiVersion: '2022-11-15',
+  apiVersion: '2023-08-16',
   protocol: `http`,
 });
 
