@@ -36,7 +36,7 @@ export async function inviteMembers(params: Params) {
 
   if (!organizationData) {
     throw new Error(
-      `Organization data with ID ${organizationId} was not found`
+      `Organization data with ID ${organizationId} was not found`,
     );
   }
 
@@ -46,7 +46,7 @@ export async function inviteMembers(params: Params) {
   // validate that the inviter is currently in the organization
   if (inviterRole === undefined) {
     throw new Error(
-      `Invitee with ID ${inviterId} does not belong to the organization`
+      `Invitee with ID ${inviterId} does not belong to the organization`,
     );
   }
 
@@ -95,7 +95,7 @@ export async function inviteMembers(params: Params) {
           inviter: inviter?.uid,
           organizationId,
         },
-        `Error while sending invite to member`
+        `Error while sending invite to member`,
       );
 
       logger.debug(error);
@@ -169,8 +169,12 @@ function sendInviteEmail(props: {
     inviter,
   } = props;
 
-  const sender = configuration.email.senderAddress;
+  const sender = process.env.EMAIL_SENDER;
   const productName = configuration.site.siteName;
+
+  if (!sender) {
+    throw new Error(`Please configure the "EMAIL_SENDER" environment variable`);
+  }
 
   const subject = 'You have been invited to join an organization!';
   const link = getInvitePageFullUrl(inviteCode);
@@ -213,7 +217,7 @@ function getInvitePageFullUrl(inviteCode: string) {
 function assertSiteUrl(siteUrl: Maybe<string>): asserts siteUrl is string {
   if (!siteUrl && configuration.production) {
     throw new Error(
-      `Please configure the "siteUrl" property in the configuration file ~/configuration.ts`
+      `Please configure the "siteUrl" property in the configuration file ~/configuration.ts`,
     );
   }
 }

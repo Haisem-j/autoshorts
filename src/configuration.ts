@@ -68,19 +68,11 @@ const configuration = {
       checkout: `/api/stripe/checkout`,
       billingPortal: `/api/stripe/portal`,
     },
-    searchIndex: `/public/search-index`,
   },
   navigation: {
     style: LayoutStyle.Sidebar,
   },
   appCheckSiteKey: process.env.NEXT_PUBLIC_APPCHECK_KEY,
-  email: {
-    host: '',
-    port: 587,
-    user: '',
-    password: '',
-    senderAddress: 'MakerKit Team <info@makerkit.dev>',
-  },
   emailEtherealTestAccount: {
     email: process.env.ETHEREAL_EMAIL,
     password: process.env.ETHEREAL_PASSWORD,
