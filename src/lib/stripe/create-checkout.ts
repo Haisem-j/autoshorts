@@ -8,6 +8,7 @@ interface CreateCheckoutParams {
   priceId: string;
   customerId?: string;
   trialPeriodDays?: Maybe<number>;
+  customerEmail?: string;
 }
 
 /**
@@ -61,6 +62,7 @@ export async function createStripeCheckout(params: CreateCheckoutParams) {
     cancel_url: cancelUrl,
     client_reference_id: clientReferenceId,
     subscription_data: subscriptionData,
+    customer_email: params.customerEmail,
   });
 }
 

@@ -20,7 +20,7 @@ const SUPPORTED_METHODS: HttpMethod[] = ['POST'];
 
 async function checkoutsSessionHandler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   const { headers, firebaseUser } = req;
 
@@ -52,7 +52,7 @@ async function checkoutsSessionHandler(
   // check if the plan exists in the configuration.
   if (!plan) {
     console.warn(
-      `Plan not found for price ID "${priceId}". Did you forget to add it to the configuration? If the Price ID is incorrect, the checkout will be rejected. Please check the Stripe dashboard`
+      `Plan not found for price ID "${priceId}". Did you forget to add it to the configuration? If the Price ID is incorrect, the checkout will be rejected. Please check the Stripe dashboard`,
     );
   }
 
@@ -71,7 +71,7 @@ async function checkoutsSessionHandler(
         userId,
         organizationId,
       },
-      `User attempted to access checkout but lacked permissions`
+      `User attempted to access checkout but lacked permissions`,
     );
 
     return redirectToErrorPage();
@@ -83,12 +83,15 @@ async function checkoutsSessionHandler(
         ? (plan.trialPeriodDays as number)
         : undefined;
 
+    const customerEmail = firebaseUser.email;
+
     const { url } = await createStripeCheckout({
       returnUrl,
       organizationId,
       priceId,
       customerId,
       trialPeriodDays,
+      customerEmail,
     });
 
     const portalUrl = getCheckoutPortalUrl(url, returnUrl);
@@ -106,7 +109,7 @@ export default withPipe(
   withCsrf((req) => req.body.csrfToken),
   withMethodsGuard(SUPPORTED_METHODS),
   withAuthedUser,
-  checkoutsSessionHandler
+  checkoutsSessionHandler,
 );
 
 async function getUserCanAccessCheckout(params: {
