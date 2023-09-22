@@ -1,7 +1,3 @@
-import React, { useMemo } from 'react';
-import { EmailAuthProvider } from 'firebase/auth';
-import { useUser } from 'reactfire';
-
 import NavigationItem from '~/core/ui/Navigation/NavigationItem';
 import NavigationMenu from '~/core/ui/Navigation/NavigationMenu';
 import MobileNavigationDropdown from '~/core/ui/MobileNavigationMenu';
@@ -26,22 +22,6 @@ const links = {
 };
 
 const ProfileSettingsTabs = () => {
-  const { data: user } = useUser();
-
-  // user can only edit email and password
-  // if they signed up with the EmailAuthProvider provider
-  const canEditEmailAndPassword = useMemo(() => {
-    const emailProviderId = EmailAuthProvider.PROVIDER_ID;
-
-    if (!user) {
-      return false;
-    }
-
-    return user.providerData.some((item) => {
-      return item.providerId === emailProviderId;
-    });
-  }, [user]);
-
   const itemClassName = `flex justify-center lg:justify-start items-center w-full`;
 
   return (
@@ -59,17 +39,9 @@ const ProfileSettingsTabs = () => {
             link={links.Authentication}
           />
 
-          <NavigationItem
-            className={itemClassName}
-            disabled={!canEditEmailAndPassword}
-            link={links.Email}
-          />
+          <NavigationItem className={itemClassName} link={links.Email} />
 
-          <NavigationItem
-            className={itemClassName}
-            disabled={!canEditEmailAndPassword}
-            link={links.Password}
-          />
+          <NavigationItem className={itemClassName} link={links.Password} />
         </NavigationMenu>
       </div>
 

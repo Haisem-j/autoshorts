@@ -1,5 +1,5 @@
 import { GetServerSidePropsContext } from 'next';
-import { setCookie, destroyCookie, parseCookies } from 'nookies';
+import { setCookie, parseCookies } from 'nookies';
 
 import configuration from '~/configuration';
 import { getUserInfoById } from '~/core/firebase/admin/auth/get-user-info-by-id';
@@ -11,6 +11,7 @@ import { withTranslationProps } from '~/lib/props/with-translation-props';
 import { getUserData } from '~/lib/server/queries';
 
 import createCsrfCookie from '~/core/generic/create-csrf-token';
+import { signOutServerSession } from '~/core/session/sign-out-server-session';
 
 const ORGANIZATION_ID_COOKIE_NAME = 'organizationId';
 
@@ -41,6 +42,9 @@ export async function withAppProps(
     // if for any reason we're not able to fetch the user's data, we redirect
     // back to the login page
     if (!metadata) {
+      // clear session cookies to avoid stale data
+      await signOutServerSession(ctx.req, ctx.res);
+
       return redirectToLogin({
         returnUrl: ctx.resolvedUrl,
         redirectPath,
@@ -50,6 +54,7 @@ export async function withAppProps(
 
     const userId = metadata.uid;
     const isEmailVerified = metadata.emailVerified;
+
     const requireEmailVerification =
       configuration.auth.requireEmailVerification;
 
@@ -137,7 +142,7 @@ export async function withAppProps(
       },
     };
   } catch (e) {
-    clearAuthenticationCookies(ctx);
+    await signOutServerSession(ctx.req, ctx.res);
 
     // if the user is signed out, we save the requested URL
     // so, we can redirect them to where they originally navigated to
@@ -221,17 +226,6 @@ function redirectToOnboarding() {
       destination,
     },
   };
-}
-
-/**
- * @name clearAuthenticationCookies
- * @description When authentication fails, we clear session cookies that may
- * be stale
- * @param ctx
- */
-function clearAuthenticationCookies(ctx: GetServerSidePropsContext) {
-  destroyCookie(ctx, 'session');
-  destroyCookie(ctx, 'sessionExpiresAt');
 }
 
 function getAppPropsOptions(
