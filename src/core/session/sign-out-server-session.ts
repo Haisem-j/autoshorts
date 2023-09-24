@@ -36,7 +36,11 @@ export async function signOutServerSession(req: Req, res: Res) {
     destroySessionCookies(res);
   } catch (e) {
     const error = e instanceof Error ? e.message : e;
-    logger.warn(`Could not destroy user's session: ${error}`);
+    logger.warn(
+      `Could not destroy user's session: ${error}. Removing cookies.`,
+    );
+
+    destroySessionCookies(res);
   }
 }
 
