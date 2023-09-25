@@ -55,7 +55,7 @@ const Modal: React.FC<Props> & {
   return (
     <DialogWrapper>
       <If condition={Trigger}>
-        <DialogTrigger>{Trigger}</DialogTrigger>
+        <DialogTrigger asChild>{Trigger}</DialogTrigger>
       </If>
 
       <DialogContent>
