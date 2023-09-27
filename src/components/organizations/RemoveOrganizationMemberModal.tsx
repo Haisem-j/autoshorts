@@ -21,7 +21,7 @@ const RemoveOrganizationMemberModal: React.FCC<{
 
   const { isMutating, trigger } = useRemoveMemberRequest(
     organizationId,
-    member.uid
+    member.uid,
   );
 
   const onUserRemoved = useCallback(() => {
@@ -52,8 +52,7 @@ const RemoveOrganizationMemberModal: React.FCC<{
 
           <Button
             data-cy={'confirm-remove-member'}
-            color={'danger'}
-            variant={'flat'}
+            variant={'ghost'}
             onClick={onUserRemoved}
             loading={isMutating}
           >

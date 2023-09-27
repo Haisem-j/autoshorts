@@ -28,11 +28,7 @@ const DisableMultiFactorButton: React.FC<{
   return (
     <>
       <div>
-        <Button
-          color={'danger'}
-          variant={'flat'}
-          onClick={() => setIsModalOpen(true)}
-        >
+        <Button variant={'destructive'} onClick={() => setIsModalOpen(true)}>
           <span className={'font-medium'}>
             <Trans i18nKey={'profile:disableMfaButtonLabel'} />
           </span>
@@ -55,7 +51,7 @@ const DisableMultiFactorButton: React.FC<{
             <Modal.CancelButton onClick={() => setIsModalOpen(false)} />
 
             <Button
-              color={'danger'}
+              variant={'destructive'}
               loading={isMutating}
               onClick={onDisableSubmit}
             >

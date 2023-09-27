@@ -230,7 +230,7 @@ function UserActionsDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button color={'transparent'}>
+        <Button variant={'ghost'}>
           <span className={'flex space-x-2.5 items-center'}>
             <span>Manage User</span>
 

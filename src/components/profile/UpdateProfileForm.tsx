@@ -163,7 +163,7 @@ function UpdateProfileForm({
               <div>
                 <Button
                   type={'button'}
-                  color={'transparent'}
+                  variant={'ghost'}
                   size={'small'}
                   href={configuration.paths.settings.email}
                 >
@@ -178,7 +178,7 @@ function UpdateProfileForm({
               <div>
                 <Button
                   type={'button'}
-                  color={'transparent'}
+                  variant={'ghost'}
                   size={'small'}
                   href={configuration.paths.settings.authentication}
                 >
@@ -261,7 +261,7 @@ function getPhotoFile(value: string | null | FileList) {
 async function uploadUserProfilePhoto(
   storage: FirebaseStorage,
   photoFile: File,
-  userId: string
+  userId: string,
 ) {
   const url = `/profiles/${userId}/${photoFile.name}`;
   const bytes = await photoFile.arrayBuffer();
@@ -310,7 +310,7 @@ function RemovePhoneNumberButton({
     <>
       <Button
         type={'button'}
-        color={'transparent'}
+        variant={'ghost'}
         size={'small'}
         onClick={() => setIsModalOpen(true)}
       >
@@ -340,7 +340,7 @@ function RemovePhoneNumberButton({
           <Button
             block
             loading={requestState.state.loading}
-            color={'danger'}
+            variant={'destructive'}
             onClick={onUnlinkPhoneNumber}
           >
             <Trans i18nKey={'profile:confirmRemovePhoneNumber'} />
@@ -354,12 +354,12 @@ function RemovePhoneNumberButton({
 function AddPhoneNumberButton(
   props: React.PropsWithChildren<{
     onClick: EmptyCallback;
-  }>
+  }>,
 ) {
   return (
     <Button
       type={'button'}
-      color={'transparent'}
+      variant={'ghost'}
       size={'small'}
       onClick={props.onClick}
     >

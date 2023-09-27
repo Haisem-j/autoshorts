@@ -19,7 +19,7 @@ const CreateOrganizationModal: React.FC<{
 
   const Heading = useMemo(
     () => <Trans i18nKey={'organization:createOrganizationModalHeading'} />,
-    []
+    [],
   );
 
   // Report error when user leaves input empty
@@ -53,7 +53,7 @@ const CreateOrganizationModal: React.FC<{
         onCreate(organizationId);
       }
     },
-    [createOrganization, onCreate, onError, setIsOpen, t]
+    [createOrganization, onCreate, onError, setIsOpen, t],
   );
 
   return (
@@ -80,7 +80,6 @@ const CreateOrganizationModal: React.FC<{
 
               <Button
                 data-cy={'confirm-create-organization-button'}
-                variant={'flat'}
                 loading={loading}
               >
                 <Trans i18nKey={'organization:createOrganizationSubmitLabel'} />

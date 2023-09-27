@@ -47,7 +47,7 @@ export const PasswordReset: React.FCC = () => {
         setError(getFirebaseErrorCode(e));
       }
     },
-    [auth, setData, setError, setLoading]
+    [auth, setData, setError, setLoading],
   );
 
   return (
@@ -92,11 +92,7 @@ export const PasswordReset: React.FCC = () => {
                 <AuthErrorMessage error={state.error as string} />
               </If>
 
-              <Button
-                loading={state.loading}
-                type="submit"
-                block
-              >
+              <Button loading={state.loading} type="submit" block>
                 <Trans i18nKey={'auth:passwordResetLabel'} />
               </Button>
             </div>
@@ -111,7 +107,7 @@ export const PasswordReset: React.FCC = () => {
           </span>
 
           <Link
-            className={'text-primary-800 hover:underline dark:text-primary-500'}
+            className={'text-primary-800 hover:underline dark:text-primary'}
             href={configuration.paths.signIn}
           >
             <Trans i18nKey={'auth:signIn'} />

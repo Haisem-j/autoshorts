@@ -35,8 +35,7 @@ function DisableUserModal({
           <Button
             onClick={() => trigger()}
             loading={isMutating}
-            variant={'flat'}
-            color={'danger'}
+            variant={'default'}
           >
             Yes, disable user
           </Button>

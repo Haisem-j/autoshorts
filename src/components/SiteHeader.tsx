@@ -2,7 +2,7 @@ import dynamic from 'next/dynamic';
 
 import { useAuth } from 'reactfire';
 
-import { ArrowRightIcon } from '@heroicons/react/24/outline';
+import { ChevronRightIcon } from '@heroicons/react/24/outline';
 import { useUserSession } from '~/core/hooks/use-user-session';
 
 import Logo from '~/core/ui/Logo';
@@ -32,7 +32,7 @@ const SiteHeader: React.FCC<{
   return (
     <div className={`w-full ${fixed ? fixedClassName : ''}`}>
       <Container>
-        <div className="flex py-1.5 px-1 items-center border-b border-gray-50 dark:border-dark-800 justify-between">
+        <div className="flex py-1.5 px-1 items-center border-b border-gray-50 dark:border-dark-800/50 justify-between">
           <div className={'w-4/12'}>
             <Logo />
           </div>
@@ -70,14 +70,14 @@ const SiteHeader: React.FCC<{
 function AuthButtons() {
   return (
     <div className={'hidden space-x-2 lg:flex'}>
-      <Button round color={'transparent'} href={configuration.paths.signIn}>
+      <Button round variant={'ghost'} href={configuration.paths.signIn}>
         <span>Sign In</span>
       </Button>
 
-      <Button round color={'secondary'} href={configuration.paths.signUp}>
+      <Button round href={configuration.paths.signUp}>
         <span className={'flex items-center space-x-2'}>
           <span>Sign Up</span>
-          <ArrowRightIcon className={'h-4'} />
+          <ChevronRightIcon className={'h-4'} />
         </span>
       </Button>
     </div>

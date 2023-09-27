@@ -219,11 +219,7 @@ function UsersTable({
 
       <div className={'flex justify-end space-x-2.5'}>
         <If condition={canGoBack}>
-          <Button
-            onClick={() => onChange({})}
-            size={'small'}
-            color={'transparent'}
-          >
+          <Button onClick={() => onChange({})} size={'small'} variant={'ghost'}>
             <span className={'flex space-x-2.5 items-center'}>
               <ChevronLeftIcon className={'h-3'} />
               <span>Back to first page</span>
@@ -235,7 +231,7 @@ function UsersTable({
           <Button
             onClick={() => onChange({ pageToken })}
             size={'small'}
-            color={'transparent'}
+            variant={'link'}
           >
             <span className={'flex space-x-2.5 items-center'}>
               <span>Next page</span>

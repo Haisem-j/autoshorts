@@ -35,7 +35,7 @@ const NotFoundPage = () => {
                 <Heading type={1}>
                   <span
                     data-cy={'catch-route-status-code'}
-                    className={'text-primary-500'}
+                    className={'text-primary'}
                   >
                     404
                   </span>
@@ -56,7 +56,7 @@ const NotFoundPage = () => {
                 </div>
 
                 <div className={'flex space-x-4'}>
-                  <Button color={'secondary'} href={'/'}>
+                  <Button variant={'secondary'} href={'/'}>
                     <Trans i18nKey={'common:contactUs'} />
                   </Button>
 

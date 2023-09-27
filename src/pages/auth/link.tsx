@@ -162,7 +162,7 @@ const EmailLinkAuthPage: React.FC<{
         <div className={'flex flex-col space-y-2'}>
           <AuthErrorMessage error={state.error as string} />
 
-          <Button color={'transparent'} href={configuration.paths.signIn}>
+          <Button variant={'ghost'} href={configuration.paths.signIn}>
             <Trans i18nKey={'auth:getNewLink'} />
           </Button>
         </div>

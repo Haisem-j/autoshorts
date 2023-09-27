@@ -9,13 +9,8 @@ const CardButton = forwardRef<
     <Button
       {...props}
       size={'large'}
-      color={'custom'}
-      className={
-        'h-28 rounded-sm shadow dark:shadow-primary-500/30' +
-        ' cursor-pointer transition-all hover:shadow-lg' +
-        ' ring-primary-500 active:bg-gray-50 dark:active:bg-dark-700' +
-        ' dark:ring-primary-500/70'
-      }
+      variant={'custom'}
+      className={`h-28 cursor-pointer rounded-sm shadow ring-primary transition-all hover:shadow-lg active:bg-gray-50 dark:shadow-primary/30 dark:ring-primary/70 dark:active:bg-background/80`}
     >
       {props.children}
     </Button>

@@ -28,12 +28,7 @@ function ReactivateUserModal({
         </div>
 
         <div className={'flex space-x-2.5 justify-end'}>
-          <Button
-            onClick={() => trigger()}
-            loading={isMutating}
-            variant={'flat'}
-            color={'primary'}
-          >
+          <Button onClick={() => trigger()} loading={isMutating}>
             Yes, reactivate user
           </Button>
         </div>

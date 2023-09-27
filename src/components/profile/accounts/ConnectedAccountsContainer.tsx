@@ -370,15 +370,12 @@ function UnlinkAuthProviderButton({
           <Button
             data-cy={'unlink-provider-button'}
             data-provider={providerId}
-            className={'font-medium'}
-            color={'danger'}
-            variant={'flat'}
+            className={'font-medium text-destructive'}
+            variant={'link'}
             size={'small'}
             onClick={onUnlink}
           >
-            <span>
-              <Trans i18nKey={`profile:unlinkActionLabel`} />
-            </span>
+            <Trans i18nKey={`profile:unlinkActionLabel`} />
           </Button>
         </div>
       </If>
@@ -416,9 +413,8 @@ function ConfirmUnlinkAccountModal({
           <Modal.CancelButton onClick={() => setIsOpen(false)} />
 
           <Button
-            variant={'flat'}
             data-cy={'confirm-unlink-provider-button'}
-            color={'danger'}
+            variant={'destructive'}
             onClick={onUnlink}
           >
             <Trans i18nKey={'profile:confirmUnlinkSubmitLabel'} />

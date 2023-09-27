@@ -62,8 +62,7 @@ const TransferOrganizationOwnershipModal: React.FC<{
 
           <Button
             data-cy={'confirm-transfer-ownership-button'}
-            color={'danger'}
-            variant={'flat'}
+            variant={'destructive'}
             onClick={onConfirmTransferOwnership}
             loading={isMutating}
           >

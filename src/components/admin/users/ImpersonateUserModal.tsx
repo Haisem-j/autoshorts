@@ -41,8 +41,7 @@ function ImpersonateUserModal({
           <Button
             onClick={() => trigger()}
             loading={isMutating}
-            variant={'flat'}
-            color={'danger'}
+            variant={'default'}
           >
             Yes, let&apos;s do it
           </Button>

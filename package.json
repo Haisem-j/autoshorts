@@ -1,6 +1,6 @@
 {
   "name": "next-firebase-saas-kit",
-  "version": "0.12.11",
+  "version": "0.13.0",
   "description": "",
   "private": true,
   "sideEffects": false,
@@ -80,6 +80,7 @@
     "reactfire": "^4.2.3",
     "stripe": "^13.7.0",
     "swr": "^2.2.4",
+    "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.2"
   },

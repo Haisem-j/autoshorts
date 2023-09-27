@@ -73,8 +73,7 @@ const DeleteInviteButton: React.FCC<{
 
               <Button
                 data-cy={'confirm-delete-invite-button'}
-                color={'danger'}
-                variant={'flat'}
+                variant={'destructive'}
                 onClick={onInviteDeleteRequested}
               >
                 <Trans i18nKey={'organization:deleteInviteSubmitLabel'} />

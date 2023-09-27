@@ -195,7 +195,6 @@ function LinkEmailPasswordModal({
             block
             data-cy={'auth-submit-button'}
             className={'w-full'}
-            color={'primary'}
             type="submit"
             loading={state.loading}
           >

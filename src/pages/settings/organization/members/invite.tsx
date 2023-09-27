@@ -50,7 +50,7 @@ function GoBackToMembersButton() {
   return (
     <Button
       size={'small'}
-      color={'transparent'}
+      variant={'ghost'}
       href={'/settings/organization/members'}
     >
       <span className={'flex items-center space-x-1'}>

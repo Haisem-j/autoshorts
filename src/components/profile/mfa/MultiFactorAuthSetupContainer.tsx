@@ -60,10 +60,10 @@ const MultiFactorAuthSetupContainer: React.FC<{
 };
 
 function EnableMFAButton(
-  props: React.PropsWithChildren<{ onClick: EmptyCallback }>
+  props: React.PropsWithChildren<{ onClick: EmptyCallback }>,
 ) {
   return (
-    <Button color={'primary'} onClick={props.onClick}>
+    <Button onClick={props.onClick}>
       <span className={'flex space-x-2'}>
         <ShieldCheckIcon className={'h-5'} />
 

@@ -39,7 +39,7 @@ function AppRouteLoadingIndicator() {
       height={4}
       waitingTime={200}
       shadow={true}
-      className={'bg-primary-500'}
+      className={'bg-primary'}
       color={''}
       ref={ref}
     />

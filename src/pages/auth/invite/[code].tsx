@@ -179,7 +179,7 @@ const InvitePage = (
 
                 <Button
                   block
-                  color={'transparent'}
+                  variant={'ghost'}
                   size={'small'}
                   disabled={isMutating}
                   onClick={() => auth.signOut()}
@@ -207,7 +207,7 @@ const InvitePage = (
 
               <Button
                 block
-                color={'transparent'}
+                variant={'link'}
                 size={'small'}
                 onClick={() => setMode(Mode.SignIn)}
               >
@@ -222,7 +222,7 @@ const InvitePage = (
 
               <Button
                 block
-                color={'transparent'}
+                variant={'link'}
                 size={'small'}
                 onClick={() => setMode(Mode.SignUp)}
               >

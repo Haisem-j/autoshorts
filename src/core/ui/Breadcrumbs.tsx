@@ -63,7 +63,7 @@ const Breadcrumbs: React.FC<{
         const className = classNames({
           ['text-gray-600 dark:text-gray-300']: !isLast,
           ['text-current dark:text-white']: isLast,
-          ['hover:text-primary-500 dark:hover:text-white hover:underline']:
+          ['hover:text-primary dark:hover:text-white hover:underline']:
             segment.link,
         });
 

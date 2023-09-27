@@ -162,7 +162,7 @@ const InviteMembersForm = () => {
           <Button
             data-cy={'append-new-invite-button'}
             type={'button'}
-            color={'transparent'}
+            variant={'ghost'}
             size={'small'}
             loading={isMutating}
             onClick={() => append(memberFactory())}
@@ -178,7 +178,7 @@ const InviteMembersForm = () => {
         </div>
       </div>
 
-      <div>
+      <div className={'flex justify-end'}>
         <Button
           className={'w-full lg:w-auto'}
           data-cy={'send-invites-button'}

@@ -28,7 +28,7 @@ function VerifyEmailAlert() {
         state.setError(error);
       }
     },
-    [state]
+    [state],
   );
 
   return (
@@ -57,7 +57,7 @@ function VerifyEmailAlert() {
             <Button
               loading={state.state.loading}
               className={'hover:color-yellow-900 border border-yellow-600'}
-              color={'custom'}
+              variant={'custom'}
               size={'small'}
               onClick={() => user && onSendEmail(user)}
             >

@@ -21,7 +21,7 @@ const BillingPortalRedirectButton: React.FCC<{
 
       <input type={'hidden'} name={'customerId'} value={customerId} />
 
-      <Button color={'secondary'} className={className}>
+      <Button variant={'secondary'} className={className}>
         <span className={'flex items-center space-x-2'}>
           <span>{children}</span>
 

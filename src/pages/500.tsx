@@ -32,7 +32,7 @@ const InternalServerErrorPage = () => {
             >
               <div>
                 <Heading type={1}>
-                  <span className={'text-primary-500'}>500</span>
+                  <span className={'text-primary'}>500</span>
                 </Heading>
               </div>
 
@@ -50,7 +50,7 @@ const InternalServerErrorPage = () => {
                 </div>
 
                 <div className={'flex space-x-4'}>
-                  <Button color={'secondary'} href={'/'}>
+                  <Button variant={'secondary'} href={'/'}>
                     <Trans i18nKey={'common:contactUs'} />
                   </Button>
 

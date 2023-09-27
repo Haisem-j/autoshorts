@@ -17,7 +17,10 @@ export default function DocumentationNavigation({
       {data.map(({ directory, pages }) => {
         return (
           <div
-            className={'DocumentationSidebarItemContainer'}
+            className={
+              'mt-6 sticky inset-0 hidden md:flex overflow-y-auto h-screen' +
+              ' last-child:pb-24'
+            }
             key={directory.title}
           >
             <div className={'flex flex-col space-y-1'}>
@@ -42,10 +45,14 @@ export default function DocumentationNavigation({
                   <Link
                     key={href}
                     href={href}
-                    className={`DocumentationSidebarItem ${
+                    className={`
+                    flex dark:active:bg-dark-800 active:bg-gray-100 flex-1
+                    text-sm text-gray-500 dark:text-gray-400 hover:text-current rounded-md
+                    py-1.5 px-2 transition-colors duration-300 w-full ${
                       selected
-                        ? `DocumentationSidebarItemSelected`
-                        : `DocumentationSidebarItemNotSelected`
+                        ? `font-semibold text-current dark:text-primary bg-primary-500/5`
+                        : `hover:border-l-primary-400 dark:hover:text-white
+                    dark:border-l-dark-800 font-medium border-l-gray-50`
                     }`}
                   >
                     <span>{page.label}</span>
