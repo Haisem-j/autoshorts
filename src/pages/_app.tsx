@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 import { Inter as SansFont } from 'next/font/google';
 
 import type { User as AuthUser } from 'firebase/auth';
-import { appWithTranslation, SSRConfig } from 'next-i18next';
+import { appWithTranslation, SSRConfig, useTranslation } from 'next-i18next';
 
 import configuration from '~/configuration';
 
@@ -66,6 +66,7 @@ function App(
   const { Component } = props;
   const pageProps = props.pageProps as DefaultPageProps;
   const { emulator, firebase } = configuration;
+  const { i18n } = useTranslation();
 
   const userSessionContext: UserSession = useMemo(() => {
     return {
@@ -98,6 +99,7 @@ function App(
     <FirebaseAppShell config={firebase}>
       <FirebaseAppCheckProvider>
         <FirebaseAuthProvider
+          language={i18n.language}
           userSession={userSession}
           setUserSession={setUserSession}
           useEmulator={emulator}

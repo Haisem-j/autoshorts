@@ -36,10 +36,12 @@ export default function FirebaseAuthProvider({
   setUserSession,
   children,
   useEmulator,
+  language,
 }: React.PropsWithChildren<{
   useEmulator: boolean;
   userSession: Maybe<UserSession>;
   setUserSession: Dispatch<Maybe<UserSession>>;
+  language: string;
 }>) {
   const app = useFirebaseApp();
   const { trigger: signOut } = useDestroySession();
@@ -53,6 +55,8 @@ export default function FirebaseAuthProvider({
 
   const sdk = initializeAuth(app, { persistence });
   const shouldConnectEmulator = useEmulator && !('emulator' in sdk.config);
+
+  sdk.languageCode = language;
 
   if (shouldConnectEmulator) {
     const host = getAuthEmulatorHost();

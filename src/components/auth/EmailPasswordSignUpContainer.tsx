@@ -55,7 +55,7 @@ const EmailPasswordSignUpContainer: React.FCC<{
         onSignUp();
       }
     },
-    [enforceEmailVerification, onSignUp, sendEmailVerification, sessionRequest]
+    [enforceEmailVerification, onSignUp, sendEmailVerification, sessionRequest],
   );
 
   useEffect(() => {
@@ -74,7 +74,7 @@ const EmailPasswordSignUpContainer: React.FCC<{
         await createSession(credential.user);
       }
     },
-    [loading, signUp, createSession]
+    [loading, signUp, createSession],
   );
 
   return (
