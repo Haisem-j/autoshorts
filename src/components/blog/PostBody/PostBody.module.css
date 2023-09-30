@@ -101,7 +101,7 @@ For more info: https://github.com/tailwindlabs/tailwindcss/issues/3258#issuecomm
 }
 
 .PostBody blockquote {
-  @apply my-4 py-4 px-6 font-medium text-lg text-gray-600 border-l-4 border-primary;
+  @apply my-4 py-4 px-6 font-medium text-lg text-gray-600 border-l-4 border-primary bg-primary/5;
 }
 
 :global(.dark) .PostBody blockquote {
@@ -122,7 +122,7 @@ For more info: https://github.com/tailwindlabs/tailwindcss/issues/3258#issuecomm
   border-top-left-radius: 0.35rem;
   border-top-right-radius: 0.35rem;
 
-  @apply bg-dark-800 relative left-3 text-[0.55rem] md:text-sm font-bold;
+  @apply bg-dark-900 relative left-3 text-[0.55rem] md:text-sm font-bold;
 }
 
 .PostBody pre[filename] {
@@ -145,13 +145,13 @@ For more info: https://github.com/tailwindlabs/tailwindcss/issues/3258#issuecomm
 }
 
 .PostBody pre > code {
-  @apply p-3 md:p-6 text-xs md:text-sm font-medium font-monospace block bg-gray-100 dark:bg-dark-800;
+  @apply p-3 md:p-6 text-xs md:text-sm font-medium font-monospace block bg-gray-100 dark:bg-dark-900;
 
   white-space: pre-wrap;
 }
 
 :global(.dark) .PostBody code {
-  @apply bg-dark-800 rounded-xl;
+  @apply bg-dark-900 rounded-xl;
 }
 
 .PostBody p > code,

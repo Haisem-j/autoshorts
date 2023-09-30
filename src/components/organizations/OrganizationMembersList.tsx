@@ -99,7 +99,7 @@ const OrganizationMembersList: React.FCC<{
                 <div className={'block truncate text-sm'}>{displayName}</div>
 
                 <If condition={isCurrentUser}>
-                  <Badge size={'small'}>
+                  <Badge color={'info'} size={'small'}>
                     <Trans i18nKey={'organization:youBadgeLabel'} />
                   </Badge>
                 </If>
