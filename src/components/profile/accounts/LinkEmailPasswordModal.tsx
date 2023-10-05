@@ -9,7 +9,7 @@ import {
 } from 'firebase/auth';
 
 import { useForm } from 'react-hook-form';
-import toaster from 'react-hot-toast';
+import { toast } from 'sonner';
 import { Trans, useTranslation } from 'next-i18next';
 
 import { isMultiFactorError } from '~/core/firebase/utils/is-multi-factor-error';
@@ -96,27 +96,29 @@ function LinkEmailPasswordModal({
         await sessionRequest(newCredential.user);
 
         resolve();
-      }).catch((error) => {
-        if (isMultiFactorError(error)) {
-          setMultiFactorAuthError(error);
+      })
+        .catch((error) => {
+          if (isMultiFactorError(error)) {
+            setMultiFactorAuthError(error);
+            setIsOpen(false);
+            toast.dismiss();
+          } else {
+            setError(error);
+
+            return Promise.reject(error);
+          }
+        })
+        .finally(() => {
+          resetState();
           setIsOpen(false);
-          toaster.dismiss();
-        } else {
-          setError(error);
+          reset();
+        });
 
-          return Promise.reject(error);
-        }
-      });
-
-      await toaster.promise(promise, {
+      return toast.promise(promise, {
         success: t(`profile:linkActionSuccess`),
         error: t(`profile:linkActionError`),
         loading: t(`profile:linkActionLoading`),
       });
-
-      resetState();
-      setIsOpen(false);
-      reset();
     },
     [
       state.loading,

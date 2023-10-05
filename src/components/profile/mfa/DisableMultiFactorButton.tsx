@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { Trans, useTranslation } from 'next-i18next';
-import toaster from 'react-hot-toast';
+import { toast } from 'sonner';
 
 import Button from '~/core/ui/Button';
 import Modal from '~/core/ui/Modal';
@@ -18,7 +18,7 @@ const DisableMultiFactorButton: React.FC<{
   const onDisableSubmit = useCallback(async () => {
     const promise = trigger().then(onDisable);
 
-    return toaster.promise(promise, {
+    return toast.promise(promise, {
       loading: t(`profile:disablingMfa`),
       error: t(`profile:disableMfaError`),
       success: t(`profile:disableMfaSuccess`),
@@ -51,6 +51,7 @@ const DisableMultiFactorButton: React.FC<{
             <Modal.CancelButton onClick={() => setIsModalOpen(false)} />
 
             <Button
+              type={'button'}
               variant={'destructive'}
               loading={isMutating}
               onClick={onDisableSubmit}

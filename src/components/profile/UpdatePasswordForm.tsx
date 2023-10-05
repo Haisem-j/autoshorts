@@ -8,7 +8,7 @@ import {
 } from 'firebase/auth';
 
 import { useCallback, useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { Trans, useTranslation } from 'next-i18next';
 import { useForm } from 'react-hook-form';
 
@@ -83,7 +83,7 @@ const UpdatePasswordForm: React.FCC<{ user: User }> = ({ user }) => {
     (email: string, currentPassword: string) => {
       const emailAuthCredential = EmailAuthProvider.credential(
         email,
-        currentPassword
+        currentPassword,
       );
 
       // first, we check if the password is correct
@@ -99,10 +99,10 @@ const UpdatePasswordForm: React.FCC<{ user: User }> = ({ user }) => {
             requestState.setError(error);
             return Promise.reject(error);
           }
-        }
+        },
       );
     },
-    [user, setMultiFactorAuthError, requestState]
+    [user, setMultiFactorAuthError, requestState],
   );
 
   const updatePasswordFromCredential = useCallback(
@@ -124,13 +124,13 @@ const UpdatePasswordForm: React.FCC<{ user: User }> = ({ user }) => {
         }
       });
 
-      return await toast.promise(promise, {
+      return toast.promise(promise, {
         success: t(`profile:updatePasswordSuccess`),
         error: t(`profile:updatePasswordError`),
         loading: t(`profile:updatePasswordLoading`),
       });
     },
-    [requestState, createServerSideSession, t, user]
+    [requestState, createServerSideSession, t, user],
   );
 
   const updatePasswordCallback = useCallback(
@@ -159,7 +159,7 @@ const UpdatePasswordForm: React.FCC<{ user: User }> = ({ user }) => {
         return Promise.reject(e);
       }
     },
-    [reauthenticateUser, updatePasswordFromCredential, t]
+    [reauthenticateUser, updatePasswordFromCredential, t],
   );
 
   const onSubmit = useCallback(
@@ -173,10 +173,10 @@ const UpdatePasswordForm: React.FCC<{ user: User }> = ({ user }) => {
           requestState.setError(t(`profile:updatePasswordError`));
 
           return e;
-        }
+        },
       );
     },
-    [t, user, requestState, updatePasswordCallback]
+    [t, user, requestState, updatePasswordCallback],
   );
 
   // reset form on success
@@ -267,7 +267,7 @@ const UpdatePasswordForm: React.FCC<{ user: User }> = ({ user }) => {
             onSuccess={async (credential) => {
               await updatePasswordFromCredential(
                 credential,
-                getValues('newPassword')
+                getValues('newPassword'),
               );
 
               setMultiFactorAuthError(undefined);

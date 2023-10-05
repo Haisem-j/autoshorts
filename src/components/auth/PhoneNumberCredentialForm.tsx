@@ -2,7 +2,7 @@ import { FormEventHandler, useCallback } from 'react';
 import { FirebaseError } from 'firebase/app';
 import type { ConfirmationResult, UserCredential } from 'firebase/auth';
 import { useAuth } from 'reactfire';
-import toaster from 'react-hot-toast';
+import { toast } from 'sonner';
 import { Trans, useTranslation } from 'next-i18next';
 
 import useRecaptchaVerifier from '~/core/firebase/hooks/use-recaptcha-verifier';
@@ -51,13 +51,13 @@ const PhoneNumberCredentialForm: React.FC<{
             throw getFirebaseErrorCode(error);
           });
 
-        await toaster.promise(promise, {
+        return toast.promise(promise, {
           loading: t(`profile:verifyPhoneNumberLoading`),
           success: t(`profile:verifyPhoneNumberSuccess`),
           error: t(`profile:verifyPhoneNumberError`),
         });
       },
-      [verifyPhoneNumberState, getPhoneNumberSignInMethod, t]
+      [verifyPhoneNumberState, getPhoneNumberSignInMethod, t],
     );
 
   const onVerificationCodeSubmit: FormEventHandler<HTMLFormElement> =
@@ -89,7 +89,7 @@ const PhoneNumberCredentialForm: React.FC<{
             throw getFirebaseErrorCode(error);
           });
 
-        await toaster.promise(promise, {
+        return toast.promise(promise, {
           loading: t(`profile:verificationCodeLoading`),
           success: t(`profile:verificationCodeSuccess`),
           error: t(`profile:verificationCodeError`),
@@ -100,7 +100,7 @@ const PhoneNumberCredentialForm: React.FC<{
         verifyVerificationCodeState,
         t,
         onSuccess,
-      ]
+      ],
     );
 
   // if verifyPhoneNumberState's state is not set, we dispplay the phone
@@ -213,7 +213,7 @@ function useGetPhoneNumberSignInMethod(action: ActionType) {
 
       return Promise.reject(`Invalid action "${action}"`);
     },
-    [action, auth, getRecaptchaVerifier]
+    [action, auth, getRecaptchaVerifier],
   );
 }
 

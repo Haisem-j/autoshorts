@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import toaster from 'react-hot-toast';
+import { toast } from 'sonner';
 import type { User } from 'firebase/auth';
 import { Trans, useTranslation } from 'next-i18next';
 
@@ -26,13 +26,15 @@ const RemoveOrganizationMemberModal: React.FCC<{
 
   const onUserRemoved = useCallback(() => {
     void (async () => {
-      await toaster.promise(trigger(), {
+      const promise = trigger().then(() => {
+        setIsOpen(false);
+      });
+
+      return toast.promise(promise, {
         success: t(`removeMemberSuccessMessage`),
         error: t(`removeMemberErrorMessage`),
         loading: t(`removeMemberLoadingMessage`),
       });
-
-      setIsOpen(false);
     })();
   }, [trigger, setIsOpen, t]);
 
@@ -51,6 +53,7 @@ const RemoveOrganizationMemberModal: React.FCC<{
           <Modal.CancelButton onClick={() => setIsOpen(false)} />
 
           <Button
+            type={'button'}
             data-cy={'confirm-remove-member'}
             variant={'ghost'}
             onClick={onUserRemoved}

@@ -3,7 +3,7 @@ import { Trans, useTranslation } from 'next-i18next';
 import { multiFactor, PhoneAuthProvider } from 'firebase/auth';
 import { FirebaseError } from 'firebase/app';
 
-import toaster from 'react-hot-toast';
+import { toast } from 'sonner';
 import { useAuth } from 'reactfire';
 
 import TextField from '~/core/ui/TextField';
@@ -71,7 +71,7 @@ const MultiFactorAuthPhoneNumberForm: React.FC<{
           }
         });
 
-      await toaster.promise(promise, {
+      return toast.promise(promise, {
         success: (value) => value,
         error: t(`profile:verifyPhoneNumberError`),
         loading: t(`profile:verifyPhoneNumberLoading`),
@@ -84,7 +84,7 @@ const MultiFactorAuthPhoneNumberForm: React.FC<{
       t,
       onComplete,
       onReauthenticateError,
-    ]
+    ],
   );
 
   const onSubmit: FormEventHandler<HTMLFormElement> = useCallback(
@@ -96,7 +96,7 @@ const MultiFactorAuthPhoneNumberForm: React.FC<{
 
       return onVerifyPhoneNumber(phoneNumber);
     },
-    [onVerifyPhoneNumber]
+    [onVerifyPhoneNumber],
   );
 
   return (

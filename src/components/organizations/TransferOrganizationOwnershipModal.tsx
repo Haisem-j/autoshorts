@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { Trans, useTranslation } from 'next-i18next';
 import type { User } from 'firebase/auth';
-import toaster from 'react-hot-toast';
+import { toast } from 'sonner';
 
 import Button from '~/core/ui/Button';
 import Modal from '~/core/ui/Modal';
@@ -27,15 +27,15 @@ const TransferOrganizationOwnershipModal: React.FC<{
     useTransferOrganizationOwnership(organizationId);
 
   const onConfirmTransferOwnership = useCallback(async () => {
-    const promise = trigger({ userId: targetMemberId });
+    const promise = trigger({ userId: targetMemberId }).then(() => {
+      setIsOpen(false);
+    });
 
-    await toaster.promise(promise, {
+    return toast.promise(promise, {
       loading: t('organization:transferringOwnership'),
       success: t('organization:transferOwnershipSuccess'),
       error: t('organization:transferOwnershipError'),
     });
-
-    setIsOpen(false);
   }, [setIsOpen, t, targetMemberId, trigger]);
 
   return (
@@ -61,6 +61,7 @@ const TransferOrganizationOwnershipModal: React.FC<{
           <Modal.CancelButton onClick={() => setIsOpen(false)} />
 
           <Button
+            type={'button'}
             data-cy={'confirm-transfer-ownership-button'}
             variant={'destructive'}
             onClick={onConfirmTransferOwnership}

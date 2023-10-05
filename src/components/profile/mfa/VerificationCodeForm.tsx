@@ -7,7 +7,7 @@ import {
   PhoneMultiFactorGenerator,
 } from 'firebase/auth';
 
-import toaster from 'react-hot-toast';
+import { toast } from 'sonner';
 import { useAuth } from 'reactfire';
 
 import TextField from '~/core/ui/TextField';
@@ -35,7 +35,7 @@ const MultiFactorAuthVerificationCodeForm: React.FC<{
 
       const phoneAuthCredential = PhoneAuthProvider.credential(
         verificationId,
-        verificationCode
+        verificationCode,
       );
 
       const multiFactorAssertion =
@@ -55,13 +55,13 @@ const MultiFactorAuthVerificationCodeForm: React.FC<{
           throw error.code;
         });
 
-      return await toaster.promise(promise, {
+      return toast.promise(promise, {
         success: t(`profile:mfaEnabledSuccessTitle`),
         error: t(`profile:verificationCodeError`),
         loading: t(`profile:mfaActivationLoading`),
       });
     },
-    [verificationId, t, onComplete, user, requestState]
+    [verificationId, t, onComplete, user, requestState],
   );
 
   const onSubmit: FormEventHandler<HTMLFormElement> = useCallback(
@@ -74,7 +74,7 @@ const MultiFactorAuthVerificationCodeForm: React.FC<{
 
       return onEnrolRequested({ verificationCode, authFactorName });
     },
-    [onEnrolRequested]
+    [onEnrolRequested],
   );
 
   return (

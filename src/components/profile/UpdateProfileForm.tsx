@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useStorage } from 'reactfire';
 import type { User } from 'firebase/auth';
 import { Trans, useTranslation } from 'next-i18next';
-import toaster from 'react-hot-toast';
+import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 
 import {
@@ -95,7 +95,7 @@ function UpdateProfileForm({
       onUpdate(info);
     });
 
-    return toaster.promise(promise, {
+    return toast.promise(promise, {
       success: t(`profile:updateProfileSuccess`),
       error: t(`profile:updateProfileError`),
       loading: t(`profile:updateProfileLoading`),
@@ -299,7 +299,7 @@ function RemovePhoneNumberButton({
 
     requestState.setLoading(true);
 
-    return toaster.promise(promise, {
+    return toast.promise(promise, {
       loading: t(`profile:unlinkActionLoading`),
       success: t(`profile:unlinkActionSuccess`),
       error: t(`profile:unlinkActionError`),

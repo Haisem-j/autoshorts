@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import toaster from 'react-hot-toast';
+import { toast } from 'sonner';
 import { Trans, useTranslation } from 'next-i18next';
 
 import XMarkIcon from '@heroicons/react/24/outline/XMarkIcon';
@@ -24,19 +24,21 @@ const DeleteInviteButton: React.FCC<{
 
   const onInviteDeleteRequested = useCallback(() => {
     void (async () => {
-      try {
-        const promise = deleteRequest(organizationId, inviteId);
+      const promise = deleteRequest(organizationId, inviteId)
+        .then(() => {
+          setIsDeleting(false);
+        })
+        .catch((e) => {
+          setIsDeleting(false);
 
-        await toaster.promise(promise, {
-          success: t(`deleteInviteSuccessMessage`),
-          error: t(`deleteInviteErrorMessage`),
-          loading: t(`deleteInviteLoadingMessage`),
+          return Promise.reject(e);
         });
 
-        setIsDeleting(false);
-      } catch (e) {
-        setIsDeleting(false);
-      }
+      toast.promise(promise, {
+        success: t(`deleteInviteSuccessMessage`),
+        error: t(`deleteInviteErrorMessage`),
+        loading: t(`deleteInviteLoadingMessage`),
+      });
     })();
   }, [deleteRequest, inviteId, organizationId, t]);
 
@@ -72,6 +74,7 @@ const DeleteInviteButton: React.FCC<{
               <Modal.CancelButton onClick={() => setIsDeleting(false)} />
 
               <Button
+                type={'button'}
                 data-cy={'confirm-delete-invite-button'}
                 variant={'destructive'}
                 onClick={onInviteDeleteRequested}

@@ -8,7 +8,7 @@ import {
 } from 'firebase/auth';
 
 import { useCallback, useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { Trans, useTranslation } from 'next-i18next';
 import { useForm } from 'react-hook-form';
 
@@ -32,7 +32,7 @@ const UpdateEmailForm: React.FC<{ user: User }> = ({ user }) => {
     useState<Maybe<MultiFactorError>>();
 
   const updateEmailWithCredential = useCallback(
-    (credential: UserCredential, email: string) => {
+    (credential: UserCredential, email: string, callback?: () => void) => {
       // then, we update the user's email address
       const promise = updateEmail(credential.user, email)
         .then(() => {
@@ -45,15 +45,20 @@ const UpdateEmailForm: React.FC<{ user: User }> = ({ user }) => {
           setErrorMessage(t(`profile:updateEmailError`));
 
           return e;
+        })
+        .finally(() => {
+          if (callback) {
+            callback();
+          }
         });
 
-      return toast.promise(promise, {
+      toast.promise(promise, {
         success: t(`profile:updateEmailSuccess`),
         loading: t(`profile:updateEmailLoading`),
         error: t(`profile:updateEmailError`),
       });
     },
-    [createServerSideSession, setErrorMessage, t]
+    [createServerSideSession, setErrorMessage, t],
   );
 
   const currentEmail = user?.email as string;
@@ -94,7 +99,7 @@ const UpdateEmailForm: React.FC<{ user: User }> = ({ user }) => {
       // by reauthenticating the user
       const emailAuthCredential = EmailAuthProvider.credential(
         currentEmail,
-        password
+        password,
       );
 
       const promise = reauthenticateWithCredential(user, emailAuthCredential);
@@ -120,11 +125,11 @@ const UpdateEmailForm: React.FC<{ user: User }> = ({ user }) => {
       }
 
       // otherwise, go ahead and update the email
-      return await updateEmailWithCredential(credential, email).finally(() => {
+      return updateEmailWithCredential(credential, email, () => {
         requestState.setData();
       });
     },
-    [currentEmail, t, requestState, updateEmailWithCredential, user]
+    [currentEmail, t, requestState, updateEmailWithCredential, user],
   );
 
   const emailControl = register('email', {

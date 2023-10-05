@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import { Trans, useTranslation } from 'next-i18next';
 import { Fragment, useCallback } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
 import PlusCircleIcon from '@heroicons/react/24/outline/PlusCircleIcon';
 import XMarkIcon from '@heroicons/react/24/outline/XMarkIcon';

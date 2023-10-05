@@ -33,6 +33,7 @@ function DisableUserModal({
 
         <div className={'flex space-x-2.5 justify-end'}>
           <Button
+            type={'button'}
             onClick={() => trigger()}
             loading={isMutating}
             variant={'default'}

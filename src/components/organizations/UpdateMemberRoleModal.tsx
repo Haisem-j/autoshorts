@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import toaster from 'react-hot-toast';
+import { toast } from 'sonner';
 import { Trans, useTranslation } from 'next-i18next';
 import type { User } from 'firebase/auth';
 
@@ -30,20 +30,20 @@ const UpdateMemberRoleModal: React.FCC<{
 
   const onRoleUpdated = useCallback(async () => {
     if (role === undefined || role === memberRole) {
-      return toaster.error(t('chooseDifferentRoleError'), {
+      return toast.error(t('chooseDifferentRoleError'), {
         className: 'chooseDifferentRoleError',
       });
     }
 
-    const promise = trigger({ role });
+    const promise = trigger({ role }).then(() => {
+      setIsOpen(false);
+    });
 
-    await toaster.promise(promise, {
+    toast.promise(promise, {
       loading: t('updateRoleLoadingMessage'),
       success: t('updateRoleSuccessMessage'),
       error: t('updatingRoleErrorMessage'),
     });
-
-    setIsOpen(false);
   }, [trigger, role, setIsOpen, t, memberRole]);
 
   const heading = (
@@ -59,6 +59,7 @@ const UpdateMemberRoleModal: React.FCC<{
           <Modal.CancelButton onClick={() => setIsOpen(false)} />
 
           <Button
+            type={'button'}
             data-cy={'confirm-update-member-role'}
             variant={'flat'}
             loading={isMutating}

@@ -1,7 +1,7 @@
 import { sendEmailVerification, User } from 'firebase/auth';
 import { Trans, useTranslation } from 'next-i18next';
 import { useCallback } from 'react';
-import toaster from 'react-hot-toast';
+import { toast } from 'sonner';
 
 import { useRequestState } from '~/core/hooks/use-request-state';
 import Alert from '~/core/ui/Alert';
@@ -14,7 +14,7 @@ import AuthErrorMessage from '~/components/auth/AuthErrorMessage';
 function EmailVerificationAlert(
   props: React.PropsWithChildren<{
     user: User;
-  }>
+  }>,
 ) {
   const requestState = useRequestState<void>();
   const { t } = useTranslation();
@@ -32,7 +32,7 @@ function EmailVerificationAlert(
         throw getFirebaseErrorCode(error);
       });
 
-    await toaster.promise(promise, {
+    return toast.promise(promise, {
       loading: t(`profile:sendingEmailVerificationLink`),
       success: t(`profile:sendEmailVerificationLinkSuccess`),
       error: t(`profile:sendEmailVerificationLinkError`),

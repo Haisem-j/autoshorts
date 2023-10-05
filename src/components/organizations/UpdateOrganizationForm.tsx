@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { useStorage } from 'reactfire';
 import { Trans, useTranslation } from 'next-i18next';
 import { useForm } from 'react-hook-form';
@@ -100,7 +100,7 @@ const UpdateOrganizationForm = () => {
       storage,
       t,
       updateOrganization,
-    ]
+    ],
   );
 
   useEffect(() => {

@@ -4,7 +4,7 @@ import { GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 
-import toaster from 'react-hot-toast';
+import { toast } from 'sonner';
 import { useTranslation, Trans } from 'next-i18next';
 
 import type { User } from 'firebase/auth';
@@ -85,7 +85,7 @@ const InvitePage = (
       redirectToHomePage(),
     );
 
-    await toaster.promise(promise, {
+    return toast.promise(promise, {
       loading: t('auth:acceptingInvite'),
       success: t('auth:acceptInviteSuccess'),
       error: t('auth:acceptInviteError'),

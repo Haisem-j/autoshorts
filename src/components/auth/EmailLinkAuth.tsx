@@ -2,7 +2,7 @@ import { Trans, useTranslation } from 'next-i18next';
 import { FormEventHandler, useCallback } from 'react';
 import { useAuth } from 'reactfire';
 import { sendSignInLinkToEmail } from 'firebase/auth';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
 import { useRequestState } from '~/core/hooks/use-request-state';
 import { getFirebaseErrorCode } from '~/core/firebase/utils/get-firebase-error-code';

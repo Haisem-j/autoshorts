@@ -1,5 +1,5 @@
 import { FormEvent, useCallback, useMemo } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { Trans, useTranslation } from 'next-i18next';
 
 import Modal from '~/core/ui/Modal';
@@ -23,7 +23,7 @@ const CreateOrganizationModal: React.FC<{
   );
 
   // Report error when user leaves input empty
-  const onError = useCallback(() => {
+  const onInvalidName = useCallback(() => {
     toast.error(`Please use a valid name`);
   }, []);
 
@@ -38,22 +38,24 @@ const CreateOrganizationModal: React.FC<{
       const isNameInvalid = !name || name.trim().length === 0;
 
       if (isNameInvalid) {
-        return onError();
+        return onInvalidName();
       }
 
-      const organizationId = await toast.promise(createOrganization(name), {
+      const promise = createOrganization(name).then((organizationId) => {
+        setIsOpen(false);
+
+        if (organizationId) {
+          onCreate(organizationId);
+        }
+      });
+
+      toast.promise(promise, {
         success: t(`organization:createOrganizationSuccess`),
         error: t(`organization:createOrganizationError`),
         loading: t(`organization:createOrganizationLoading`),
       });
-
-      setIsOpen(false);
-
-      if (organizationId) {
-        onCreate(organizationId);
-      }
     },
-    [createOrganization, onCreate, onError, setIsOpen, t],
+    [createOrganization, onCreate, onInvalidName, setIsOpen, t],
   );
 
   return (

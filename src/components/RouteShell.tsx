@@ -5,28 +5,28 @@ import configuration from '~/configuration';
 import { LayoutStyle } from '~/core/layout-style';
 import Layout from '~/core/ui/Layout';
 
-const ReactHotToast = dynamic(async () => {
-  const { Toaster } = await import('react-hot-toast');
+const Sonner = dynamic(async () => {
+  const { Toaster } = await import('sonner');
 
   return Toaster;
 });
 
 const FirebaseFirestoreProvider = dynamic(
-  () => import('~/core/firebase/components/FirebaseFirestoreProvider')
+  () => import('~/core/firebase/components/FirebaseFirestoreProvider'),
 );
 
 const SentryProvider = dynamic(() => import('~/components/SentryProvider'));
 
 const GuardedPage = dynamic(
-  () => import('~/core/firebase/components/GuardedPage')
+  () => import('~/core/firebase/components/GuardedPage'),
 );
 
 const RouteShellWithSidebar = dynamic(
-  () => import('./layouts/sidebar/RouteShellWithSidebar')
+  () => import('./layouts/sidebar/RouteShellWithSidebar'),
 );
 
 const RouteShellWithTopNavigation = dynamic(
-  () => import('./layouts/header/RouteShellWithTopNavigation')
+  () => import('./layouts/header/RouteShellWithTopNavigation'),
 );
 
 const redirectPathWhenSignedOut = '/';
@@ -46,7 +46,7 @@ const RouteShell: React.FCC<{
       <GuardedPage whenSignedOut={redirectPathWhenSignedOut}>
         <SentryProvider>
           <Layout>
-            <ReactHotToast />
+            <Sonner />
 
             <LayoutRenderer style={layout} title={title}>
               {children}
@@ -62,7 +62,7 @@ function LayoutRenderer(
   props: React.PropsWithChildren<{
     title: string;
     style: LayoutStyle;
-  }>
+  }>,
 ) {
   switch (props.style) {
     case LayoutStyle.Sidebar: {

@@ -7,7 +7,7 @@ import {
   useState,
 } from 'react';
 
-import toaster from 'react-hot-toast';
+import { toast } from 'sonner';
 import { useUser } from 'reactfire';
 
 import {
@@ -77,7 +77,7 @@ const ConnectedAccountsContainer = () => {
 
       const promise = unlink(user, providerId);
 
-      await toaster.promise(promise, {
+      await toast.promise(promise, {
         success: t(`profile:unlinkActionSuccess`),
         loading: t(`profile:unlinkActionLoading`),
         error: t(`profile:unlinkActionError`),
@@ -91,7 +91,7 @@ const ConnectedAccountsContainer = () => {
   );
 
   const onLinkSuccess = useCallback(() => {
-    return toaster.success(t(`profile:linkActionSuccess`));
+    return toast.success(t(`profile:linkActionSuccess`));
   }, [t]);
 
   const onLinkError = useCallback(
@@ -100,7 +100,7 @@ const ConnectedAccountsContainer = () => {
         ? t(`auth:errors.${error}`)
         : t(`profile:linkActionError`);
 
-      toaster.error(message);
+      toast.error(message);
     },
     [t],
   );
@@ -413,6 +413,7 @@ function ConfirmUnlinkAccountModal({
           <Modal.CancelButton onClick={() => setIsOpen(false)} />
 
           <Button
+            type={'button'}
             data-cy={'confirm-unlink-provider-button'}
             variant={'destructive'}
             onClick={onUnlink}
