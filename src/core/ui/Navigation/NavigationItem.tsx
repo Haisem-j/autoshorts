@@ -55,7 +55,7 @@ export default NavigationMenuItem;
 function getNavigationMenuItemClassBuilder() {
   return cva(
     [
-      `p-1 lg:px-2.5 flex items-center justify-center font-medium lg:justify-start rounded-md text-sm transition-colors active:[&>*]:translate-y-[2px]`,
+      `p-1 lg:px-2.5 flex items-center justify-center font-medium lg:justify-start rounded-md text-sm transition colors transform active:[&>*]:translate-y-[2px]`,
     ],
     {
       compoundVariants: [
