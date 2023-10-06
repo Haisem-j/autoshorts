@@ -70,7 +70,7 @@ const SelectLabel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Label
     ref={ref}
-    className={cn('py-1.5 pl-8 pr-2 text-sm font-semibold', className)}
+    className={cn('py-1.5 px-2 text-sm font-semibold', className)}
     {...props}
   />
 ));
@@ -107,7 +107,7 @@ const SelectAction = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        `relative cursor-pointer flex w-full select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent hover:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50`,
+        `relative cursor-pointer flex w-full select-none items-center rounded-sm py-1.5 px-2 text-sm outline-none focus:bg-accent hover:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50`,
         className,
       )}
       {...props}

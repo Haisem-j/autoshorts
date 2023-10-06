@@ -9,6 +9,7 @@ CSS.
 
 - Node.js
 - Git
+- Java (for the Firebase Emulators)
 
 Please ensure you installed these before proceeding.
 
