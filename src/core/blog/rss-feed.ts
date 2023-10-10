@@ -26,7 +26,7 @@ function generateRSSFeed(articles: Article[]) {
     id: baseUrl,
     link: baseUrl,
     favicon: `${baseUrl}/assets/favicon/favicon.ico`,
-    language: configuration.site.language ?? `en`,
+    language: configuration.site.locale ?? `en`,
     feedLinks: {
       rss2: `${baseUrl}/rss.xml`,
       json: `${baseUrl}/rss.json`,

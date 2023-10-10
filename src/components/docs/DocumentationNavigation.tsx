@@ -23,8 +23,8 @@ export default function DocumentationNavigation({
             }
             key={directory.title}
           >
-            <div className={'flex flex-col space-y-1'}>
-              <div className={'pb-4'}>
+            <div className={'flex flex-col space-y-1 w-full'}>
+              <div className={'pb-2'}>
                 <Heading type={6}>
                   <span
                     className={
@@ -46,7 +46,7 @@ export default function DocumentationNavigation({
                     key={href}
                     href={href}
                     className={`
-                    flex dark:active:bg-dark-800 active:bg-gray-100 flex-1
+                    flex dark:active:bg-dark-800 active:bg-gray-100
                     text-sm text-gray-500 dark:text-gray-400 hover:text-current rounded-md
                     py-1.5 px-2 transition-colors duration-300 w-full ${
                       selected
