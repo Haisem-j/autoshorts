@@ -13,12 +13,12 @@ export default function DocumentationNavigation({
   const path = router.query.page;
 
   return (
-    <div className={'flex h-full flex-col space-y-8'}>
+    <div className={'flex h-full flex-col space-y-4'}>
       {data.map(({ directory, pages }) => {
         return (
           <div
             className={
-              'mt-6 sticky inset-0 hidden md:flex overflow-y-auto h-screen' +
+              'mt-6 sticky inset-0 hidden md:flex overflow-y-auto' +
               ' last-child:pb-24'
             }
             key={directory.title}
@@ -45,8 +45,7 @@ export default function DocumentationNavigation({
                   <Link
                     key={href}
                     href={href}
-                    className={`
-                    flex dark:active:bg-dark-800 active:bg-gray-100
+                    className={`flex dark:active:bg-dark-800 active:bg-gray-100
                     text-sm text-gray-500 dark:text-gray-400 hover:text-current rounded-md
                     py-1.5 px-2 transition-colors duration-300 w-full ${
                       selected
