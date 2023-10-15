@@ -36,10 +36,9 @@ const CheckoutRedirectButton: React.FCC<{
       <Button
         block
         className={classNames({
-          'text-foreground bg-background dark:bg-white dark:text-gray-900':
-            props.recommended,
+          'text-primary-foreground bg-primary': props.recommended,
         })}
-        variant={props.recommended ? 'custom' : 'secondary'}
+        variant={props.recommended ? 'custom' : 'outline'}
         type="submit"
         disabled={props.disabled}
       >
