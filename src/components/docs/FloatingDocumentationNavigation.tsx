@@ -54,10 +54,10 @@ export default function FloatingDocumentationNavigation({
         <div
           className={
             'fixed left-0 top-0 z-10 h-screen w-full py-4 px-4' +
-            ' flex flex-col space-y-4 overflow-auto bg-white dark:bg-dark-900'
+            ' flex flex-col space-y-4 overflow-auto bg-background'
           }
         >
-          <Heading type={1}>Table of Contents</Heading>
+          <Heading type={2}>Table of Contents</Heading>
 
           <DocumentationNavigation data={data} />
         </div>

@@ -1,4 +1,5 @@
 {
-  "title": "Category",
-  "position": 0
+  "title": "Setup",
+  "position": 0,
+  "description": "Learn how to setup your project to use the SDK."
 }

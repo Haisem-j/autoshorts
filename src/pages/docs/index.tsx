@@ -11,7 +11,6 @@ import SiteHeader from '~/components/SiteHeader';
 import Container from '~/core/ui/Container';
 import Footer from '~/components/Footer';
 import Heading from '~/core/ui/Heading';
-import GridList from '~/components/GridList';
 import SubHeading from '~/core/ui/SubHeading';
 
 import DocumentationNavigation from '~/components/docs/DocumentationNavigation';
@@ -52,7 +51,12 @@ export default function Docs({
             </div>
 
             <div className="mt-8 flex flex-1 flex-col">
-              <GridList>
+              <div
+                className={
+                  'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3' +
+                  ' gap-4 md:gap-8'
+                }
+              >
                 {docs.map((doc) => {
                   const { pages, directory } = doc;
                   const page = pages[0];
@@ -60,26 +64,19 @@ export default function Docs({
 
                   return (
                     <TopicLink key={href} href={href}>
-                      <>
-                        <Heading type={2}>
-                          <span className={'dark:text-white'}>
-                            {directory.title}
-                          </span>
-                        </Heading>
-
-                        <span
-                          className={
-                            'block text-base dark:text-gray-300' +
-                            ' mt-4 font-medium'
-                          }
-                        >
-                          {directory.description}
+                      <Heading type={4}>
+                        <span className={'font-semibold'}>
+                          {directory.title}
                         </span>
-                      </>
+                      </Heading>
+
+                      <span className={'block text-base dark:text-gray-300'}>
+                        {directory.description}
+                      </span>
                     </TopicLink>
                   );
                 })}
-              </GridList>
+              </div>
             </div>
           </div>
         </Container>
@@ -96,7 +93,7 @@ function TopicLink({
 }: React.PropsWithChildren<{ href: string }>) {
   return (
     <Link
-      className={`flex w-full flex-col rounded-xl bg-gray-50 px-5 py-6 transition-colors hover:bg-gray-100 active:bg-gray-200 dark:border-2 dark:border-dark-900 dark:bg-dark-800 dark:hover:border-dark-700 dark:hover:bg-dark-900 dark:active:bg-dark-600`}
+      className={`flex w-full flex-col space-y-2 border hover:border-gray-100 dark:hover:border-dark-700 rounded-xl bg-background px-6 py-6 transition-colors dark:border-dark-800`}
       href={href}
     >
       {children}

@@ -17,18 +17,14 @@ const PostHeadings: React.FC<{
     }, {});
 
   return (
-    <div className={'flex flex-col space-y-4'}>
+    <div className={'flex flex-col space-y-2'}>
       <Heading type={6}>
-        <span
-          className={
-            'text-sm font-bold uppercase text-gray-700 dark:text-gray-300'
-          }
-        >
+        <span className={'text-sm font-bold text-gray-700 dark:text-gray-200'}>
           Table of Contents
         </span>
       </Heading>
 
-      <div className={'flex flex-col space-y-2'}>
+      <div className={'flex flex-col space-y-1'}>
         {headings.map((heading, index) => {
           const slug = heading.text
             .split(' ')
@@ -43,7 +39,7 @@ const PostHeadings: React.FC<{
                 : undefined
               : undefined;
 
-          const marginLeft = `${(heading.level - 1) * 14}px`;
+          const marginLeft = `${(heading.level - 1) * 8}px`;
           const style = { marginLeft, marginTop };
 
           return (
