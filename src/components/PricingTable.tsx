@@ -72,10 +72,12 @@ function PricingTable(
             product.plans.find((item) => item.name === planVariant) ??
             product.plans[0];
 
+          const key = plan.stripePriceId + plan.name + product.name;
+
           return (
             <PricingItem
               selectable
-              key={plan.stripePriceId ?? plan.name}
+              key={key}
               plan={plan}
               product={product}
               CheckoutButton={props.CheckoutButton}

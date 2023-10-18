@@ -40,7 +40,6 @@ async function checkoutsSessionHandler(
   }
 
   const { organizationId, priceId, customerId, returnUrl } = bodyResult.data;
-
   const matchesSessionOrganizationId = currentOrganizationId === organizationId;
 
   if (!matchesSessionOrganizationId) {
@@ -84,17 +83,46 @@ async function checkoutsSessionHandler(
         : undefined;
 
     const customerEmail = firebaseUser.email;
+    const embedded = configuration.stripe.embedded;
 
-    const { url } = await createStripeCheckout({
+    const session = await createStripeCheckout({
       returnUrl,
       organizationId,
       priceId,
       customerId,
       trialPeriodDays,
       customerEmail,
+      embedded,
     });
 
-    const portalUrl = getCheckoutPortalUrl(url, returnUrl);
+    logger.info(
+      {
+        id: session.id,
+        organizationId,
+      },
+      `Created Stripe Checkout session`,
+    );
+
+    // if the checkout is embedded, we need to render the checkout
+    // therefore, we send the clientSecret back to the client
+    if (embedded) {
+      logger.info(
+        { id: session.id },
+        `Using embedded checkout mode. Sending client secret back to client.`,
+      );
+
+      return res.json({
+        clientSecret: session.client_secret,
+      });
+    }
+
+    logger.info(
+      { id: session.id },
+      `Using hosted checkout mode. Redirecting user to Stripe Checkout.`,
+    );
+
+    // get the URL of the Checkout Portal
+    const portalUrl = getCheckoutPortalUrl(session.url, returnUrl);
 
     // redirect user back based on the response
     res.redirect(HttpStatusCode.SeeOther, portalUrl);

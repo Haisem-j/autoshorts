@@ -9,6 +9,7 @@ interface CreateCheckoutParams {
   customerId?: string;
   trialPeriodDays?: Maybe<number>;
   customerEmail?: string;
+  embedded?: boolean;
 }
 
 /**
@@ -19,14 +20,6 @@ interface CreateCheckoutParams {
  * @param params
  */
 export async function createStripeCheckout(params: CreateCheckoutParams) {
-  const successUrl = getUrlWithParams(params.returnUrl, {
-    success: 'true',
-  });
-
-  const cancelUrl = getUrlWithParams(params.returnUrl, {
-    cancel: 'true',
-  });
-
   // in MakerKit, a subscription belongs to an organization,
   // rather than to a user
   // if you wish to change it, use the current user ID instead
@@ -54,33 +47,36 @@ export async function createStripeCheckout(params: CreateCheckoutParams) {
       trial_period_days: params.trialPeriodDays,
     };
 
+  const uiMode = params.embedded ? 'embedded' : 'hosted';
+
+  const urls = getUrls({
+    returnUrl: params.returnUrl,
+    embedded: params.embedded,
+  });
+
   return stripe.checkout.sessions.create({
+    ui_mode: uiMode,
     mode,
     customer,
     line_items: [lineItem],
-    success_url: successUrl,
-    cancel_url: cancelUrl,
     client_reference_id: clientReferenceId,
     subscription_data: subscriptionData,
     customer_email: params.customerEmail,
+    ...urls,
   });
 }
 
-function getUrlWithParams(origin: string, params: StringObject) {
-  const url = new URL(origin);
-  const returnUrl = cleanParams(url);
+function getUrls(params: { returnUrl: string; embedded?: boolean }) {
+  const successUrl = `${params.returnUrl}?success=true`;
+  const cancelUrl = `${params.returnUrl}?cancel=true`;
+  const returnUrl = `${params.returnUrl}/return?session_id={CHECKOUT_SESSION_ID}`;
 
-  for (const param in params) {
-    returnUrl.searchParams.set(param, params[param]);
-  }
-
-  return returnUrl.toString();
-}
-
-function cleanParams(returnUrl: URL) {
-  returnUrl.searchParams.delete('cancel');
-  returnUrl.searchParams.delete('success');
-  returnUrl.searchParams.delete('error');
-
-  return returnUrl;
+  return params.embedded
+    ? {
+        return_url: returnUrl,
+      }
+    : {
+        success_url: successUrl,
+        cancel_url: cancelUrl,
+      };
 }

@@ -1,11 +1,14 @@
 import dynamic from 'next/dynamic';
-import React from 'react';
-import ArrowRightIcon from '@heroicons/react/24/outline/ArrowRightIcon';
+import React, { FormEventHandler } from 'react';
+import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import classNames from 'clsx';
+import useSWRMutation from 'swr/mutation';
 
 import Button from '~/core/ui/Button';
 import configuration from '~/configuration';
 import { isBrowser } from '~/core/generic/is-browser';
+import { useApiRequest } from '~/core/hooks/use-api';
+import PageLoadingIndicator from '~/core/ui/PageLoadingIndicator';
 
 const CHECKOUT_SESSION_API_ENDPOINT = configuration.paths.api.checkout;
 
@@ -19,13 +22,32 @@ const CheckoutRedirectButton: React.FCC<{
   disabled?: boolean;
   organizationId: Maybe<string>;
   customerId: Maybe<string>;
+  onCheckoutCreated?: (clientSecret: string) => void;
 }> = ({ children, ...props }) => {
+  const isEmbedded = configuration.stripe.embedded;
+  const createCheckout = useCreateCheckout();
+
+  const onSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
+    if (isEmbedded) {
+      e.preventDefault();
+    }
+
+    const data = new FormData(e.currentTarget);
+    const body = Object.fromEntries(data.entries());
+    const { clientSecret } = await createCheckout.trigger(body);
+
+    if (props.onCheckoutCreated) {
+      props.onCheckoutCreated(clientSecret);
+    }
+  };
+
   return (
     <form
       className={'w-full'}
       data-cy={'checkout-form'}
       action={CHECKOUT_SESSION_API_ENDPOINT}
       method="POST"
+      onSubmit={isEmbedded ? onSubmit : undefined}
     >
       <CheckoutFormData
         customerId={props.customerId}
@@ -41,6 +63,7 @@ const CheckoutRedirectButton: React.FCC<{
         variant={props.recommended ? 'custom' : 'outline'}
         type="submit"
         disabled={props.disabled}
+        loading={createCheckout.isMutating}
       >
         <span className={'flex items-center space-x-2'}>
           <span>{children}</span>
@@ -87,4 +110,23 @@ function getReturnUrl() {
   return isBrowser()
     ? [window.location.origin, window.location.pathname].join('')
     : undefined;
+}
+
+function useCreateCheckout() {
+  type CreateCheckoutResponse = {
+    clientSecret: string;
+  };
+
+  const fetcher = useApiRequest<CreateCheckoutResponse, unknown>();
+
+  return useSWRMutation(
+    CHECKOUT_SESSION_API_ENDPOINT,
+    (_, data: { arg: unknown }) => {
+      return fetcher({
+        method: 'POST',
+        path: CHECKOUT_SESSION_API_ENDPOINT,
+        body: data.arg,
+      });
+    },
+  );
 }

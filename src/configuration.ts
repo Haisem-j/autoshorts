@@ -1,5 +1,6 @@
 import { LayoutStyle } from '~/core/layout-style';
 import { GoogleAuthProvider } from 'firebase/auth';
+import { StripeCheckoutDisplayMode } from '~/lib/stripe/types';
 
 enum Themes {
   Light = 'light',
@@ -80,6 +81,8 @@ const configuration = {
     dsn: process.env.SENTRY_DSN,
   },
   stripe: {
+    embedded: true,
+    displayMode: StripeCheckoutDisplayMode.Popup,
     products: [
       {
         name: 'Basic',
@@ -95,12 +98,12 @@ const configuration = {
           {
             name: 'Monthly',
             price: '$9',
-            stripePriceId: 'basic-plan-mth',
+            stripePriceId: 'price_1NNwYHI1i3VnbZTqI2UzaHIe',
           },
           {
             name: 'Yearly',
             price: '$90',
-            stripePriceId: 'basic-plan-yr',
+            stripePriceId: '',
           },
         ],
       },
@@ -119,12 +122,12 @@ const configuration = {
           {
             name: 'Monthly',
             price: '$29',
-            stripePriceId: 'pro-plan-mth',
+            stripePriceId: 'price_1NNwYHI1i3VnbZTqI2UzaHIe',
           },
           {
             name: 'Yearly',
             price: '$200',
-            stripePriceId: 'pro-plan-yr',
+            stripePriceId: '',
           },
         ],
       },
@@ -153,3 +156,17 @@ const configuration = {
 };
 
 export default configuration;
+
+// Validate Stripe configuration
+// as this is a new requirement, we throw an error if the key is not defined
+// in the environment
+if (
+  configuration.stripe.embedded &&
+  configuration.production &&
+  !process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+) {
+  throw new Error(
+    'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not defined. Please' +
+      ' add it to your environment variables.',
+  );
+}

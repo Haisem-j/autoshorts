@@ -1,4 +1,5 @@
-import React from 'react';
+import dynamic from 'next/dynamic';
+import { useState } from 'react';
 import { Trans } from 'next-i18next';
 
 import CheckoutRedirectButton from '~/components/subscriptions/CheckoutRedirectButton';
@@ -10,13 +11,22 @@ import { IfHasPermissions } from '~/components/IfHasPermissions';
 import { canChangeBilling } from '~/lib/organizations/permissions';
 
 import If from '~/core/ui/If';
-import PricingTable from '~/components/PricingTable';
 import Alert from '~/core/ui/Alert';
+
+import PricingTable from '~/components/PricingTable';
+
+const EmbeddedStripeCheckout = dynamic(
+  () => import('./EmbeddedStripeCheckout'),
+  {
+    ssr: false,
+  },
+);
 
 const PlanSelectionForm: React.FCC<{
   organization: WithId<Organization>;
 }> = ({ organization }) => {
   const customerId = organization.customerId;
+  const [clientSecret, setClientSecret] = useState<string>();
 
   return (
     <div className={'flex flex-col space-y-6'}>
@@ -24,6 +34,10 @@ const PlanSelectionForm: React.FCC<{
         condition={canChangeBilling}
         fallback={<NoPermissionsAlert />}
       >
+        <If condition={clientSecret}>
+          <EmbeddedStripeCheckout clientSecret={clientSecret as string} />
+        </If>
+
         <div className={'flex w-full flex-col space-y-8'}>
           <PricingTable
             CheckoutButton={(props) => {
@@ -33,6 +47,7 @@ const PlanSelectionForm: React.FCC<{
                   customerId={customerId}
                   stripePriceId={props.stripePriceId}
                   recommended={props.recommended}
+                  onCheckoutCreated={setClientSecret}
                 >
                   <Trans
                     i18nKey={'subscriptions:checkout'}
