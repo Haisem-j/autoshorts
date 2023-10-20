@@ -2,6 +2,7 @@ import { FieldValue } from 'firebase-admin/firestore';
 
 import { getOrganizationsCollection } from '~/lib/server/collections';
 import { OrganizationSubscription } from '~/lib/organizations/types/organization-subscription';
+import logger from '~/core/logger';
 
 interface AddSubscriptionProps {
   organizationId: string;
@@ -46,9 +47,18 @@ export async function deleteOrganizationSubscription(subscriptionId: string) {
  */
 export async function updateSubscriptionById(
   subscriptionId: string,
-  subscription: OrganizationSubscription
+  subscription: OrganizationSubscription,
 ) {
   const organization = await getOrganizationBySubscriptionId(subscriptionId);
+
+  if (!organization) {
+    logger.info(
+      {
+        subscriptionId,
+      },
+      `No organization found with subscription provided - so we cannot update the subscription. Exiting...`,
+    );
+  }
 
   return organization.update({
     subscription,
@@ -72,7 +82,7 @@ async function getOrganizationBySubscriptionId(subscriptionId: string) {
 
   if (!size) {
     throw new Error(
-      `No organization found with subscription ${subscriptionId}`
+      `No organization found with subscription ${subscriptionId}`,
     );
   }
 

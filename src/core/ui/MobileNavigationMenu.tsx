@@ -23,7 +23,11 @@ const MobileNavigationDropdown: React.FC<{
   const path = router.asPath;
 
   const currentPathName = useMemo(() => {
-    return Object.values(links).find((link) => link.path === path)?.label;
+    const selectedLink = Object.values(links).find(
+      (link) => link.path === path,
+    );
+
+    return selectedLink ? selectedLink.label : '';
   }, [links, path]);
 
   return (

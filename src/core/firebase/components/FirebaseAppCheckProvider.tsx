@@ -12,7 +12,7 @@ const FirebaseAppCheckProvider: React.FCC = ({ children }) => {
 
   const sdk = useMemo(() => {
     if (!siteKey || !isBrowser()) {
-      return;
+      return null;
     }
 
     const provider = new ReCaptchaV3Provider(siteKey);

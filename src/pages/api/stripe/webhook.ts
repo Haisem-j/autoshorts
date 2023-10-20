@@ -42,11 +42,11 @@ const webhookSecretKey = process.env.STRIPE_WEBHOOK_SECRET as string;
  */
 async function checkoutWebhooksHandler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (!webhookSecretKey) {
     return throwInternalServerErrorException(
-      `The variable STRIPE_WEBHOOK_SECRET is unset. Please add the STRIPE_WEBHOOK_SECRET environment variable`
+      `The variable STRIPE_WEBHOOK_SECRET is unset. Please add the STRIPE_WEBHOOK_SECRET environment variable`,
     );
   }
 
@@ -63,14 +63,14 @@ async function checkoutWebhooksHandler(
   const event = stripe.webhooks.constructEvent(
     rawBody,
     signature,
-    webhookSecretKey
+    webhookSecretKey,
   );
 
   logger.info(
     {
       type: event.type,
     },
-    `[Stripe] Received Stripe Webhook`
+    `[Stripe] Received Stripe Webhook`,
   );
 
   try {
@@ -79,9 +79,8 @@ async function checkoutWebhooksHandler(
         const session = event.data.object as Stripe.Checkout.Session;
         const subscriptionId = session.subscription as string;
 
-        const subscription = await stripe.subscriptions.retrieve(
-          subscriptionId
-        );
+        const subscription =
+          await stripe.subscriptions.retrieve(subscriptionId);
 
         await onCheckoutCompleted(session, subscription);
 
@@ -106,15 +105,14 @@ async function checkoutWebhooksHandler(
     }
 
     return respondOk(res);
-  } catch (e) {
+  } catch (error) {
     logger.error(
       {
         type: event.type,
+        error,
       },
-      `[Stripe] Webhook handling failed`
+      `[Stripe] Webhook handling failed`,
     );
-
-    logger.debug(e);
 
     return throwInternalServerErrorException();
   }
@@ -122,12 +120,12 @@ async function checkoutWebhooksHandler(
 
 export default function stripeCheckoutsWebhooksHandler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   const handler = withPipe(
     withMethodsGuard(SUPPORTED_HTTP_METHODS),
     withAdmin,
-    checkoutWebhooksHandler
+    checkoutWebhooksHandler,
   );
 
   return withExceptionFilter(req, res)(handler);
@@ -140,7 +138,7 @@ export default function stripeCheckoutsWebhooksHandler(
  */
 async function onCheckoutCompleted(
   session: Stripe.Checkout.Session,
-  subscription: Stripe.Subscription
+  subscription: Stripe.Subscription,
 ) {
   const organizationId = session.client_reference_id as string;
   const customerId = session.customer as string;

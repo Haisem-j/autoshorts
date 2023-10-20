@@ -8,7 +8,6 @@ import Button from '~/core/ui/Button';
 import configuration from '~/configuration';
 import { isBrowser } from '~/core/generic/is-browser';
 import { useApiRequest } from '~/core/hooks/use-api';
-import PageLoadingIndicator from '~/core/ui/PageLoadingIndicator';
 
 const CHECKOUT_SESSION_API_ENDPOINT = configuration.paths.api.checkout;
 
@@ -21,7 +20,6 @@ const CheckoutRedirectButton: React.FCC<{
   recommended?: boolean;
   disabled?: boolean;
   organizationId: Maybe<string>;
-  customerId: Maybe<string>;
   onCheckoutCreated?: (clientSecret: string) => void;
 }> = ({ children, ...props }) => {
   const isEmbedded = configuration.stripe.embedded;
@@ -50,7 +48,6 @@ const CheckoutRedirectButton: React.FCC<{
       onSubmit={isEmbedded ? onSubmit : undefined}
     >
       <CheckoutFormData
-        customerId={props.customerId}
         organizationId={props.organizationId}
         priceId={props.stripePriceId}
       />
@@ -81,7 +78,6 @@ function CheckoutFormData(
   props: React.PropsWithChildren<{
     organizationId: Maybe<string>;
     priceId: Maybe<string>;
-    customerId: Maybe<string>;
   }>,
 ) {
   return (
@@ -96,12 +92,6 @@ function CheckoutFormData(
 
       <input type="hidden" name={'returnUrl'} defaultValue={getReturnUrl()} />
       <input type="hidden" name={'priceId'} defaultValue={props.priceId} />
-
-      <input
-        type="hidden"
-        name={'customerId'}
-        defaultValue={props.customerId}
-      />
     </>
   );
 }

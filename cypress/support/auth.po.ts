@@ -6,9 +6,8 @@ import {
   indexedDBLocalPersistence,
 } from 'firebase/auth';
 
-import { FirebaseApp, initializeApp } from 'firebase/app';
+import { testFirebaseApp } from './firebase.po';
 
-let firebaseApp: FirebaseApp;
 let auth: Auth;
 
 // we use a namespace not to pollute the IDE with methods from the tests
@@ -86,19 +85,6 @@ function fetchSessionId(idToken: string) {
   });
 }
 
-function createFirebaseApp() {
-  const env = (varName: string) => Cypress.env(varName) as string;
-
-  const config = {
-    apiKey: env('FIREBASE_API_KEY'),
-    projectId: env('FIREBASE_PROJECT_ID'),
-    storageBucket: env('FIREBASE_STORAGE_BUCKET'),
-    appId: env('FIREBASE_APP_ID'),
-  };
-
-  return initializeApp(config);
-}
-
 function getAuthEmulatorHost() {
   const host = Cypress.env('FIREBASE_EMULATOR_HOST');
   const port = Cypress.env('FIREBASE_AUTH_EMULATOR_PORT');
@@ -107,13 +93,11 @@ function getAuthEmulatorHost() {
 }
 
 function getAuth() {
-  firebaseApp = firebaseApp || createFirebaseApp();
-
   if (auth) {
     return auth;
   }
 
-  auth = initializeAuth(firebaseApp, {
+  auth = initializeAuth(testFirebaseApp, {
     persistence: indexedDBLocalPersistence,
   });
 

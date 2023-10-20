@@ -117,11 +117,20 @@ To run the Stripe tests and enable Stripe in development mode, you need to:
 2. Have Docker installed and running in your local machine to run the Stripe 
   Emulator
 3. Generate a webhook key and set the environment variable 
-   `STRIPE_WEBHOOK_SECRET`
+   `STRIPE_WEBHOOK_SECRET` and the other required Stripe environment variables
 
 The first two steps are only required to run the Cypress E2E tests for 
 Stripe. Generating a webhook key and running the Stripe CLI server is 
 always required for developing your Stripe functionality locally.
+
+The variables should be added either in `.env.test` or as part of your CI environment.
+
+NB: The secret keys should not be added to the repository - even
+though these are test keys. Instead - please add them to your CI
+environment - such as Github Actions.
+
+The test API keys should be added as secrets - while the variable
+ENABLE_STRIPE_TESTING should be added as a simple variable.
 
 To generate a webhook key, run the following command:
 
@@ -138,6 +147,8 @@ Stripe webhooks to your local server.
 ```
 ENABLE_STRIPE_TESTING=true
 ```
+
+The Stripe tests work only using the Embedded Stripe Checkout.
 
 ### Full Documentation
 To continue setting up your application, please take a look at [the official 

@@ -32,6 +32,7 @@ function SuccessSessionStatus({
 }>) {
   return (
     <section
+      data-cy={'payment-return-success'}
       className={
         'max-w-xl mx-auto rounded-xl p-16 fade-in xl:drop-shadow-sm border' +
         ' border-gray-100 dark:border-dark-800' +

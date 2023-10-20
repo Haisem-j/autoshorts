@@ -32,16 +32,32 @@ export default defineConfig({
 });
 
 function getExcludeSpecPattern() {
-  const enableStripeTests = process.env.ENABLE_STRIPE_TESTING === 'true';
+  const ENABLE_STRIPE_TESTING = process.env.ENABLE_STRIPE_TESTING?.trim();
+
+  const enableStripeTests = ENABLE_STRIPE_TESTING === 'true';
   const enableThemeTests = configuration.enableThemeSwitcher;
+  const embedded = configuration.stripe.embedded;
 
   const excludePatterns = [];
 
-  if (!enableStripeTests) {
+  if (!enableStripeTests || !embedded) {
+    if (!enableStripeTests) {
+      console.log(
+        `Stripe Testing: (${ENABLE_STRIPE_TESTING}); testing is not enabled, skipping Stripe tests. Please set ENABLE_STRIPE_TESTING=true to enable Stripe testing.`,
+      );
+    }
+
+    if (!embedded) {
+      console.log(`Embedded Stripe is not enabled, skipping Stripe tests`);
+    }
+
     excludePatterns.push('**/stripe/*');
+  } else {
+    console.log(`Stripe Testing is enabled, running Stripe tests`);
   }
 
   if (!enableThemeTests) {
+    console.log(`Theme Switcher is not enabled, skipping Theme tests`);
     excludePatterns.push('**/theme.cy.ts');
   }
 

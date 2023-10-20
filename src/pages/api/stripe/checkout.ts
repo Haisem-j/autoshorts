@@ -14,6 +14,8 @@ import { createStripeCheckout } from '~/lib/stripe/create-checkout';
 import { canChangeBilling } from '~/lib/organizations/permissions';
 import withCsrf from '~/core/middleware/with-csrf';
 import { getUserRoleByOrganization } from '~/lib/server/organizations/memberships';
+import { getOrganizationById } from '~/lib/server/queries';
+
 import configuration from '~/configuration';
 
 const SUPPORTED_METHODS: HttpMethod[] = ['POST'];
@@ -39,11 +41,42 @@ async function checkoutsSessionHandler(
     return redirectToErrorPage();
   }
 
-  const { organizationId, priceId, customerId, returnUrl } = bodyResult.data;
+  const { organizationId, priceId, returnUrl } = bodyResult.data;
   const matchesSessionOrganizationId = currentOrganizationId === organizationId;
 
   if (!matchesSessionOrganizationId) {
+    logger.error(
+      `Organization ID mismatch: the organziation ID in the session does not match the organization ID in the request.`,
+    );
+
     return redirectToErrorPage();
+  }
+
+  // we retrieve the customer ID from the organization
+  const organization = await getOrganizationById(organizationId).then((doc) =>
+    doc.data(),
+  );
+
+  if (!organization) {
+    logger.error(
+      {
+        organizationId,
+      },
+      `Organization not found`,
+    );
+
+    return redirectToErrorPage();
+  }
+
+  const customerId = organization.customerId;
+
+  if (customerId) {
+    logger.info(
+      {
+        customerId,
+      },
+      `Organization has a customer ID}`,
+    );
   }
 
   const plan = getPlanByPriceId(priceId);
@@ -121,11 +154,17 @@ async function checkoutsSessionHandler(
       `Using hosted checkout mode. Redirecting user to Stripe Checkout.`,
     );
 
-    // get the URL of the Checkout Portal
-    const portalUrl = getCheckoutPortalUrl(session.url, returnUrl);
+    if (!session.url) {
+      logger.error(
+        { id: session.id },
+        `Stripe Checkout session URL is undefined.`,
+      );
+
+      return redirectToErrorPage();
+    }
 
     // redirect user back based on the response
-    res.redirect(HttpStatusCode.SeeOther, portalUrl);
+    res.redirect(HttpStatusCode.SeeOther, session.url);
   } catch (e) {
     logger.error(e, `Stripe Checkout error`);
 
@@ -134,7 +173,7 @@ async function checkoutsSessionHandler(
 }
 
 export default withPipe(
-  withCsrf((req) => req.body.csrfToken),
+  withCsrf((req) => req.body.csrfToken || req.headers['x-csrf-token']),
   withMethodsGuard(SUPPORTED_METHODS),
   withAuthedUser,
   checkoutsSessionHandler,
@@ -163,26 +202,9 @@ function getBodySchema() {
   return z.object({
     organizationId: z.string().min(1),
     priceId: z.string().min(1),
-    customerId: z.string().optional(),
     returnUrl: z.string().min(1),
+    csrfToken: z.string().min(1).optional(),
   });
-}
-
-/**
- *
- * @param portalUrl
- * @param returnUrl
- * @description return the URL of the Checkout Portal
- * if running in emulator mode and the portal URL is undefined (as
- * stripe-mock does) then return the returnUrl (i.e. it redirects back to
- * the subscriptions page)
- */
-function getCheckoutPortalUrl(portalUrl: string | null, returnUrl: string) {
-  if (isTestingMode() && !portalUrl) {
-    return [returnUrl, 'success=true'].join('?');
-  }
-
-  return portalUrl as string;
 }
 
 function getPlanByPriceId(priceId: string) {
@@ -197,13 +219,4 @@ function getPlanByPriceId(priceId: string) {
 
     return product.plans.find(({ stripePriceId }) => stripePriceId === priceId);
   }, undefined);
-}
-
-/**
- * @description detect if Stripe is running in emulator mode
- */
-function isTestingMode() {
-  const enableStripeTesting = process.env.ENABLE_STRIPE_TESTING;
-
-  return enableStripeTesting === 'true';
 }
