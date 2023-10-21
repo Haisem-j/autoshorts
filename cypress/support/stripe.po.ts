@@ -12,6 +12,7 @@ const stripePo = {
     this.$cardNumber().type('4242424242424242');
     this.$expiry().type('1228');
     this.$cvc().type('123');
+    this.$billingCountry().select('IT');
   },
   $cardNumber() {
     return this.$getStripeCheckoutIframe().find('#cardNumber');
@@ -27,6 +28,9 @@ const stripePo = {
   },
   $cardForm() {
     return this.$getStripeCheckoutIframe().find('form');
+  },
+  $billingCountry() {
+    return this.$getStripeCheckoutIframe().find('#billingCountry');
   },
   selectPlan(number: number = 0) {
     this.$plans().eq(number).find('button').click();
