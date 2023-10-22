@@ -1,6 +1,6 @@
 {
   "name": "next-firebase-saas-kit",
-  "version": "0.14.1",
+  "version": "0.14.2",
   "description": "",
   "private": true,
   "sideEffects": false,
@@ -31,7 +31,8 @@
     "cypress:headless": "NODE_ENV=test cypress run",
     "test": "firebase emulators:exec --project demo-makerkit --import ./firebase-seed \"sh ./scripts/test.sh\"",
     "stripe:listen": "docker run --rm -it --name=stripe -v ~/.config/stripe:/root/.config/stripe stripe/stripe-cli:latest listen --forward-to http://host.docker.internal:3000/api/stripe/webhook",
-    "killports": "sh scripts/kill-ports.sh"
+    "killports": "sh scripts/kill-ports.sh",
+    "inbucket:start": "docker run --rm -d -p 9000:9000 -p 2500:2500 -p 1100:1100 inbucket/inbucket"
   },
   "dependencies": {
     "@heroicons/react": "^2.0.18",
@@ -59,7 +60,7 @@
     "i18next": "^23.6.0",
     "next": "13.5.6",
     "next-i18next": "^14.0.3",
-    "nodemailer": "^6.9.6",
+    "nodemailer": "^6.9.7",
     "nookies": "^2.5.2",
     "pino": "^8.16.0",
     "raw-body": "^2.5.2",
@@ -82,12 +83,12 @@
     "@types/jest": "^29.5.6",
     "@types/node": "^20.8.7",
     "@types/nodemailer": "^6.4.13",
-    "@types/react": "^18.2.30",
+    "@types/react": "^18.2.31",
     "@types/react-dom": "^18.2.14",
     "autoprefixer": "^10.4.16",
     "cypress": "13.3.0",
     "dotenv": "^16.3.1",
-    "eslint": "^8.51.0",
+    "eslint": "^8.52.0",
     "eslint-config-next": "13.5.6",
     "firebase-tools": "^12.7.0",
     "gray-matter": "4.0.3",

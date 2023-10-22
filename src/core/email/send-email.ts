@@ -1,4 +1,5 @@
 import configuration from '../../configuration';
+import type { Options } from 'nodemailer/lib/smtp-transport';
 
 interface SendEmailParams {
   from: string;
@@ -9,21 +10,9 @@ interface SendEmailParams {
 }
 
 export async function sendEmail(config: SendEmailParams) {
-  const transporter = await getTransporter();
+  const transporter = await getSMTPTransporter();
 
   return transporter.sendMail(config);
-}
-
-function getTransporter() {
-  if (process.env.IS_CI) {
-    return getMockMailTransporter();
-  }
-
-  if (configuration.emulator) {
-    return getEtherealMailTransporter();
-  }
-
-  return getSMTPTransporter();
 }
 
 /**
@@ -33,11 +22,22 @@ function getTransporter() {
 async function getSMTPTransporter() {
   const nodemailer = await import('nodemailer');
 
+  return nodemailer.createTransport(getSMTPConfiguration());
+}
+
+function getSMTPConfiguration(): Options {
+  if (configuration.production) {
+    return getProductionSMTPConfiguration();
+  }
+
+  return getInBucketSMTPConfiguration();
+}
+
+function getProductionSMTPConfiguration() {
   const user = process.env.EMAIL_USER;
   const pass = process.env.EMAIL_PASSWORD;
   const host = process.env.EMAIL_HOST;
   const port = Number(process.env.EMAIL_PORT);
-
   const secure = port === 465 && !configuration.production;
 
   // validate that we have all the required configuration
@@ -52,7 +52,7 @@ async function getSMTPTransporter() {
     );
   }
 
-  return nodemailer.createTransport({
+  return {
     host,
     port,
     secure,
@@ -60,76 +60,14 @@ async function getSMTPTransporter() {
       user,
       pass,
     },
-  });
-}
-
-/**
- * @description Dev transport for https://ethereal.email that you can use to
- * debug your emails for free. It's the default for the dev environment
- */
-async function getEtherealMailTransporter() {
-  const nodemailer = await import('nodemailer');
-  const testAccount = await getEtherealTestAccount();
-
-  const host = 'smtp.ethereal.email';
-  const port = 587;
-
-  return nodemailer.createTransport({
-    host,
-    port,
-    secure: false,
-    auth: {
-      user: testAccount.user,
-      pass: testAccount.pass,
-    },
-  });
-}
-
-function getMockMailTransporter() {
-  return {
-    sendMail(params: SendEmailParams) {
-      console.log(
-        `Using mock email transporter with params`,
-        JSON.stringify(params, null, 2),
-      );
-    },
   };
 }
 
-async function getEtherealTestAccount() {
-  const testAccount = configuration.emailEtherealTestAccount;
-
-  // if we have added an Ethereal account, we reuse these credentials to
-  // send the email
-  if (testAccount?.email && testAccount?.password) {
-    console.log(`Sending email with Ethereal test account...`);
-
-    return {
-      user: testAccount.email,
-      pass: testAccount.password,
-    };
-  }
-
-  // Otherwise, we create a new account and recommend to add the credentials
-  // to the configuration file
-  return createEtherealTestAccount();
-}
-
-async function createEtherealTestAccount() {
-  const nodemailer = await import('nodemailer');
-  const newAccount = await nodemailer.createTestAccount();
-
-  console.warn(`
-    Configuration property "emailEtherealTestAccount" was not found! 
-    Consider adding a fixed Ethereal account so that you don't need to update the credentials each time you use it.
-    To do so, please use the guide at https://makerkit.dev/docs/next-fire/emails
-  `);
-
-  console.log(
-    `Created Ethereal test account: ${JSON.stringify(newAccount, null, 2)}`,
-  );
-
-  console.log(`Consider adding these credentials to your configuration file`);
-
-  return newAccount;
+function getInBucketSMTPConfiguration() {
+  return {
+    host: '0.0.0.0',
+    port: 2500,
+    secure: false,
+    auth: {},
+  };
 }

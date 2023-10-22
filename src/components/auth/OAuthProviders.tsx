@@ -1,7 +1,14 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Trans } from 'next-i18next';
+import { useAuth } from 'reactfire';
 
-import { MultiFactorError, UserCredential, User } from 'firebase/auth';
+import {
+  MultiFactorError,
+  UserCredential,
+  User,
+  getRedirectResult,
+  browserPopupRedirectResolver,
+} from 'firebase/auth';
 
 import AuthProviderButton from '~/core/ui/AuthProviderButton';
 import { useSignInWithProvider } from '~/core/firebase/hooks';
@@ -22,6 +29,8 @@ const OAUTH_PROVIDERS = configuration.auth.providers.oAuth;
 const OAuthProviders: React.FCC<{
   onSignIn: () => unknown;
 }> = ({ onSignIn }) => {
+  const auth = useAuth();
+
   const {
     signInWithProvider,
     state: signInWithProviderState,
@@ -29,12 +38,14 @@ const OAuthProviders: React.FCC<{
   } = useSignInWithProvider();
 
   const [sessionRequest, sessionRequestState] = useCreateServerSideSession();
+  const [checkingRedirect, setCheckingRedirect] = useState(true);
 
   // we make the UI "busy" until the next page is fully loaded
   const loading =
     signInWithProviderState.loading ||
     sessionRequestState.loading ||
-    sessionRequestState.success;
+    sessionRequestState.success ||
+    checkingRedirect;
 
   const [multiFactorAuthError, setMultiFactorAuthError] =
     useState<Maybe<MultiFactorError>>();
@@ -45,7 +56,7 @@ const OAuthProviders: React.FCC<{
 
       onSignIn();
     },
-    [sessionRequest, onSignIn]
+    [sessionRequest, onSignIn],
   );
 
   const onSignInWithProvider = useCallback(
@@ -66,8 +77,23 @@ const OAuthProviders: React.FCC<{
         }
       }
     },
-    [setMultiFactorAuthError, createSession]
+    [setMultiFactorAuthError, createSession],
   );
+
+  useEffect(() => {
+    (async () => {
+      const result = await getRedirectResult(
+        auth,
+        browserPopupRedirectResolver,
+      );
+
+      if (result) {
+        await createSession(result.user);
+      } else {
+        setCheckingRedirect(false);
+      }
+    })();
+  }, [auth, createSession]);
 
   if (!OAUTH_PROVIDERS || !OAUTH_PROVIDERS.length) {
     return null;
@@ -98,7 +124,7 @@ const OAuthProviders: React.FCC<{
                 providerId={providerId}
                 onClick={() => {
                   return onSignInWithProvider(() =>
-                    signInWithProvider(providerInstance)
+                    signInWithProvider(providerInstance),
                   );
                 }}
               >

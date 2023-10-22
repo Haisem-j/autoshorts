@@ -3,14 +3,17 @@ import { MembershipRole } from '~/lib/organizations/types/membership-role';
 import authPo from '../../support/auth.po';
 
 describe(`Create Invite`, () => {
-  const email = `invited-member@makerkit.dev`;
+  const email = `invited-member+${Math.round(
+    Math.random() * 1000,
+  )}@makerkit.dev`;
+
   const defaultEmailAddress = authPo.getDefaultUserEmail();
 
-  beforeEach(() => {
-    cy.signIn(`/settings/organization/members/invite`);
-  });
-
   describe(`Given a user invites a new member`, () => {
+    beforeEach(() => {
+      cy.signIn(`/settings/organization/members/invite`);
+    });
+
     describe(`When entering current user's email address`, () => {
       it('should disallow the form submission', () => {
         organizationPageObject
@@ -43,13 +46,6 @@ describe(`Create Invite`, () => {
       });
     });
 
-    describe(`When the user is invited successfully`, () => {
-      it('should be added to the list', () => {
-        organizationPageObject.inviteMember(email, MembershipRole.Member);
-        organizationPageObject.$getInvitedMemberByEmail(email).should('exist');
-      });
-    });
-
     describe(`When the same user is invited again`, () => {
       it('should update the existing invite', () => {
         organizationPageObject.inviteMember(email, MembershipRole.Admin);
@@ -57,6 +53,33 @@ describe(`Create Invite`, () => {
         organizationPageObject.$getInvitedMemberByEmail(email).within(() => {
           organizationPageObject.$getRoleBadge().should('have.text', `Admin`);
         });
+      });
+    });
+  });
+
+  describe(`When the user is invited successfully`, () => {
+    it('should be found in InBucket', () => {
+      const mailbox = email.split('@')[0];
+      const emailTask = cy.task<UnknownObject>('getInviteEmail', mailbox);
+
+      emailTask.then((email) => {
+        expect(email.subject).to.include(
+          `You have been invited to join an organization!`,
+        );
+
+        expect(email.from).to.include(`<info@makerkit.dev>`);
+
+        const html = (email.body as { html: string }).html;
+        const el = document.createElement('html');
+        el.innerHTML = html;
+
+        const linkHref = el.querySelector('a')?.getAttribute('href');
+
+        cy.visit(linkHref!, {
+          failOnStatusCode: false,
+        });
+
+        cy.cyGet('auth-submit-button').should('exist');
       });
     });
   });

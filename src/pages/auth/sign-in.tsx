@@ -6,6 +6,7 @@ import { useCallback, useEffect } from 'react';
 import { useAuth } from 'reactfire';
 import { useRouter } from 'next/router';
 import { Trans, useTranslation } from 'next-i18next';
+
 import If from '~/core/ui/If';
 
 import configuration from '~/configuration';

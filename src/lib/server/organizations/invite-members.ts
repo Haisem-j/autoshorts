@@ -69,14 +69,22 @@ export async function inviteMembers(params: Params) {
 
     const organizationLogo = organizationData?.logoURL ?? undefined;
 
-    const sendEmailRequest = () =>
-      sendInviteEmail({
+    const sendEmailRequest = async (params: {
+      inviteCode: string;
+      inviteId: string;
+    }) => {
+      logger.info(params, `Sending email...`);
+
+      await sendInviteEmail({
         invitedUserEmail: invite.email,
-        inviteCode: ref.id,
+        inviteCode: params.inviteCode,
         organizationName,
         organizationLogo,
         inviter: inviterDisplayName,
       });
+
+      logger.info(params, `Email successfully sent.`);
+    };
 
     const field: keyof MembershipInvite = 'email';
     const op = '==';
@@ -94,11 +102,10 @@ export async function inviteMembers(params: Params) {
           inviteId: ref.id,
           inviter: inviter?.uid,
           organizationId,
+          error,
         },
         `Error while sending invite to member`,
       );
-
-      logger.debug(error);
 
       return Promise.reject(error);
     };
@@ -107,14 +114,32 @@ export async function inviteMembers(params: Params) {
     // then we update the existing document
     if (inviteExists) {
       const doc = existingInvite.docs[0];
+      const inviteId = doc.id;
+
+      logger.info(
+        {
+          inviteId,
+        },
+        `Invite already exists. Updating ...`,
+      );
 
       const request = async () => {
         try {
           // update invitation document
           await doc.ref.update({ ...invite });
 
+          logger.info(
+            {
+              inviteId,
+            },
+            `Invite successfully updated`,
+          );
+
           // send email
-          await sendEmailRequest();
+          await sendEmailRequest({
+            inviteId,
+            inviteCode: doc.data().code,
+          });
         } catch (e) {
           return catchCallback(e);
         }
@@ -125,9 +150,18 @@ export async function inviteMembers(params: Params) {
     } else {
       // otherwise, we create a new document with the invite
       const request = async () => {
+        const code = ref.id;
+
+        logger.info(
+          {
+            code,
+          },
+          `Inserting invite to join organization...`,
+        );
+
         const data: MembershipInvite = {
           ...invite,
-          code: ref.id,
+          code,
           expiresAt,
           organization: {
             id: organizationId,
@@ -137,10 +171,21 @@ export async function inviteMembers(params: Params) {
 
         try {
           // add invite to the Firestore collection
-          await invitesCollection.add(data);
+          const invite = await invitesCollection.add(data);
+
+          logger.info(
+            {
+              code,
+              inviteId: invite.id,
+            },
+            `Invite successfully created`,
+          );
 
           // send email to user
-          await sendEmailRequest();
+          await sendEmailRequest({
+            inviteCode: code,
+            inviteId: invite.id,
+          });
         } catch (e) {
           return catchCallback(e);
         }

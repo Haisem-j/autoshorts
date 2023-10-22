@@ -97,6 +97,23 @@ This is particularly important when:
 2. **Deploying to Vercel**: Of course, when you're publishing the project to 
    Vercel, as it will execute `npm build` on the CI
 
+### Testing Emails
+
+To test emails - since version 0.14.2, the kit uses InBucket, a platform to 
+test emails locally. InBucket saves time during development since we can test 
+our emails without setting up a real SMTP service - and works locally and 
+offline.
+
+To run the InBucket platform, we need Docker running on our machine. To 
+start the InBucket service, run the following command:
+
+```
+npm run inbucket:start
+```
+
+InBucket is used by default during development. Instead, for production 
+usage, you will need to set up a real SMTP service.
+
 ### Running Tests
 
 To run the Cypress tests, please run the command:
@@ -114,8 +131,7 @@ To run the Stripe tests and enable Stripe in development mode, you need to:
 
 1. Enable the tests using the environment variable `ENABLE_STRIPE_TESTING` in 
 `.env.test`
-2. Have Docker installed and running in your local machine to run the Stripe 
-  Emulator
+2. Have Docker installed and running in your local machine to run the Stripe CLI
 3. Generate a webhook key and set the environment variable 
    `STRIPE_WEBHOOK_SECRET` and the other required Stripe environment variables
 
@@ -130,7 +146,7 @@ though these are test keys. Instead - please add them to your CI
 environment - such as Github Actions.
 
 The test API keys should be added as secrets - while the variable
-ENABLE_STRIPE_TESTING should be added as a simple variable.
+`ENABLE_STRIPE_TESTING` should be added as a simple variable.
 
 To generate a webhook key, run the following command:
 

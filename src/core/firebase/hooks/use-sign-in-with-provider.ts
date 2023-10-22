@@ -5,6 +5,7 @@ import { FirebaseError } from 'firebase/app';
 import { UserCredential, AuthProvider, Auth } from 'firebase/auth';
 
 import { useRequestState } from '~/core/hooks/use-request-state';
+import configuration from '~/configuration';
 
 export function useSignInWithProvider() {
   const auth = useAuth();
@@ -30,7 +31,7 @@ export function useSignInWithProvider() {
         return Promise.reject(error);
       }
     },
-    [auth, setData, setError, setLoading]
+    [auth, setData, setError, setLoading],
   );
 
   return { signInWithProvider, state, resetState };
@@ -38,20 +39,36 @@ export function useSignInWithProvider() {
 
 async function getCredential(auth: Auth, provider: AuthProvider) {
   const user = auth.currentUser;
-
-  const {
-    signInWithPopup,
-    browserPopupRedirectResolver,
-    reauthenticateWithPopup,
-  } = await import('firebase/auth');
+  const { useRedirectStrategy } = configuration.auth;
 
   if (user) {
+    if (useRedirectStrategy) {
+      const { reauthenticateWithRedirect } = await import('firebase/auth');
+
+      return reauthenticateWithRedirect(user, provider);
+    }
+
+    const { browserPopupRedirectResolver, reauthenticateWithPopup } =
+      await import('firebase/auth');
+
     return reauthenticateWithPopup(
       user,
       provider,
-      browserPopupRedirectResolver
+      browserPopupRedirectResolver,
     );
   }
+
+  if (useRedirectStrategy) {
+    const { browserPopupRedirectResolver, signInWithRedirect } = await import(
+      'firebase/auth'
+    );
+
+    return signInWithRedirect(auth, provider, browserPopupRedirectResolver);
+  }
+
+  const { signInWithPopup, browserPopupRedirectResolver } = await import(
+    'firebase/auth'
+  );
 
   return signInWithPopup(auth, provider, browserPopupRedirectResolver);
 }

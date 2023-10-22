@@ -41,7 +41,16 @@ const config = {
 
     return config;
   },
-  i18n: i18nConfig.i18n
+  async redirects() {
+    return [
+      {
+        source: "/__/auth/",
+        destination: `https://${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}.firebaseapp.com/__/auth/`,
+        permanent: true,
+      },
+    ];
+  },
+  i18n: i18nConfig.i18n,
 };
 
 const nextConfig = withBundleAnalyzer({

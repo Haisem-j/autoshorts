@@ -45,6 +45,10 @@ const configuration = {
       emailLink: false,
       oAuth: [GoogleAuthProvider],
     },
+    // use redirect or popup. By default, we use the popup strategy
+    // the redirect strategy needs additional setup:
+    // https://firebase.google.com/docs/auth/web/redirect-best-practices
+    useRedirectStrategy: true,
   },
   environment: process.env.NODE_ENV ?? 'development',
   emulatorHost: process.env.NEXT_PUBLIC_EMULATOR_HOST,
@@ -73,10 +77,6 @@ const configuration = {
     style: LayoutStyle.Sidebar,
   },
   appCheckSiteKey: process.env.NEXT_PUBLIC_APPCHECK_KEY,
-  emailEtherealTestAccount: {
-    email: process.env.ETHEREAL_EMAIL,
-    password: process.env.ETHEREAL_PASSWORD,
-  },
   sentry: {
     dsn: process.env.SENTRY_DSN,
   },

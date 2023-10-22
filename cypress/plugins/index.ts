@@ -22,6 +22,12 @@ function plugins(on: Cypress.PluginEvents, config: Cypress.Config) {
     ...(output.parsed ?? {}),
   };
 
+  on('task', {
+    async getInviteEmail(mailbox: string) {
+      return getInviteEmail(mailbox);
+    },
+  });
+
   return {
     ...config,
     env,
@@ -29,3 +35,24 @@ function plugins(on: Cypress.PluginEvents, config: Cypress.Config) {
 }
 
 export default plugins;
+
+async function getInviteEmail(mailbox: string) {
+  const url = `http://0.0.0.0:9000/api/v1/mailbox/${mailbox}`;
+  const fetch = require('node-fetch');
+
+  // @ts-ignore
+  const response = await fetch(url);
+  const json = await response.json();
+
+  if (!json) {
+    return;
+  }
+
+  const messageId = json[0].id;
+  const messageUrl = `${url}/${messageId}`;
+
+  // @ts-ignore
+  const messageResponse = await fetch(messageUrl);
+
+  return messageResponse.json();
+}

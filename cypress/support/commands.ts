@@ -58,6 +58,15 @@ export default function registerCypressCommands() {
   Cypress.Commands.add(`signOutSession`, () => {
     cy.request(`POST`, `/api/session/sign-out`);
   });
+
+  // fix for ResizeObserver loop limit exceeded
+  const resizeObserverLoopErrRe = /^[^(ResizeObserver loop limit exceeded)]/;
+
+  Cypress.on('uncaught:exception', (err) => {
+    if (resizeObserverLoopErrRe.test(err.message)) {
+      return false;
+    }
+  });
 }
 
 export function createCySelector(name: string) {
