@@ -1,4 +1,3 @@
-import rehypeHighlight from 'rehype-highlight';
 import rehypeSlug from 'rehype-slug';
 import rehypeAutoLinkHeadings from 'rehype-autolink-headings';
 
@@ -15,8 +14,7 @@ export async function compileMdx(markdown: string) {
   const code = await compile(markdown, {
     outputFormat: 'function-body',
     development: false,
-    useDynamicImport: true,
-    rehypePlugins: [rehypeHighlight, rehypeSlug, rehypeAutoLinkHeadings],
+    rehypePlugins: [rehypeSlug, rehypeAutoLinkHeadings],
   });
 
   return String(code);
