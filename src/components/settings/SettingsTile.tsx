@@ -1,14 +1,16 @@
 import Heading from '~/core/ui/Heading';
 import If from '~/core/ui/If';
+import classNames from 'clsx';
 
 const SettingsTile: React.FCC<{
   heading?: string | React.ReactNode;
   subHeading?: string | React.ReactNode;
   actions?: React.ReactNode;
-}> = ({ children, heading, subHeading, actions }) => {
+  className?: string;
+}> = ({ children, heading, subHeading, actions, className }) => {
   return (
-    <div className={'flex flex-col space-y-6'}>
-      <div className={'flex flex-col space-y-1'}>
+    <div className={classNames('flex flex-col space-y-4', className)}>
+      <div className={'flex flex-col space-y-0.5'}>
         <div
           className={
             'flex flex-col space-y-4 lg:flex-row lg:space-y-0' +
@@ -27,7 +29,11 @@ const SettingsTile: React.FCC<{
         </div>
 
         <If condition={subHeading}>
-          <p className={'text-gray-500 dark:text-gray-400'}>{subHeading}</p>
+          <Heading type={6}>
+            <span className={'text-gray-500 dark:text-gray-400 font-normal'}>
+              {subHeading}
+            </span>
+          </Heading>
         </If>
       </div>
 

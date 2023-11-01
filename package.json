@@ -1,6 +1,6 @@
 {
   "name": "next-firebase-saas-kit",
-  "version": "0.14.3",
+  "version": "0.14.4",
   "description": "",
   "private": true,
   "sideEffects": false,
@@ -32,7 +32,8 @@
     "test": "firebase emulators:exec --project demo-makerkit --import ./firebase-seed \"sh ./scripts/test.sh\"",
     "stripe:listen": "docker run --rm -it --name=stripe -v ~/.config/stripe:/root/.config/stripe stripe/stripe-cli:latest listen --forward-to http://host.docker.internal:3000/api/stripe/webhook",
     "killports": "sh scripts/kill-ports.sh",
-    "inbucket:start": "docker run --rm -d -p 9000:9000 -p 2500:2500 -p 1100:1100 inbucket/inbucket"
+    "inbucket:start": "docker run --rm -d -p 9000:9000 -p 2500:2500 -p 1100:1100 inbucket/inbucket",
+    "inbucket:stop": "docker kill inbucket"
   },
   "dependencies": {
     "@heroicons/react": "^2.0.18",
@@ -43,10 +44,10 @@
     "@radix-ui/react-popover": "1.0.7",
     "@radix-ui/react-select": "^2.0.0",
     "@radix-ui/react-tooltip": "^1.0.7",
-    "@react-email/components": "0.0.7",
-    "@sentry/node": "^7.76.0",
-    "@sentry/react": "^7.76.0",
-    "@sentry/tracing": "^7.76.0",
+    "@react-email/components": "0.0.10",
+    "@sentry/node": "^7.77.0",
+    "@sentry/react": "^7.77.0",
+    "@sentry/tracing": "^7.77.0",
     "@stripe/react-stripe-js": "^2.3.1",
     "@tanstack/react-table": "^8.10.7",
     "clsx": "^2.0.0",
@@ -58,7 +59,7 @@
     "firebase-admin": "^11.11.0",
     "heroicons": "2.0.18",
     "i18next": "^23.6.0",
-    "next": "14.0.0",
+    "next": "14.0.1",
     "next-i18next": "^14.0.3",
     "nodemailer": "^6.9.7",
     "nookies": "^2.5.2",
@@ -70,7 +71,7 @@
     "react-i18next": "^13.3.1",
     "react-top-loading-bar": "^2.3.1",
     "reactfire": "^4.2.3",
-    "sonner": "^1.0.3",
+    "sonner": "^1.1.0",
     "stripe": "^14.2.0",
     "swr": "^2.2.4",
     "tailwind-merge": "^2.0.0",
@@ -79,18 +80,18 @@
   },
   "devDependencies": {
     "@cypress/webpack-preprocessor": "^6.0.0",
-    "@next/bundle-analyzer": "14.0.0",
+    "@next/bundle-analyzer": "14.0.1",
     "@types/jest": "^29.5.6",
     "@types/node": "^20.8.7",
     "@types/nodemailer": "^6.4.13",
     "@types/react": "^18.2.33",
     "@types/react-dom": "^18.2.14",
     "autoprefixer": "^10.4.16",
-    "cypress": "13.3.3",
+    "cypress": "13.4.0",
     "dotenv": "^16.3.1",
     "eslint": "^8.52.0",
-    "eslint-config-next": "14.0.0",
-    "firebase-tools": "^12.7.0",
+    "eslint-config-next": "14.0.1",
+    "firebase-tools": "^12.8.0",
     "gray-matter": "4.0.3",
     "next-sitemap": "^4.2.3",
     "pino-pretty": "10.2.3",
@@ -104,6 +105,6 @@
     "typescript": "^5.2.2"
   },
   "optionalDependencies": {
-    "recharts": "^2.9.1"
+    "recharts": "^2.9.2"
   }
 }

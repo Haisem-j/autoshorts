@@ -51,6 +51,32 @@ export default function registerCypressCommands() {
     },
   );
 
+  Cypress.Commands.add(
+    'signUp',
+    (
+      redirectPath: string = '/',
+      credentials = authPo.getDefaultUserCredentials(),
+      orgName: string = `Test Org ${Math.random()}`,
+    ) => {
+      cy.session([redirectPath, credentials.email, Math.random()], () => {
+        cy.log(`Signing Up and redirecting to ${redirectPath} ...`);
+
+        cy.visit(`/auth/sign-up`);
+
+        authPo.$getEmailInput().type(credentials.email);
+        authPo.$getPasswordInput().type(credentials.password);
+        authPo.$getRepeatPasswordInput().type(credentials.password);
+        authPo.$getSubmitButton().click();
+
+        cy.cyGet(`organization-name-input`).type(orgName);
+        cy.get('form').submit();
+      });
+
+      cy.visit(redirectPath);
+      cy.wait(500);
+    },
+  );
+
   Cypress.Commands.add(`clearStorage`, () => {
     indexedDB.deleteDatabase('firebaseLocalStorageDb');
   });

@@ -3,9 +3,8 @@ import { MembershipRole } from '~/lib/organizations/types/membership-role';
 import authPo from '../../support/auth.po';
 
 describe(`Create Invite`, () => {
-  const email = `invited-member+${Math.round(
-    Math.random() * 1000,
-  )}@makerkit.dev`;
+  const random = Math.round(Math.random() * 1000);
+  const email = `invited-member-${random}@makerkit.dev`;
 
   const defaultEmailAddress = authPo.getDefaultUserEmail();
 

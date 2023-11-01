@@ -33,6 +33,14 @@ const organizationPageObject = {
   $removeMemberActionButton: () => $get(`remove-member-action`),
   $transferOwnershipAction: () => $get('transfer-ownership-action'),
   $updateMemberRoleActionButton: () => $get(`update-member-role-action`),
+  $getLeaveOrganizationButton: () => $get(`leave-organization-button`),
+  $getDeleteOrganizationConfirmInput: () =>
+    $get(`delete-organization-input-field`),
+  $getDeleteOrganizationButton: () => $get(`delete-organization-button`),
+  $getConfirmDeleteOrganizationButton: () =>
+    $get(`confirm-delete-organization-button`),
+  $getConfirmLeaveOrganizationButton: () =>
+    $get(`confirm-leave-organization-button`),
   getDefaultOrganizationId() {
     return DEFAULT_ORGANIZATION_ID;
   },
@@ -40,19 +48,24 @@ const organizationPageObject = {
     organizationPageObject.$currentOrganization().wait(100).click();
     organizationPageObject.$createOrganizationButton().click();
 
-    cy.wait(1000);
-
     organizationPageObject
       .$createOrganizationNameInput()
+      .wait(500)
+      .clear()
       .type(organizationName);
 
-    organizationPageObject.$confirmCreateOrganizationButton().click();
+    organizationPageObject.$confirmCreateOrganizationButton().click().wait(500);
+
+    // close the select
+    cy.get('body').click({
+      force: true,
+    });
   },
   useDefaultOrganization: () => {
     cy.setCookie('organizationId', DEFAULT_ORGANIZATION_ID);
   },
   switchToOrganization(name: string) {
-    this.$currentOrganization().wait(100).click();
+    this.$currentOrganization().wait(500).click();
 
     cy.contains('[data-cy="organization-selector-item"]', name).click();
     organizationPageObject.assertCurrentOrganization(name);
@@ -80,9 +93,11 @@ const organizationPageObject = {
     return this;
   },
   inviteMember(email: string, role = MembershipRole.Member) {
+    cy.intercept('*members').as('inviteMember');
     this.$getInvitationEmailInput().type(email);
     this.selectRole(role);
     this.$getInvitationsSubmitButton().click();
+    cy.wait('@inviteMember');
 
     return this;
   },

@@ -1,36 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import configuration from '~/configuration';
 
-import type { FirebaseStorage } from 'firebase/storage';
-import { StorageProvider, useInitStorage } from 'reactfire';
+import { FirebaseStorage, getStorage } from 'firebase/storage';
+import { StorageProvider, useFirebaseApp } from 'reactfire';
 
 export default function FirebaseStorageProvider({
   children,
   useEmulator,
 }: React.PropsWithChildren<{ useEmulator?: boolean }>) {
+  const app = useFirebaseApp();
   const emulator = useEmulator ?? configuration.emulator;
+  const bucketUrl = configuration.firebase.storageBucket;
+  const sdk = getStorage(app, bucketUrl);
 
-  const { data: sdk, status } = useInitStorage(async (app) => {
-    const bucketUrl = configuration.firebase.storageBucket;
-    const { getStorage } = await import('firebase/storage');
-    const storage = getStorage(app, bucketUrl);
-
+  useEffect(() => {
     if (emulator) {
-      await connectToEmulator(storage);
+      void connectToEmulator(sdk);
     }
-
-    return storage;
-  });
-
-  const loading = status === 'loading';
-
-  // while loading, we display an indicator
-  // this will avoid issue where the SDK was not initialized
-  // when using the Storage SDK by calling useStorage()
-  // NB: it also means SSR won't work for children of this provider
-  if (loading) {
-    return null;
-  }
+  }, [emulator, sdk]);
 
   return <StorageProvider sdk={sdk}>{children}</StorageProvider>;
 }

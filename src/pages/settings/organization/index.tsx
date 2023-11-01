@@ -10,6 +10,7 @@ import OrganizationSettingsTabs from '~/components/organizations/OrganizationSet
 import SettingsPageContainer from '~/components/settings/SettingsPageContainer';
 import SettingsContentContainer from '~/components/settings/SettingsContentContainer';
 import SettingsTile from '~/components/settings/SettingsTile';
+import { OrganizationDangerZone } from '~/components/organizations/OrganizationDangerZone';
 
 const Organization = () => {
   return (
@@ -21,16 +22,25 @@ const Organization = () => {
       <OrganizationSettingsTabs />
 
       <SettingsContentContainer>
-        <SettingsTile
-          heading={<Trans i18nKey={'organization:generalTabLabel'} />}
-          subHeading={
-            <Trans i18nKey={'organization:generalTabLabelSubheading'} />
-          }
-        >
-          <FirebaseStorageProvider>
-            <UpdateOrganizationForm />
-          </FirebaseStorageProvider>
-        </SettingsTile>
+        <div className={'flex flex-col space-y-8'}>
+          <SettingsTile
+            heading={<Trans i18nKey={'organization:generalTabLabel'} />}
+            subHeading={
+              <Trans i18nKey={'organization:generalTabLabelSubheading'} />
+            }
+          >
+            <FirebaseStorageProvider>
+              <UpdateOrganizationForm />
+            </FirebaseStorageProvider>
+          </SettingsTile>
+
+          <SettingsTile
+            heading={<Trans i18nKey={'organization:dangerZone'} />}
+            subHeading={<Trans i18nKey={'organization:dangerZoneSubheading'} />}
+          >
+            <OrganizationDangerZone />
+          </SettingsTile>
+        </div>
       </SettingsContentContainer>
     </SettingsPageContainer>
   );

@@ -8,11 +8,9 @@ import Button from '~/core/ui/Button';
 
 import { useCreateOrganization } from '~/lib/organizations/hooks/use-create-organization';
 
-const CreateOrganizationModal: React.FC<{
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => unknown;
+const CreateOrganizationModal: React.FCC<{
   onCreate: (organizationId: string) => void;
-}> = ({ isOpen, setIsOpen, onCreate }) => {
+}> = ({ onCreate, children }) => {
   const [createOrganization, createOrganizationState] = useCreateOrganization();
   const { loading } = createOrganizationState;
   const { t } = useTranslation();
@@ -22,11 +20,6 @@ const CreateOrganizationModal: React.FC<{
     [],
   );
 
-  // Report error when user leaves input empty
-  const onInvalidName = useCallback(() => {
-    toast.error(`Please use a valid name`);
-  }, []);
-
   const onSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -35,15 +28,13 @@ const CreateOrganizationModal: React.FC<{
       const name = data.get(`name`) as string;
 
       // Adjust logic for error handling as needed
-      const isNameInvalid = !name || name.trim().length === 0;
+      const isNameInvalid = !name || name.trim().length <= 1;
 
       if (isNameInvalid) {
-        return onInvalidName();
+        return toast.error(`Please use a valid name`);
       }
 
       const promise = createOrganization(name).then((organizationId) => {
-        setIsOpen(false);
-
         if (organizationId) {
           onCreate(organizationId);
         }
@@ -55,38 +46,31 @@ const CreateOrganizationModal: React.FC<{
         loading: t(`organization:createOrganizationLoading`),
       });
     },
-    [createOrganization, onCreate, onInvalidName, setIsOpen, t],
+    [createOrganization, onCreate, t],
   );
 
   return (
-    <Modal isOpen={isOpen} setIsOpen={setIsOpen} heading={Heading}>
+    <Modal Trigger={children} heading={Heading}>
       <form onSubmit={onSubmit}>
         <div className={'flex flex-col space-y-6'}>
-          <TextField>
-            <TextField.Label>
-              <Trans i18nKey={'organization:organizationNameLabel'} />
+          <TextField.Label>
+            <Trans i18nKey={'organization:organizationNameLabel'} />
 
-              <TextField.Input
-                data-cy={'create-organization-name-input'}
-                name={'name'}
-                minLength={1}
-                required
-                placeholder={'ex. IndieCorp'}
-              />
-            </TextField.Label>
-          </TextField>
+            <TextField.Input
+              data-cy={'create-organization-name-input'}
+              name={'name'}
+              required
+              placeholder={''}
+            />
+          </TextField.Label>
 
-          <div>
-            <div className={'flex justify-end space-x-2'}>
-              <Modal.CancelButton onClick={() => setIsOpen(false)} />
-
-              <Button
-                data-cy={'confirm-create-organization-button'}
-                loading={loading}
-              >
-                <Trans i18nKey={'organization:createOrganizationSubmitLabel'} />
-              </Button>
-            </div>
+          <div className={'flex justify-end space-x-2'}>
+            <Button
+              data-cy={'confirm-create-organization-button'}
+              loading={loading}
+            >
+              <Trans i18nKey={'organization:createOrganizationSubmitLabel'} />
+            </Button>
           </div>
         </div>
       </form>

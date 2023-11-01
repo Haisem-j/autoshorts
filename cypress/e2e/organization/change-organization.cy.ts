@@ -2,7 +2,10 @@ import organizationPageObject from '../../support/organization.po';
 import configuration from '~/configuration';
 
 describe(`Change Organization`, () => {
-  const organizationName = `org-${(Math.random() * 10).toFixed(2)}`;
+  const organizationName = Array.from({ length: 8 }, () =>
+    String.fromCharCode(Math.random() * 26 + 97),
+  ).join('');
+
   const originalOrganizationName = `Test`;
 
   const originalOrganizationId =

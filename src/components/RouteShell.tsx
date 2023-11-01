@@ -5,11 +5,16 @@ import configuration from '~/configuration';
 import { LayoutStyle } from '~/core/layout-style';
 import Layout from '~/core/ui/Layout';
 
-const Sonner = dynamic(async () => {
-  const { Toaster } = await import('sonner');
+const Sonner = dynamic(
+  async () => {
+    const { Toaster } = await import('sonner');
 
-  return Toaster;
-});
+    return Toaster;
+  },
+  {
+    ssr: false,
+  },
+);
 
 const FirebaseFirestoreProvider = dynamic(
   () => import('~/core/firebase/components/FirebaseFirestoreProvider'),
@@ -46,7 +51,7 @@ const RouteShell: React.FCC<{
       <GuardedPage whenSignedOut={redirectPathWhenSignedOut}>
         <SentryProvider>
           <Layout>
-            <Sonner />
+            <Sonner richColors position={'top-center'} />
 
             <LayoutRenderer style={layout} title={title}>
               {children}

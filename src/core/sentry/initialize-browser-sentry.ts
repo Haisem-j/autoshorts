@@ -8,7 +8,6 @@ let initialized = false;
  */
 export async function initializeBrowserSentry() {
   const dsn = configuration.sentry.dsn;
-  const { Integrations: SentryIntegrations } = await import('@sentry/tracing');
 
   if (!isBrowser() || initialized) {
     return;
@@ -22,6 +21,7 @@ export async function initializeBrowserSentry() {
     return;
   }
 
+  const { Integrations: SentryIntegrations } = await import('@sentry/tracing');
   const Sentry = await import('@sentry/react');
 
   Sentry.init({

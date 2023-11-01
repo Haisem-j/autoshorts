@@ -38,7 +38,12 @@ declare global {
       cyGet(name: string): Chainable<JQuery>;
       signIn(
         redirectPath?: string,
-        credentials?: { email: string; password: string }
+        credentials?: { email: string; password: string },
+      ): void;
+      signUp(
+        redirectPath: string,
+        credentials: { email: string; password: string },
+        orgName: string,
       ): void;
       clearStorage(): void;
       signOutSession(): void;

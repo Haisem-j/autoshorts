@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 
@@ -26,23 +25,18 @@ import {
 
 import ClientOnly from '~/core/ui/ClientOnly';
 
-const OrganizationsSelector: React.FCC<{ userId: string }> = ({ userId }) => {
-  const [isOrganizationModalOpen, setIsOrganizationModalOpen] = useState(false);
-  const [isSelectOpen, setIsSelectOpen] = useState(false);
-
+const OrganizationsSelector = ({ userId }: { userId: string }) => {
   const router = useRouter();
   const organization = useCurrentOrganization();
-
-  const value = getDeepLinkPath(organization?.id as string, router.asPath);
+  const path = router.asPath;
+  const value = getDeepLinkPath(organization?.id as string, path);
 
   return (
     <>
       <Select
-        open={isSelectOpen}
-        onOpenChange={setIsSelectOpen}
         value={value}
         onValueChange={(path) => {
-          return router.push(path);
+          return router.replace(path);
         }}
       >
         <SelectTrigger
@@ -79,36 +73,29 @@ const OrganizationsSelector: React.FCC<{ userId: string }> = ({ userId }) => {
           <SelectSeparator />
 
           <SelectGroup>
-            <SelectAction
-              onClick={() => {
-                setIsSelectOpen(false);
-                setIsOrganizationModalOpen(true);
+            <CreateOrganizationModal
+              onCreate={(organizationId) => {
+                return router.replace(getDeepLinkPath(organizationId, path));
               }}
             >
-              <span
-                data-cy={'create-organization-button'}
-                className={'flex flex-row items-center space-x-2 truncate'}
-              >
-                <PlusCircleIcon className={'h-5'} />
+              <SelectAction>
+                <span
+                  data-cy={'create-organization-button'}
+                  className={'flex flex-row items-center space-x-2 truncate'}
+                >
+                  <PlusCircleIcon className={'h-5'} />
 
-                <span>
-                  <Trans
-                    i18nKey={'organization:createOrganizationDropdownLabel'}
-                  />
+                  <span>
+                    <Trans
+                      i18nKey={'organization:createOrganizationDropdownLabel'}
+                    />
+                  </span>
                 </span>
-              </span>
-            </SelectAction>
+              </SelectAction>
+            </CreateOrganizationModal>
           </SelectGroup>
         </SelectContent>
       </Select>
-
-      <CreateOrganizationModal
-        setIsOpen={setIsOrganizationModalOpen}
-        isOpen={isOrganizationModalOpen}
-        onCreate={(organizationId) => {
-          return router.push(getDeepLinkPath(organizationId, router.asPath));
-        }}
-      />
     </>
   );
 };
@@ -122,13 +109,14 @@ function OrganizationsOptions({
 }>) {
   const router = useRouter();
   const { data, status } = useFetchUserOrganizations(userId);
+  const path = router.asPath;
   const isLoading = status === 'loading';
 
   if (isLoading && organization) {
-    const path = getDeepLinkPath(organization?.id as string, router.asPath);
+    const href = getDeepLinkPath(organization?.id as string, path);
 
     return (
-      <SelectItem value={path} key={organization.id}>
+      <SelectItem value={href} key={organization.id}>
         <OrganizationItem organization={organization} />
       </SelectItem>
     );
@@ -139,10 +127,10 @@ function OrganizationsOptions({
   return (
     <>
       {organizations.map((item) => {
-        const path = getDeepLinkPath(item.id, router.asPath);
+        const href = getDeepLinkPath(item.id, path);
 
         return (
-          <SelectItem value={path} key={item.id}>
+          <SelectItem value={href} key={item.id}>
             <OrganizationItem organization={item} />
           </SelectItem>
         );
