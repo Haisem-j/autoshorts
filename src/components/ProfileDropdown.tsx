@@ -106,7 +106,7 @@ const ProfileDropdown: React.FCC<{
           </Link>
         </DropdownMenuItem>
 
-        <If condition={configuration.enableThemeSwitcher}>
+        <If condition={configuration.features.enableThemeSwitcher}>
           <ThemeSelectorSubMenu />
         </If>
 

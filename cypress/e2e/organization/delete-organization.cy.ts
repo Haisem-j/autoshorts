@@ -1,34 +1,30 @@
 import organizationPageObject from '../../support/organization.po';
-import authPo from '../../support/auth.po';
 
 describe(`Delete Organization`, () => {
-  const random = Math.round(Math.random() * 1000);
-  const email = `delete-organization+${random}@makerkit.dev`;
-  const orgName = `Leave Organization Test ${random}`;
-
-  beforeEach(() => {
-    cy.signUp(
-      `/settings/organization`,
-      {
-        email,
-        password: authPo.getDefaultUserPassword(),
-      },
-      orgName,
-    );
-  });
-
   describe(`When the user is an owner`, () => {
     it(`should be able to delete the organization`, () => {
+      const path = `/${organizationPageObject.getDefaultOrganizationId()}/dashboard`;
+      cy.signIn(path);
+
+      const orgName = `Org ${Math.random()}`;
+      organizationPageObject.createOrganization(orgName);
+
+      cy.visit('/settings/organization').wait(500);
+
       organizationPageObject.$getDeleteOrganizationButton().click();
+      organizationPageObject.$getDeleteOrganizationConfirmInput().type(orgName);
 
       organizationPageObject
-        .$getDeleteOrganizationConfirmInput()
-        .clear()
-        .type(orgName);
+        .$getConfirmDeleteOrganizationButton()
+        .wait(100)
+        .click();
 
-      organizationPageObject.$getConfirmDeleteOrganizationButton().click();
+      cy.visit(path);
+      organizationPageObject.$currentOrganization().click();
 
-      cy.url().should('contain', '/onboarding');
+      cy.contains('[data-cy="organization-selector-item"]', orgName).should(
+        'not.exist',
+      );
     });
   });
 });

@@ -1,5 +1,5 @@
 import { GetServerSidePropsContext } from 'next';
-import { Trans } from 'next-i18next';
+import { Trans, useTranslation } from 'next-i18next';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import { UserPlusIcon } from '@heroicons/react/24/outline';
@@ -22,17 +22,11 @@ const OrganizationMembersList = dynamic(
   () => import('~/components/organizations/OrganizationMembersList'),
   {
     ssr: false,
-  }
-);
-
-const OrganizationInvitedMembersList = dynamic(
-  () => import('~/components/organizations/OrganizationInvitedMembersList'),
-  {
-    ssr: false,
-  }
+  },
 );
 
 const OrganizationMembersPage: React.FCC = () => {
+  const { t } = useTranslation();
   const canInviteUsers = useUserCanInviteUsers();
   const organization = useCurrentOrganization();
   const id = organization?.id as string;
@@ -42,9 +36,11 @@ const OrganizationMembersPage: React.FCC = () => {
   }
 
   return (
-    <SettingsPageContainer title={'Settings'}>
+    <SettingsPageContainer title={t('common:settingsTabLabel')}>
       <Head>
-        <title key="title">Organization Members</title>
+        <title key="title">
+          {t('organization:membersTabLabel')} - {t('common:settingsTabLabel')}
+        </title>
       </Head>
 
       <OrganizationSettingsTabs />
@@ -61,15 +57,6 @@ const OrganizationMembersPage: React.FCC = () => {
             }
           >
             <OrganizationMembersList organizationId={id} />
-          </SettingsTile>
-
-          <SettingsTile
-            heading={<Trans i18nKey={'organization:pendingInvitesHeading'} />}
-            subHeading={
-              <Trans i18nKey={'organization:pendingInvitesSubheading'} />
-            }
-          >
-            <OrganizationInvitedMembersList organizationId={id} />
           </SettingsTile>
         </div>
       </SettingsContentContainer>

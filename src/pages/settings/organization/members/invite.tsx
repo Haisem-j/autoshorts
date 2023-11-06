@@ -1,7 +1,7 @@
 import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
-import { Trans } from 'next-i18next';
-import ArrowLeftIcon from '@heroicons/react/24/outline/ArrowLeftIcon';
+import { Trans, useTranslation } from 'next-i18next';
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 import { withAppProps } from '~/lib/props/with-app-props';
 
@@ -13,11 +13,15 @@ import SettingsContentContainer from '~/components/settings/SettingsContentConta
 import Button from '~/core/ui/Button';
 import SettingsTile from '~/components/settings/SettingsTile';
 
-const OrganizationMembersInvitePage: React.FCC = () => {
+const OrganizationMembersInvitePage = () => {
+  const { t } = useTranslation();
+
   return (
-    <SettingsPageContainer title={'Settings'}>
+    <SettingsPageContainer title={t('common:settingsTabLabel')}>
       <Head>
-        <title key="title">Invite Members</title>
+        <title key="title">
+          {t('organization:membersTabLabel')} - {t('common:settingsTabLabel')}
+        </title>
       </Head>
 
       <OrganizationSettingsTabs />

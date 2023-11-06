@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
-import { Trans } from 'next-i18next';
+import { Trans, useTranslation } from 'next-i18next';
 import { GetServerSidePropsContext } from 'next';
 import { User, MultiFactorInfo } from 'firebase/auth';
 import { useRouter } from 'next/router';
@@ -26,6 +26,7 @@ const ProfileAuthenticationPage: React.FC<{
 }> = (props) => {
   const multiFactor = props.session.multiFactor;
   const router = useRouter();
+  const { t } = useTranslation();
 
   const [refreshing, setRefreshing] = useState(false);
   const [shouldReauthenticate, setShouldReauthenticate] = useState(false);
@@ -41,7 +42,7 @@ const ProfileAuthenticationPage: React.FC<{
         return router.replace(router.asPath);
       }
     },
-    [router]
+    [router],
   );
 
   useEffect(() => {
@@ -50,9 +51,11 @@ const ProfileAuthenticationPage: React.FC<{
   }, [props]);
 
   return (
-    <SettingsPageContainer title={'Settings'}>
+    <SettingsPageContainer title={t('common:settingsTabLabel')}>
       <Head>
-        <title key={'title'}>Authentication</title>
+        <title key={'title'}>
+          {t('profile:authenticationTab')} - {t('common:settingsTabLabel')}
+        </title>
       </Head>
 
       <If condition={refreshing}>

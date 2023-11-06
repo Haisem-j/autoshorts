@@ -1,6 +1,6 @@
 import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
-import { Trans } from 'next-i18next';
+import { Trans, useTranslation } from 'next-i18next';
 import { EmailAuthProvider } from 'firebase/auth';
 
 import { withAppProps } from '~/lib/props/with-app-props';
@@ -18,19 +18,22 @@ import SettingsTile from '~/components/settings/SettingsTile';
 const ProfilePasswordSettings = () => {
   const userSession = useUserSession();
   const user = userSession?.auth;
+  const { t } = useTranslation();
 
   if (!user) {
     return null;
   }
 
   const canUpdatePassword = user.providerData.find(
-    (item) => item.providerId === EmailAuthProvider.PROVIDER_ID
+    (item) => item.providerId === EmailAuthProvider.PROVIDER_ID,
   );
 
   return (
-    <SettingsPageContainer title={'Settings'}>
+    <SettingsPageContainer title={t('common:settingsTabLabel')}>
       <Head>
-        <title key={'title'}>Update Password</title>
+        <title key={'title'}>
+          {t('profile:passwordTab')} - {t('common:settingsTabLabel')}
+        </title>
       </Head>
 
       <ProfileSettingsTabs />

@@ -35,7 +35,7 @@ function getExcludeSpecPattern() {
   const ENABLE_STRIPE_TESTING = process.env.ENABLE_STRIPE_TESTING?.trim();
 
   const enableStripeTests = ENABLE_STRIPE_TESTING === 'true';
-  const enableThemeTests = configuration.enableThemeSwitcher;
+  const enableThemeTests = configuration.features.enableThemeSwitcher;
   const embedded = configuration.stripe.embedded;
 
   const excludePatterns = [];

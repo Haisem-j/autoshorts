@@ -27,7 +27,7 @@ const appHome = configuration.paths.appHome;
 const FORCE_SIGN_OUT_QUERY_PARAM = 'signOut';
 const NEEDS_EMAIL_VERIFICATION_QUERY_PARAM = 'needsEmailVerification';
 
-export const SignIn: React.FCC = () => {
+export const SignIn = () => {
   const router = useRouter();
   const auth = useAuth();
   const { t } = useTranslation();
@@ -38,13 +38,7 @@ export const SignIn: React.FCC = () => {
   const onSignIn = useCallback(async () => {
     const path = getRedirectPathWithoutSearchParam(appHome);
 
-    return router.push(path);
-  }, [router]);
-
-  // let's prefetch the application home
-  // to avoid slow redirects
-  useEffect(() => {
-    void router.prefetch(appHome);
+    return router.replace(path);
   }, [router]);
 
   // force user signOut if the query parameter has been passed

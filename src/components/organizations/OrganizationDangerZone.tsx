@@ -92,17 +92,10 @@ function DeleteOrganizationForm({
       className={'flex flex-col space-y-4'}
       onSubmit={(event) => {
         event.preventDefault();
-
-        const organizationName = new FormData(event.currentTarget).get('name');
-
-        if (!organization || organizationName !== organization.name) {
-          return null;
-        }
-
         deleteOrganizationMutation.trigger(organization.id);
       }}
     >
-      <div className={'flex flex-col space-y-2'}>
+      <div className={'flex flex-col space-y-4'}>
         <div>
           <Trans
             i18nKey={'organization:deleteOrganizationDisclaimer'}
@@ -110,6 +103,10 @@ function DeleteOrganizationForm({
               organizationName: organization?.name,
             }}
           />
+        </div>
+
+        <div>
+          <Trans i18nKey={'common:modalConfirmationQuestion'} />
         </div>
 
         <TextFieldLabel>
@@ -122,6 +119,7 @@ function DeleteOrganizationForm({
             type={'text'}
             className={'w-full'}
             placeholder={''}
+            pattern={organization?.name}
           />
 
           <TextFieldHint>
@@ -173,16 +171,18 @@ function LeaveOrganizationContainer() {
             </Button>
           }
         >
-          <div className={'flex flex-col space-y-4'}>
+          <div className={'flex flex-col space-y-6'}>
             <div>
-              <div>
-                <Trans
-                  i18nKey={'organization:leaveOrganizationDisclaimer'}
-                  values={{
-                    organizationName: organization?.name,
-                  }}
-                />
-              </div>
+              <Trans
+                i18nKey={'organization:leaveOrganizationDisclaimer'}
+                values={{
+                  organizationName: organization?.name,
+                }}
+              />
+            </div>
+
+            <div>
+              <Trans i18nKey={'common:modalConfirmationQuestion'} />
             </div>
 
             <div className={'flex justify-end space-x-2.5'}>

@@ -62,7 +62,7 @@ const OrganizationMembersList: React.FCC<{
 
   return (
     <div className={'w-full space-y-10'}>
-      <div className="flex flex-col divide-y divide-gray-100 dark:divide-dark-800">
+      <div className="flex flex-col divide-y divide-gray-100 dark:divide-dark-900">
         {members.map(({ role, id: memberId }) => {
           const metadata = membersMetadata?.find((metadata) => {
             return metadata.uid === memberId;

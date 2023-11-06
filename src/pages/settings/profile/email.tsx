@@ -1,5 +1,5 @@
 import { GetServerSidePropsContext } from 'next';
-import { Trans } from 'next-i18next';
+import { Trans, useTranslation } from 'next-i18next';
 import Head from 'next/head';
 
 import { useUserSession } from '~/core/hooks/use-user-session';
@@ -18,19 +18,22 @@ import Alert from '~/core/ui/Alert';
 const ProfileEmailSettings = () => {
   const userSession = useUserSession();
   const user = userSession?.auth;
+  const { t } = useTranslation();
 
   if (!user) {
     return null;
   }
 
   const canUpdateEmail = user.providerData.find(
-    (item) => item.providerId === EmailAuthProvider.PROVIDER_ID
+    (item) => item.providerId === EmailAuthProvider.PROVIDER_ID,
   );
 
   return (
-    <SettingsPageContainer title={'Settings'}>
+    <SettingsPageContainer title={t('common:settingsTabLabel')}>
       <Head>
-        <title key={'title'}>Update Email</title>
+        <title key={'title'}>
+          {t('profile:emailTab')} - {t('common:settingsTabLabel')}
+        </title>
       </Head>
 
       <ProfileSettingsTabs />

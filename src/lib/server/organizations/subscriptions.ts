@@ -33,6 +33,17 @@ export function setOrganizationSubscription(props: AddSubscriptionProps) {
 export async function deleteOrganizationSubscription(subscriptionId: string) {
   const organization = await getOrganizationBySubscriptionId(subscriptionId);
 
+  if (!organization) {
+    logger.info(
+      {
+        subscriptionId,
+      },
+      `No organization found with subscription provided - so we cannot delete the subscription. Exiting...`,
+    );
+
+    return;
+  }
+
   return organization.update({
     subscription: FieldValue.delete(),
   });
@@ -58,6 +69,8 @@ export async function updateSubscriptionById(
       },
       `No organization found with subscription provided - so we cannot update the subscription. Exiting...`,
     );
+
+    return;
   }
 
   return organization.update({
@@ -81,9 +94,7 @@ async function getOrganizationBySubscriptionId(subscriptionId: string) {
     .get();
 
   if (!size) {
-    throw new Error(
-      `No organization found with subscription ${subscriptionId}`,
-    );
+    return;
   }
 
   return docs[0].ref;

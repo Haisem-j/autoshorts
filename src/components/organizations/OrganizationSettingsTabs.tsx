@@ -13,6 +13,10 @@ const links = {
     path: '/settings/organization/members',
     label: 'organization:membersTabLabel',
   },
+  InvitedMembers: {
+    path: '/settings/organization/invites',
+    label: 'organization:pendingInvitesHeading',
+  },
 };
 
 const OrganizationSettingsTabs = () => {
@@ -29,6 +33,11 @@ const OrganizationSettingsTabs = () => {
           />
 
           <NavigationItem className={itemClassName} link={links.Members} />
+
+          <NavigationItem
+            className={itemClassName}
+            link={links.InvitedMembers}
+          />
         </NavigationMenu>
       </div>
 

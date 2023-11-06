@@ -253,13 +253,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 
   const { props } = await withUserProps(ctx);
   const userId = props.session?.uid;
-  const code = ctx.params?.code as Maybe<string>;
-
-  // if the code wasn't provided we cannot continue
-  // so, we redirect to 404
-  if (!code) {
-    return notFound();
-  }
+  const code = ctx.params?.code as string;
 
   try {
     const inviteRef = await getInviteByCode(code);
@@ -290,7 +284,20 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 
       // if yes, we redirect the user to the error page
       if (isPartOfOrganization) {
-        return redirectToErrorPage();
+        logger.info(
+          {
+            userId,
+            organizationId,
+          },
+          `User is already part of the organization. Redirecting to home page...`,
+        );
+
+        return {
+          redirect: {
+            permanent: false,
+            destination: configuration.paths.appHome,
+          },
+        };
       }
     }
 
@@ -303,10 +310,9 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
         csrfToken,
       },
     };
-  } catch (e) {
-    logger.debug(e);
-
+  } catch (error) {
     logger.error(
+      { error },
       `Error encountered while fetching invite. Redirecting to home page...`,
     );
 
@@ -319,15 +325,6 @@ function redirectToHomePage() {
     redirect: {
       permanent: false,
       destination: '/',
-    },
-  };
-}
-
-function redirectToErrorPage() {
-  return {
-    redirect: {
-      permanent: false,
-      destination: '/500',
     },
   };
 }

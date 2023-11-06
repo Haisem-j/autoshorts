@@ -93,10 +93,25 @@ const organizationPageObject = {
     return this;
   },
   inviteMember(email: string, role = MembershipRole.Member) {
-    cy.intercept('*members').as('inviteMember');
+    cy.intercept(
+      {
+        method: 'POST',
+        path: '*invite',
+      },
+      (req) => {
+        expect(req.body[0].email).to.equal(email);
+        expect(req.body[0].role).to.equal(role);
+
+        req.continue((res) => {
+          expect(res.statusCode).to.equal(200);
+        });
+      },
+    ).as('inviteMember');
+
     this.$getInvitationEmailInput().type(email);
     this.selectRole(role);
     this.$getInvitationsSubmitButton().click();
+
     cy.wait('@inviteMember');
 
     return this;

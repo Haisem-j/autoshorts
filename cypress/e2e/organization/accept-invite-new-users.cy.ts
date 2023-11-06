@@ -20,18 +20,17 @@ describe(`Accept Invite - New User`, () => {
   });
 
   describe(`The members page`, () => {
-    beforeEach(() => {
-      // go back to members page
-      cy.signIn('/settings/organization/members');
-    });
-
     it('should have removed the new member from the invited list', () => {
+      cy.signIn('/settings/organization/invites');
+
       organizationPageObject
         .$getInvitedMemberByEmail(nonExistingUserEmail)
         .should('not.exist');
     });
 
     it('should list the new member as an organization member (not invited)', () => {
+      cy.signIn('/settings/organization/members');
+
       organizationPageObject
         .$getMemberByEmail(nonExistingUserEmail)
         .should('exist');

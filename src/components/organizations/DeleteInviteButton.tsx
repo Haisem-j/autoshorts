@@ -49,7 +49,7 @@ const DeleteInviteButton: React.FCC<{
         label={'Delete Invite'}
         onClick={() => setIsDeleting(true)}
       >
-        <XMarkIcon className={'h-6'} />
+        <XMarkIcon className={'h-5'} />
       </IconButton>
 
       <If condition={isDeleting}>

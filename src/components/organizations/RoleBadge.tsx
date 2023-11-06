@@ -9,9 +9,10 @@ const roleClassNameBuilder = cva('font-medium', {
   variants: {
     role: {
       [MembershipRole.Owner]:
-        'bg-yellow-100 dark:bg-yellow-200 text-current dark:text-gray-800',
+        'bg-orange-100 dark:bg-orange-500/10 text-orange-700' +
+        ' dark:text-orange-500',
       [MembershipRole.Admin]: 'bg-blue-50 dark:bg-blue-500/10 text-blue-500',
-      [MembershipRole.Member]: 'bg-blue-50 dark:bg-blue-500/10 text-blue-500',
+      [MembershipRole.Member]: 'bg-sky-50 dark:bg-sky-500/10 text-sky-500',
     },
   },
 });
@@ -24,7 +25,7 @@ const RoleBadge: React.FCC<{
 
   return (
     <Badge color={'custom'} size={'small'} className={className}>
-      <span data-cy={'member-role-badge'}>
+      <span className={'font-semibold'} data-cy={'member-role-badge'}>
         <Trans i18nKey={data?.label} />
       </span>
     </Badge>

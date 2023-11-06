@@ -6,7 +6,7 @@ describe(`Delete Invite`, () => {
 
   describe(`When the invite is deleted`, () => {
     it('should be removed from the list', () => {
-      cy.signIn(`/settings/organization/members`);
+      cy.signIn(`/settings/organization/invites`);
 
       organizationPageObject
         .$getInvitedMemberByEmail(invitedMemberEmail)

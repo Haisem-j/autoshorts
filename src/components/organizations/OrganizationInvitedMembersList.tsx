@@ -41,7 +41,7 @@ const OrganizationInvitedMembersList: React.FCC<{
   }
 
   return (
-    <div className="flex flex-col divide-y divide-gray-100 dark:divide-dark-800">
+    <div className="flex flex-col divide-y divide-gray-100 dark:divide-dark-900">
       {members.map(({ email, role, code, id }) => {
         return (
           <div
@@ -58,7 +58,7 @@ const OrganizationInvitedMembersList: React.FCC<{
               <div className={'block truncate text-sm'}>{email}</div>
             </div>
 
-            <div className={'flex items-center justify-end space-x-4'}>
+            <div className={'flex items-center justify-end space-x-8'}>
               <RoleBadge role={role} />
 
               <IfHasPermissions condition={canDeleteInvites}>

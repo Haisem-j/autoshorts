@@ -13,16 +13,33 @@ export const profilePo = {
   $getRepeatNewPasswordInput: () => cy.cyGet(`repeat-new-password`),
   $getLinkProviderButton(providerId: string) {
     return cy.get(
-      `[data-cy="auth-provider-button"][data-provider="${providerId}"]`
+      `[data-cy="auth-provider-button"][data-provider="${providerId}"]`,
     );
   },
   $getUnlinkProviderButton(providerId: string) {
     return cy.get(
-      `[data-cy="unlink-provider-button"][data-provider="${providerId}"]`
+      `[data-cy="unlink-provider-button"][data-provider="${providerId}"]`,
     );
   },
   $confirmUnlinkButton() {
     return cy.cyGet(`confirm-unlink-provider-button`);
+  },
+  $getDeleteAccountButton: () => cy.cyGet(`delete-account-button`),
+  $confirmDeleteAccountButton: () => cy.cyGet(`confirm-delete-account-button`),
+  $confirmDeleteAccountConfirmationInput: () =>
+    cy.cyGet(`delete-account-input-field`),
+  deleteAccount() {
+    cy.intercept('DELETE', 'api/user', (req) => {
+      req.continue((res) => {
+        expect(res.statusCode).to.equal(200);
+      });
+    }).as('deleteAccount');
+
+    this.$getDeleteAccountButton().click();
+    this.$confirmDeleteAccountConfirmationInput().type('DELETE');
+    this.$confirmDeleteAccountButton().click();
+
+    cy.wait('@deleteAccount');
   },
 };
 

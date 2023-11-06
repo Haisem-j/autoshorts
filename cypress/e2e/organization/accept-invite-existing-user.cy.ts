@@ -25,23 +25,22 @@ describe(`Accept Invite - Existing User`, () => {
   });
 
   describe(`when the user visits the members page`, () => {
-    before(() => {
+    it('should list the new member as an organization member', () => {
       organizationPageObject.useDefaultOrganization();
       cy.signIn(`/settings/organization/members`);
+
+      organizationPageObject
+        .$getMemberByEmail(existingUserEmail)
+        .should('exist');
     });
 
-    it(
-      'should remove the new member from the invited list and list the new' +
-        ' one',
-      () => {
-        organizationPageObject
-          .$getInvitedMemberByEmail(existingUserEmail)
-          .should('not.exist');
+    it('should not list the new member as an invited member', () => {
+      organizationPageObject.useDefaultOrganization();
+      cy.signIn(`/settings/organization/invites`);
 
-        organizationPageObject
-          .$getMemberByEmail(existingUserEmail)
-          .should('exist');
-      }
-    );
+      organizationPageObject
+        .$getInvitedMemberByEmail(existingUserEmail)
+        .should('not.exist');
+    });
   });
 });
