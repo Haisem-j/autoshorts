@@ -31,7 +31,9 @@ async function deleteOrganizationHandler(
   destroyCookie({ res }, 'organizationId');
   destroyCookie({ res }, 'sessionId');
 
-  return res.status(200).end();
+  return res.status(200).json({
+    success: true,
+  });
 }
 
 export default withPipe(
