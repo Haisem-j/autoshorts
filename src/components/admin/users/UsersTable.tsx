@@ -30,6 +30,7 @@ import Button from '~/core/ui/Button';
 import ImpersonateUserModal from '~/components/admin/users/ImpersonateUserModal';
 import DisableUserModal from '~/components/admin/users/DisableUserModal';
 import ReactivateUserModal from '~/components/admin/users/ReactivateUserModal';
+import { DeleteUserModal } from '~/components/admin/users/DeleteUserModal';
 
 type UserRow = {
   uid: string;
@@ -158,13 +159,13 @@ const columns: Array<ColumnDef<UserRow>> = [
                     userId={user.uid}
                     displayName={displayName}
                   >
-                    Impersonate
+                    <span>Impersonate</span>
                   </ImpersonateUserModal>
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                   <DisableUserModal userId={user.uid} displayName={displayName}>
-                    <span className={'text-red-500'}>Disable</span>
+                    <span className={'text-orange-500'}>Disable</span>
                   </DisableUserModal>
                 </DropdownMenuItem>
               </If>
@@ -175,10 +176,16 @@ const columns: Array<ColumnDef<UserRow>> = [
                     userId={user.uid}
                     displayName={displayName}
                   >
-                    Reactivate
+                    <span>Reactivate</span>
                   </ReactivateUserModal>
                 </DropdownMenuItem>
               </If>
+
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                <DeleteUserModal userId={user.uid} displayName={displayName}>
+                  <span className={'text-red-500 w-full h-full'}>Delete</span>
+                </DeleteUserModal>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

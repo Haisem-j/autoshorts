@@ -7,6 +7,14 @@ import { withMethodsGuard } from '~/core/middleware/with-methods-guard';
 import { withAuthedUser } from '~/core/middleware/with-authed-user';
 import { deleteOrganization } from '~/lib/server/organizations/delete-organization';
 import logger from '~/core/logger';
+import { getUserRoleByOrganization } from '~/lib/server/organizations/memberships';
+
+import {
+  throwForbiddenException,
+  throwNotFoundException,
+} from '~/core/http-exceptions';
+
+import { MembershipRole } from '~/lib/organizations/types/membership-role';
 
 async function deleteOrganizationHandler(
   req: NextApiRequest,
@@ -23,9 +31,13 @@ async function deleteOrganizationHandler(
     `User requested to delete organization. Deleting...`,
   );
 
+  await assertUserIsOwner({
+    userId,
+    organizationId,
+  });
+
   await deleteOrganization({
     organizationId,
-    userId,
   });
 
   destroyCookie({ res }, 'organizationId');
@@ -42,3 +54,27 @@ export default withPipe(
   withAuthedUser,
   deleteOrganizationHandler,
 );
+
+async function assertUserIsOwner(params: {
+  userId: string;
+  organizationId: string;
+}) {
+  const role = await getUserRoleByOrganization(params);
+
+  logger.info(
+    params,
+    'Verifying user has permissions to delete organization...',
+  );
+
+  // check if user is in organization
+  if (!role) {
+    return throwNotFoundException(
+      `User ${params.userId} not found in organization`,
+    );
+  }
+
+  // check if user is owner
+  if (role !== MembershipRole.Owner) {
+    return throwForbiddenException(`Only owner can delete organization`);
+  }
+}

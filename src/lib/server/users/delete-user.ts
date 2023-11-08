@@ -1,4 +1,4 @@
-import { getAuth, DecodedIdToken as User } from 'firebase-admin/auth';
+import { getAuth } from 'firebase-admin/auth';
 
 import { deleteOrganization } from '~/lib/server/organizations/delete-organization';
 import logger from '~/core/logger';
@@ -13,23 +13,20 @@ import configuration from '~/configuration';
 /**
  * Deletes a user and all associated organizations.
  *
- * @param user - The Firebase Auth User instance to delete.
- * @param {object} params - Additional parameters.
- * @param {boolean} params.sendEmail - Whether or not to send an email to the user confirming account deletion.
  **/
-export async function deleteUser(
-  user: User,
-  params: {
-    sendEmail?: boolean;
-  },
-) {
-  const userId = user.uid;
+export async function deleteUser(params: {
+  userId: string;
+  email: string;
+  displayName?: string;
+  sendEmail?: boolean;
+}) {
+  const { userId, email, sendEmail, displayName } = params;
   const userOrganizations = await getUserOwnedOrganizations(userId);
 
   const requests = userOrganizations.map((organization) => {
     const organizationId = organization.id;
 
-    return deleteOrganization({ organizationId, userId });
+    return deleteOrganization({ organizationId });
   });
 
   const ids = userOrganizations.map(({ id }) => id);
@@ -71,19 +68,17 @@ export async function deleteUser(
     `Successfully deleted user record and auth record.`,
   );
 
-  const shouldSendEmail = params.sendEmail !== false;
+  const shouldSendEmail = sendEmail !== false;
 
   // if user has an email, send them an email confirming account deletion
-  const userEmail = user.email;
-
-  if (shouldSendEmail && userEmail) {
-    const userDisplayName = user.displayName || userEmail;
+  if (shouldSendEmail && email) {
+    const userDisplayName = displayName || email;
 
     logger.info({ userId }, `Sending account deletion email...`);
 
     try {
       await sendAccountDeleteEmail({
-        email: userEmail,
+        email,
         userDisplayName,
       });
 

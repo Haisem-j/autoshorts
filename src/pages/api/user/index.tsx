@@ -25,17 +25,21 @@ export default function deleteAccountHandler(
 
 async function userHandler(req: NextApiRequest, res: NextApiResponse) {
   const user = req.firebaseUser;
+  const userId = user.uid;
 
   logger.info(
     {
-      userId: user.uid,
+      userId,
     },
     `User requested to delete their account. Proceeding...`,
   );
 
   // execute the delete user function with the user id
   // this will delete the user from firebase auth and firestore
-  await deleteUser(user, {
+  await deleteUser({
+    userId,
+    email: user.email || '',
+    displayName: user.displayName,
     sendEmail: true,
   });
 

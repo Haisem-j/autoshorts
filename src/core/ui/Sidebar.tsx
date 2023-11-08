@@ -53,7 +53,7 @@ export function SidebarItem({
   const { collapsed } = useContext(SidebarContext);
 
   const currentPath = usePathname() ?? '';
-  const active = isRouteActive(path, currentPath, end ? 1 : 3);
+  const active = isRouteActive(path, currentPath, end ? 0 : 3);
 
   const className = getSidebarItemClassBuilder()({
     collapsed,

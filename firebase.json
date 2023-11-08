@@ -24,6 +24,6 @@
     }
   },
   "remoteconfig": {
-    "template": " remote-config"
+    "template": "remote-config"
   }
 }

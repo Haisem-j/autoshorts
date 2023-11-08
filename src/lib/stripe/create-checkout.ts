@@ -1,5 +1,4 @@
 import { Stripe } from 'stripe';
-import { URL } from 'url';
 import { getStripeInstance } from '~/core/stripe/get-stripe';
 
 interface CreateCheckoutParams {
@@ -45,6 +44,9 @@ export async function createStripeCheckout(params: CreateCheckoutParams) {
   const subscriptionData: Stripe.Checkout.SessionCreateParams.SubscriptionData =
     {
       trial_period_days: params.trialPeriodDays,
+      metadata: {
+        organizationId: params.organizationId,
+      },
     };
 
   const uiMode = params.embedded ? 'embedded' : 'hosted';

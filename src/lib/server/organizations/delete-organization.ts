@@ -1,14 +1,7 @@
 import getRestFirestore from '~/core/firebase/admin/get-rest-firestore';
-import { getUserRoleByOrganization } from '~/lib/server/organizations/memberships';
-
 import logger from '~/core/logger';
 
-import {
-  throwForbiddenException,
-  throwNotFoundException,
-} from '~/core/http-exceptions';
-
-import { MembershipRole } from '~/lib/organizations/types/membership-role';
+import { throwNotFoundException } from '~/core/http-exceptions';
 
 import {
   INVITES_COLLECTION,
@@ -23,37 +16,10 @@ import { getStripeInstance } from '~/core/stripe/get-stripe';
  *
  * @param {Object} params - The parameters for deleting an organization.
  * @param {string} params.organizationId - The ID of the organization to delete.
- * @param {string} params.userId - The ID of the user performing the deletion.
  **/
-export async function deleteOrganization(params: {
-  organizationId: string;
-  userId: string;
-}) {
-  const { organizationId, userId } = params;
+export async function deleteOrganization(params: { organizationId: string }) {
+  const { organizationId } = params;
   const firestore = getRestFirestore();
-
-  const role = await getUserRoleByOrganization({
-    userId,
-    organizationId,
-  });
-
-  logger.info(
-    {
-      userId,
-      organizationId,
-    },
-    'Verifying user has permissions to delete organization...',
-  );
-
-  // check if user is in organization
-  if (!role) {
-    return throwNotFoundException(`User ${userId} not found in organization`);
-  }
-
-  // check if user is owner
-  if (role !== MembershipRole.Owner) {
-    return throwForbiddenException(`Only owner can delete organization`);
-  }
 
   const organizationRef = firestore
     .collection(ORGANIZATIONS_COLLECTION)
@@ -72,7 +38,6 @@ export async function deleteOrganization(params: {
   if (data.subscription) {
     logger.info(
       {
-        userId,
         organizationId,
         subscriptionId: data.subscription.id,
       },
@@ -83,7 +48,6 @@ export async function deleteOrganization(params: {
 
     logger.info(
       {
-        userId,
         organizationId,
         subscriptionId: data.subscription.id,
       },
@@ -93,7 +57,6 @@ export async function deleteOrganization(params: {
 
   logger.info(
     {
-      userId,
       organizationId,
     },
     'Deleting organization and invites...',
@@ -105,7 +68,6 @@ export async function deleteOrganization(params: {
 
   logger.info(
     {
-      userId,
       organizationId,
     },
     'Successfully deleted organization and invites.',

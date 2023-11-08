@@ -20,6 +20,7 @@ import IconButton from '~/core/ui/IconButton';
 import SubscriptionStatusBadge from '~/components/subscriptions/SubscriptionStatusBadge';
 import { Organization } from '~/lib/organizations/types/organization';
 import { useFirestoreSnapshotPagination } from '~/core/hooks/use-firestore-snapshot-pagination';
+import { DeleteOrganizationModal } from '~/components/admin/organizations/DeleteOrganizationModal';
 
 import configuration from '~/configuration';
 
@@ -129,10 +130,17 @@ const columns: Array<ColumnDef<WithId<Organization>>> = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
+
               <DropdownMenuItem
                 onClick={() => navigator.clipboard.writeText(organization.id)}
               >
                 Copy ID
+              </DropdownMenuItem>
+
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                <DeleteOrganizationModal organization={organization}>
+                  <span className={'text-red-500 w-full h-full'}>Delete</span>
+                </DeleteOrganizationModal>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
