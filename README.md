@@ -28,12 +28,10 @@ Move to the folder just cloned:
 cd your-saas 
 ```
 
-Reinitialize Git and set this repository as your upstream fork, so you can 
+Set this repository as your upstream fork, so you can 
 pull updates when needed:
 
 ```
-rm -rf .git
-git init
 git remote add upstream https://github.com/makerkit/next-firebase-saas-kit
 ```
 
@@ -41,7 +39,7 @@ We recommend to watch to the repository, so you know when there's an update.
 To pull the latest updates, use:
 
 ```
-git pull upstream main --allow-unrelated-histories
+git pull upstream main
 ```
 
 In case we change the same files, you will need to resolve the conflicts.
