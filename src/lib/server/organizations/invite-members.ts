@@ -196,7 +196,7 @@ export async function inviteMembers(params: Params) {
     }
   }
 
-  return Promise.all(requests);
+  return Promise.allSettled(requests);
 }
 
 function sendInviteEmail(props: {

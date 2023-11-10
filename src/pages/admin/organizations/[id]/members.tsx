@@ -1,6 +1,7 @@
 import { GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
 import Head from 'next/head';
+import { ChevronRightIcon } from '@heroicons/react/24/outline';
 
 import { withAdminProps } from '~/lib/admin/props/with-admin-props';
 import { getOrganizationMembersByOrganizationId } from '~/lib/admin/queries';
@@ -8,7 +9,6 @@ import { getOrganizationMembersByOrganizationId } from '~/lib/admin/queries';
 import OrganizationMembersTable from '~/components/admin/organizations/OrganizationMembersTable';
 import AdminHeader from '~/components/admin/AdminHeader';
 import AdminRouteShell from '~/components/admin/AdminRouteShell';
-import ChevronRightIcon from '@heroicons/react/24/outline/ChevronRightIcon';
 import configuration from '~/configuration';
 
 type Props = React.PropsWithChildren<{

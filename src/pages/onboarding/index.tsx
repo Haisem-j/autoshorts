@@ -1,14 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { GetServerSidePropsContext } from 'next';
-import Head from 'next/head';
-import { useRouter } from 'next/router';
+import { useForm } from 'react-hook-form';
 
 import configuration from '~/configuration';
 import { withUserProps } from '~/lib/props/with-user-props';
-
-import Logo from '~/core/ui/Logo';
 import If from '~/core/ui/If';
-import Layout from '~/core/ui/Layout';
+import Stepper from '~/core/ui/Stepper';
 
 import { CompleteOnboardingStep } from '~/components/onboarding/CompleteOnboardingStep';
 
@@ -18,65 +15,85 @@ import {
 } from '~/components/onboarding/OrganizationInfoStep';
 
 import { withTranslationProps } from '~/lib/props/with-translation-props';
+import { OnboardingLayout } from '~/components/onboarding/OnboardingLayout';
+import { MembershipRole } from '~/lib/organizations/types/membership-role';
+import OrganizationInvitesStep from '~/components/onboarding/OrganizationInvitesStep';
 
-interface Data {
-  organization: string;
-}
+type Invite = {
+  email: string;
+  role: MembershipRole;
+};
 
-const appHome = configuration.paths.appHome;
+/**
+ * Represents the list of steps for a user onboarding process.
+ * The Array represents the list of step names to render within
+ * the Stepper component. You can either use the i18n key or the label itself.
+ *
+ * Update this array to add/remove steps from the onboarding process.
+ *
+ * @type {Array<string>}
+ */
+const STEPS: Array<string> = [
+  'onboarding:info',
+  'onboarding:invites',
+  'onboarding:complete',
+];
 
 const Onboarding = () => {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [data, setData] = useState<Data>();
-  const router = useRouter();
-
-  const onFirstStepSubmitted = useCallback(
-    (organizationInfo: OrganizationInfoStepData) => {
-      setData({
-        organization: organizationInfo.organization,
-      });
-
-      setCurrentStep(1);
+  const form = useForm({
+    defaultValues: {
+      data: {
+        organization: '',
+        invites: [] as Invite[],
+      },
+      currentStep: 0,
     },
-    [],
+  });
+
+  const nextStep = useCallback(() => {
+    form.setValue('currentStep', form.getValues('currentStep') + 1);
+  }, [form]);
+
+  const onInfoStepSubmitted = useCallback(
+    (organizationInfo: OrganizationInfoStepData) => {
+      form.setValue('data.organization', organizationInfo.organization);
+      nextStep();
+    },
+    [form, nextStep],
   );
 
-  // prefetch application home route
-  useEffect(() => {
-    void router.prefetch(appHome);
-  }, [router]);
+  const onInvitesStepSubmitted = useCallback(
+    (invites: Invite[]) => {
+      form.setValue('data.invites', invites);
+      form.setValue('currentStep', form.getValues('currentStep') + 1);
+    },
+    [form],
+  );
 
-  const onComplete = useCallback(() => {
-    void router.push(appHome);
-  }, [router]);
+  const currentStep = form.watch('currentStep');
+  const formData = form.watch('data');
+
+  const isStep = useCallback(
+    (step: number) => currentStep === step,
+    [currentStep],
+  );
 
   return (
-    <Layout>
-      <Head>
-        <title key="title">Onboarding</title>
-      </Head>
+    <OnboardingLayout>
+      <Stepper steps={STEPS} currentStep={currentStep} />
 
-      <div
-        className={
-          'flex h-screen flex-1 flex-col items-center justify-center' +
-          ' w-full space-y-24'
-        }
-      >
-        <Logo href={'/onboarding'} />
+      <If condition={isStep(0)}>
+        <OrganizationInfoStep onSubmit={onInfoStepSubmitted} />
+      </If>
 
-        <div className={'w-full max-w-xl'}>
-          <If condition={currentStep === 0}>
-            <OrganizationInfoStep onSubmit={onFirstStepSubmitted} />
-          </If>
+      <If condition={isStep(1)}>
+        <OrganizationInvitesStep onSubmit={onInvitesStepSubmitted} />
+      </If>
 
-          <If condition={currentStep === 1 && data}>
-            {(data) => (
-              <CompleteOnboardingStep data={data} onComplete={onComplete} />
-            )}
-          </If>
-        </div>
-      </div>
-    </Layout>
+      <If condition={isStep(2) && formData}>
+        {(data) => <CompleteOnboardingStep data={data} />}
+      </If>
+    </OnboardingLayout>
   );
 };
 

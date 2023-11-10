@@ -10,6 +10,7 @@ import { MembershipRole } from '~/lib/organizations/types/membership-role';
 import { useCurrentOrganization } from '~/lib/organizations/hooks/use-current-organization';
 import { useUpdateMemberRequest } from '~/lib/organizations/hooks/use-update-member-role';
 import MembershipRoleSelector from '~/components/organizations/MembershipRoleSelector';
+import { useCurrentUserRole } from '~/lib/organizations/hooks/use-current-user-role';
 
 const UpdateMemberRoleModal: React.FCC<{
   isOpen: boolean;
@@ -22,6 +23,7 @@ const UpdateMemberRoleModal: React.FCC<{
 
   const organization = useCurrentOrganization();
   const organizationId = organization?.id ?? '';
+  const currentUserRole = useCurrentUserRole();
 
   const { trigger, isMutating } = useUpdateMemberRequest({
     organizationId,
@@ -53,7 +55,11 @@ const UpdateMemberRoleModal: React.FCC<{
   return (
     <Modal heading={heading} isOpen={isOpen} setIsOpen={setIsOpen}>
       <div className={'flex flex-col space-y-6'}>
-        <MembershipRoleSelector value={role} onChange={setRole} />
+        <MembershipRoleSelector
+          currentUserRole={currentUserRole}
+          value={role}
+          onChange={setRole}
+        />
 
         <div className={'flex justify-end space-x-2'}>
           <Modal.CancelButton onClick={() => setIsOpen(false)} />

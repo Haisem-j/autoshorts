@@ -6,23 +6,19 @@ import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { withAppProps } from '~/lib/props/with-app-props';
 
 import OrganizationSettingsTabs from '~/components/organizations/OrganizationSettingsTabs';
-import InviteMembersForm from '~/components/organizations/InviteMembersForm';
 import SettingsPageContainer from '~/components/settings/SettingsPageContainer';
 import SettingsContentContainer from '~/components/settings/SettingsContentContainer';
 
 import Button from '~/core/ui/Button';
 import SettingsTile from '~/components/settings/SettingsTile';
+import InviteMembersFormContainer from '~/components/organizations/InviteMembersFormContainer';
 
 const OrganizationMembersInvitePage = () => {
   const { t } = useTranslation();
 
   return (
     <SettingsPageContainer title={t('common:settingsTabLabel')}>
-      <Head>
-        <title key="title">
-          {t('organization:membersTabLabel')} - {t('common:settingsTabLabel')}
-        </title>
-      </Head>
+      <PageTitle />
 
       <OrganizationSettingsTabs />
 
@@ -33,7 +29,7 @@ const OrganizationMembersInvitePage = () => {
             <Trans i18nKey={'organization:inviteMembersPageSubheading'} />
           }
         >
-          <InviteMembersForm />
+          <InviteMembersFormContainer />
         </SettingsTile>
 
         <div className={'mt-4'}>
@@ -65,5 +61,19 @@ function GoBackToMembersButton() {
         </span>
       </span>
     </Button>
+  );
+}
+
+function PageTitle() {
+  const { t } = useTranslation();
+
+  return (
+    <Head>
+      <title key="title">
+        {`${t('organization:membersTabLabel')} - ${t(
+          'common:settingsTabLabel',
+        )}`}
+      </title>
+    </Head>
   );
 }

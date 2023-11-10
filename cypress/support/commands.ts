@@ -85,6 +85,41 @@ export default function registerCypressCommands() {
     cy.request(`POST`, `/api/session/sign-out`);
   });
 
+  Cypress.Commands.add(
+    `completeOnboarding`,
+    (email: string, password: string) => {
+      cy.intercept({
+        method: 'POST',
+        pathname: '/api/onboarding',
+      }).as('completeOnboarding');
+
+      cy.signIn('/onboarding', { email, password });
+      cy.cyGet('organization-name-input').type('test');
+      cy.get('button[type="submit"]').click();
+      cy.cyGet('skip-onboarding-step').click();
+      cy.wait('@completeOnboarding');
+
+      cy.cyGet('complete-onboarding-link').click();
+    },
+  );
+
+  Cypress.Commands.add(`visitSignUpEmailFromInBucket`, (email: string) => {
+    const mailbox = email.split('@')[0];
+    const emailTask = cy.task<UnknownObject>('getInviteEmail', mailbox);
+
+    emailTask.then((json) => {
+      const html = (json.body as { html: string }).html;
+      const el = document.createElement('html');
+      el.innerHTML = html;
+
+      const linkHref = el.querySelector('a')?.getAttribute('href');
+
+      cy.log(`Visiting ${linkHref} ...`);
+
+      cy.visit(linkHref!, { failOnStatusCode: false });
+    });
+  });
+
   // fix for ResizeObserver loop limit exceeded
   const resizeObserverLoopErrRe = /^[^(ResizeObserver loop limit exceeded)]/;
 

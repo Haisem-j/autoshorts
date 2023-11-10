@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Trans } from 'react-i18next';
+import { Trans } from 'next-i18next';
 
 import {
   ComputerDesktopIcon,

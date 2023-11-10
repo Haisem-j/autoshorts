@@ -51,4 +51,6 @@ export async function completeOnboarding({ userId, organizationName }: Params) {
   await auth.setCustomUserClaims(userId, {
     onboarded: true,
   });
+
+  return organizationRef.id;
 }

@@ -8,18 +8,23 @@ type Options = {
 
 const DEFAULT_LOCALE = 'en';
 
+const DEFAULT_LOCALE_NAMESPACES = [
+  'common',
+  'auth',
+  'organization',
+  'profile',
+  'subscription',
+  'onboarding',
+];
+
+const LOCALE = configuration.site.locale ?? DEFAULT_LOCALE;
+
 // by default, we provide all the translations available
 // if they get very big, you could pick only the ones actually used on the page
 // we recommend to always pick at least "common" by default
 const DEFAULT_OPTIONS: Options = {
-  locale: configuration.site.locale ?? DEFAULT_LOCALE,
-  localeNamespaces: [
-    'common',
-    'auth',
-    'organization',
-    'profile',
-    'subscription',
-  ],
+  locale: LOCALE,
+  localeNamespaces: DEFAULT_LOCALE_NAMESPACES,
 };
 
 /**

@@ -1,4 +1,4 @@
-import { Trans } from 'react-i18next';
+import { Trans } from 'next-i18next';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { Close as DialogPrimitiveClose } from '@radix-ui/react-dialog';
 

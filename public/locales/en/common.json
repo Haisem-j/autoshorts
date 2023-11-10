@@ -24,6 +24,8 @@
   "documentation": "Documentation",
   "getStarted": "Get Started",
   "contactUs": "Contact Us",
+  "continue": "Continue",
+  "skip": "Skip",
   "roles": {
     "owner": {
       "label": "Owner",

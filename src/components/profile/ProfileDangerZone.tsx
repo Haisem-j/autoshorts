@@ -1,4 +1,4 @@
-import { Trans } from 'react-i18next';
+import { Trans } from 'next-i18next';
 import useSWRMutation from 'swr/mutation';
 
 import Modal from '~/core/ui/Modal';

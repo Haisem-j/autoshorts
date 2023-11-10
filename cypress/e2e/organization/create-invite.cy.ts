@@ -61,28 +61,8 @@ describe(`Create Invite`, () => {
         cy.signOutSession();
         cy.reload();
 
-        const mailbox = email.split('@')[0];
-        const emailTask = cy.task<UnknownObject>('getInviteEmail', mailbox);
-
-        emailTask.then((email) => {
-          expect(email.subject).to.include(
-            `You have been invited to join an organization!`,
-          );
-
-          expect(email.from).to.include(`<info@makerkit.dev>`);
-
-          const html = (email.body as { html: string }).html;
-          const el = document.createElement('html');
-          el.innerHTML = html;
-
-          const linkHref = el.querySelector('a')?.getAttribute('href');
-
-          cy.visit(linkHref!, {
-            failOnStatusCode: false,
-          });
-
-          cy.cyGet('auth-submit-button').should('exist');
-        });
+        cy.visitSignUpEmailFromInBucket(email);
+        cy.cyGet('auth-submit-button').should('exist');
       });
     });
 

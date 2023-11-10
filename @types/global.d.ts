@@ -47,6 +47,8 @@ declare global {
       ): void;
       clearStorage(): void;
       signOutSession(): void;
+      visitSignUpEmailFromInBucket(email: string): void;
+      completeOnboarding(email: string, password: string): void;
     }
   }
 }

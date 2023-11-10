@@ -7,32 +7,28 @@ describe(`Delete Account`, () => {
   let password: string;
 
   function setupUser() {
-    const random = Math.round(Math.random() * 1000);
-    email = `delete-account-${random}@example.com`;
+    email = `delete-account-${Date.now()}@example.com`;
     password = authPo.getDefaultUserPassword();
 
-    cy.intercept('POST', 'api/onboarding').as('onboarding');
+    authPo.interceptSession(() => {
+      cy.visit('/auth/sign-up');
+      authPo.signUpWithEmailAndPassword(email, password);
+    });
 
-    cy.visit('/auth/sign-up');
-    authPo.signUpWithEmailAndPassword(email, password);
-
-    cy.cyGet('organization-name-input').type('Delete Account Organization');
-    cy.get('button[type="submit"]').click();
-
-    cy.wait('@onboarding');
+    cy.completeOnboarding(email, password);
+    cy.visit('/settings/profile');
   }
 
   describe(`When the user deletes their account`, () => {
     it(`should delete the user's account`, () => {
       setupUser();
 
-      cy.visit('/settings/profile');
-
       profilePo.deleteAccount();
     });
 
     it(`should not be able to sign in with the deleted account`, () => {
       cy.visit('/auth/sign-in');
+
       authPo.signInWithEmailAndPassword(email, password);
       auth.$getErrorMessage().should('exist');
     });

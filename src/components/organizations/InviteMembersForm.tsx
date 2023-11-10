@@ -1,38 +1,33 @@
-import { useRouter } from 'next/router';
+'use client';
+
 import { Trans, useTranslation } from 'next-i18next';
-import { Fragment, useCallback } from 'react';
+import { Fragment } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 
-import PlusCircleIcon from '@heroicons/react/24/outline/PlusCircleIcon';
-import XMarkIcon from '@heroicons/react/24/outline/XMarkIcon';
+import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 
-import { MembershipRole } from '~/lib/organizations/types/membership-role';
-import { useInviteMembers } from '~/lib/organizations/hooks/use-invite-members';
-
-import If from '~/core/ui/If';
+import { Tooltip, TooltipContent, TooltipTrigger } from '~/core/ui/Tooltip';
 import TextField from '~/core/ui/TextField';
 import Button from '~/core/ui/Button';
 import IconButton from '~/core/ui/IconButton';
-import { Tooltip, TooltipContent, TooltipTrigger } from '~/core/ui/Tooltip';
 
 import MembershipRoleSelector from './MembershipRoleSelector';
-import { useUserSession } from '~/core/hooks/use-user-session';
-
-import { useCurrentOrganization } from '~/lib/organizations/hooks/use-current-organization';
-import { CheckIcon } from '@heroicons/react/24/outline';
+import { MembershipRole } from '~/lib/organizations/types/membership-role';
 
 type InviteModel = ReturnType<typeof memberFactory>;
 
-const InviteMembersForm = () => {
+const InviteMembersForm = ({
+  onSubmit,
+  currentUserEmail,
+  currentUserRole,
+  SubmitButton,
+}: {
+  onSubmit: (data: InviteModel[]) => void;
+  currentUserEmail: Maybe<string>;
+  currentUserRole: Maybe<MembershipRole>;
+  SubmitButton: React.ReactNode;
+}) => {
   const { t } = useTranslation('organization');
-  const router = useRouter();
-
-  const user = useUserSession();
-  const organization = useCurrentOrganization();
-  const organizationId = organization?.id ?? '';
-
-  const { trigger, isMutating } = useInviteMembers(organizationId);
 
   const { register, handleSubmit, setValue, control, clearErrors, watch } =
     useInviteMembersForm();
@@ -52,31 +47,14 @@ const InviteMembersForm = () => {
     };
   });
 
-  const navigateToInvitesPage = useCallback(() => {
-    void router.push(`/settings/organization/invites`);
-  }, [router]);
-
-  const onSubmit = useCallback(
-    async ({ members }: { members: InviteModel[] }) => {
-      const promise = trigger(members).then(() => {
-        navigateToInvitesPage();
-      });
-
-      toast.promise(promise, {
-        success: t(`inviteMembersSuccess`),
-        error: t(`inviteMembersError`),
-        loading: t(`inviteMembersLoading`),
-      });
-    },
-    [navigateToInvitesPage, trigger, t],
-  );
-
   return (
     <form
-      className={'flex flex-col space-y-4'}
+      className={'flex flex-col space-y-8'}
       data-cy={'invite-members-form'}
       onSubmit={(event) => {
-        void handleSubmit(onSubmit)(event);
+        handleSubmit((data) => {
+          onSubmit(data.members);
+        })(event);
       }}
     >
       <div className="flex flex-col space-y-2">
@@ -94,7 +72,7 @@ const InviteMembersForm = () => {
                 return t(`duplicateInviteEmailError`);
               }
 
-              const isSameAsCurrentUserEmail = user?.auth?.email === value;
+              const isSameAsCurrentUserEmail = currentUserEmail === value;
 
               if (isSameAsCurrentUserEmail) {
                 return t(`invitingOwnAccountError`);
@@ -124,6 +102,7 @@ const InviteMembersForm = () => {
 
                 <div className={'w-4/12'}>
                   <MembershipRoleSelector
+                    currentUserRole={currentUserRole}
                     value={field.role}
                     onChange={(role) => {
                       setValue(roleInputName, role);
@@ -163,12 +142,11 @@ const InviteMembersForm = () => {
             data-cy={'append-new-invite-button'}
             type={'button'}
             variant={'ghost'}
-            size={'small'}
-            disabled={isMutating}
+            size={'sm'}
             onClick={() => append(memberFactory())}
           >
             <span className={'flex items-center space-x-2'}>
-              <PlusCircleIcon className={'h-4'} />
+              <PlusCircleIcon className={'h-5'} />
 
               <span>
                 <Trans i18nKey={'organization:addAnotherMemberButtonLabel'} />
@@ -178,28 +156,7 @@ const InviteMembersForm = () => {
         </div>
       </div>
 
-      <div>
-        <Button
-          className={'w-full lg:w-auto'}
-          data-cy={'send-invites-button'}
-          type={'submit'}
-          loading={isMutating}
-        >
-          <span className={'flex space-x-2 items-center'}>
-            <CheckIcon className={'h-4'} />
-
-            <span>
-              <If condition={!isMutating}>
-                <Trans i18nKey={'organization:inviteMembersSubmitLabel'} />
-              </If>
-
-              <If condition={isMutating}>
-                <Trans i18nKey={'organization:inviteMembersLoading'} />
-              </If>
-            </span>
-          </span>
-        </Button>
-      </div>
+      {SubmitButton}
     </form>
   );
 };
@@ -208,15 +165,6 @@ function memberFactory() {
   return {
     email: '',
     role: MembershipRole.Member,
-  };
-}
-
-function getFormValidator(members: InviteModel[]) {
-  return function isValueInvalid(value: string, index: number) {
-    const emails = members.map((member) => member.email);
-    const valueIndex = emails.indexOf(value);
-
-    return valueIndex >= 0 && valueIndex !== index;
   };
 }
 
@@ -229,6 +177,15 @@ function useInviteMembersForm() {
     shouldFocusError: true,
     shouldUnregister: true,
   });
+}
+
+function getFormValidator(members: InviteModel[]) {
+  return function isValueInvalid(value: string, index: number) {
+    const emails = members.map((member) => member.email);
+    const valueIndex = emails.indexOf(value);
+
+    return valueIndex >= 0 && valueIndex !== index;
+  };
 }
 
 export default InviteMembersForm;

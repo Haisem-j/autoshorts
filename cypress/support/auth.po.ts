@@ -26,6 +26,16 @@ const authPageObject = {
   $getSubmitButton: () => cy.cyGet(`auth-submit-button`),
   $getErrorMessage: () => cy.cyGet(`auth-error-message`),
   $getAcceptInviteSubmitButton: () => cy.cyGet(`accept-invite-submit-button`),
+  interceptSession: (callback: () => void) => {
+    cy.intercept({
+      method: 'POST',
+      pathname: '/api/session/sign-in',
+    }).as('session');
+
+    callback();
+
+    cy.wait('@session');
+  },
   signInWithEmailAndPassword(email: string, password: string) {
     cy.wait(50);
 
