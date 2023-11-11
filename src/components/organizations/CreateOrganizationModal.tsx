@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useMemo } from 'react';
+import { FormEvent, useCallback } from 'react';
 import { toast } from 'sonner';
 import { Trans, useTranslation } from 'next-i18next';
 
@@ -11,14 +11,24 @@ import { useCreateOrganization } from '~/lib/organizations/hooks/use-create-orga
 const CreateOrganizationModal: React.FCC<{
   onCreate: (organizationId: string) => void;
 }> = ({ onCreate, children }) => {
+  return (
+    <Modal
+      Trigger={children}
+      heading={
+        <Trans i18nKey={'organization:createOrganizationModalHeading'} />
+      }
+    >
+      <Form onCreate={onCreate} />
+    </Modal>
+  );
+};
+
+export default CreateOrganizationModal;
+
+function Form({ onCreate }: { onCreate: (organizationId: string) => void }) {
   const [createOrganization, createOrganizationState] = useCreateOrganization();
   const { loading } = createOrganizationState;
   const { t } = useTranslation();
-
-  const Heading = useMemo(
-    () => <Trans i18nKey={'organization:createOrganizationModalHeading'} />,
-    [],
-  );
 
   const onSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
@@ -50,32 +60,28 @@ const CreateOrganizationModal: React.FCC<{
   );
 
   return (
-    <Modal Trigger={children} heading={Heading}>
-      <form onSubmit={onSubmit}>
-        <div className={'flex flex-col space-y-6'}>
-          <TextField.Label>
-            <Trans i18nKey={'organization:organizationNameLabel'} />
+    <form onSubmit={onSubmit}>
+      <div className={'flex flex-col space-y-6'}>
+        <TextField.Label>
+          <Trans i18nKey={'organization:organizationNameLabel'} />
 
-            <TextField.Input
-              data-cy={'create-organization-name-input'}
-              name={'name'}
-              required
-              placeholder={''}
-            />
-          </TextField.Label>
+          <TextField.Input
+            data-cy={'create-organization-name-input'}
+            name={'name'}
+            required
+            placeholder={''}
+          />
+        </TextField.Label>
 
-          <div className={'flex justify-end space-x-2'}>
-            <Button
-              data-cy={'confirm-create-organization-button'}
-              loading={loading}
-            >
-              <Trans i18nKey={'organization:createOrganizationSubmitLabel'} />
-            </Button>
-          </div>
+        <div className={'flex justify-end space-x-2'}>
+          <Button
+            data-cy={'confirm-create-organization-button'}
+            loading={loading}
+          >
+            <Trans i18nKey={'organization:createOrganizationSubmitLabel'} />
+          </Button>
         </div>
-      </form>
-    </Modal>
+      </div>
+    </form>
   );
-};
-
-export default CreateOrganizationModal;
+}

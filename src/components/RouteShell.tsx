@@ -1,20 +1,10 @@
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
+import { useSigninCheck } from 'reactfire';
 
 import configuration from '~/configuration';
 import { LayoutStyle } from '~/core/layout-style';
 import Layout from '~/core/ui/Layout';
-
-const Sonner = dynamic(
-  async () => {
-    const { Toaster } = await import('sonner');
-
-    return Toaster;
-  },
-  {
-    ssr: false,
-  },
-);
 
 const FirebaseFirestoreProvider = dynamic(
   () => import('~/core/firebase/components/FirebaseFirestoreProvider'),
@@ -33,6 +23,8 @@ const RouteShellWithSidebar = dynamic(
 const RouteShellWithTopNavigation = dynamic(
   () => import('./layouts/header/RouteShellWithTopNavigation'),
 );
+
+const Sonner = getSonner();
 
 const redirectPathWhenSignedOut = '/';
 
@@ -54,7 +46,7 @@ const RouteShell: React.FCC<{
             <Sonner richColors position={'top-center'} />
 
             <LayoutRenderer style={layout} title={title}>
-              {children}
+              <OnAuthReady>{children}</OnAuthReady>
             </LayoutRenderer>
           </Layout>
         </SentryProvider>
@@ -92,3 +84,34 @@ function LayoutRenderer(
 }
 
 export default RouteShell;
+
+function OnAuthReady(props: React.PropsWithChildren) {
+  const signIn = useSigninCheck();
+
+  if (signIn.status === 'loading') {
+    return null;
+  }
+
+  if (signIn.status === 'error') {
+    return null;
+  }
+
+  if (signIn.data.signedIn) {
+    return props.children;
+  }
+
+  return null;
+}
+
+function getSonner() {
+  return dynamic(
+    async () => {
+      const { Toaster } = await import('sonner');
+
+      return Toaster;
+    },
+    {
+      ssr: false,
+    },
+  );
+}

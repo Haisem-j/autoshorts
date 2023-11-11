@@ -65,7 +65,7 @@ const organizationPageObject = {
     cy.setCookie('organizationId', DEFAULT_ORGANIZATION_ID);
   },
   switchToOrganization(name: string) {
-    this.$currentOrganization().wait(500).click();
+    this.$currentOrganization().wait(500).click({ force: true });
 
     cy.contains('[data-cy="organization-selector-item"]', name).click();
     organizationPageObject.assertCurrentOrganization(name);
