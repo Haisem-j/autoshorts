@@ -78,7 +78,9 @@ export default function registerCypressCommands() {
   );
 
   Cypress.Commands.add(`clearStorage`, () => {
-    indexedDB.deleteDatabase('firebaseLocalStorageDb');
+    cy.window().then((win) => {
+      return win.indexedDB.deleteDatabase('firebaseLocalStorageDb');
+    });
   });
 
   Cypress.Commands.add(`signOutSession`, () => {
