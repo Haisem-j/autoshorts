@@ -34,6 +34,17 @@ export async function withAppProps(
   const mergedOptions = getAppPropsOptions(ctx.locale, options);
   const { redirectPath, requirePlans } = mergedOptions;
 
+  const forceSignOut = async () => {
+    // clear session cookies to avoid stale data
+    await signOutServerSession(ctx.req, ctx.res);
+
+    return redirectToLogin({
+      returnUrl: ctx.resolvedUrl,
+      redirectPath,
+      signOut: true,
+    });
+  };
+
   try {
     await initializeFirebaseAdminApp();
 
@@ -42,14 +53,7 @@ export async function withAppProps(
     // if for any reason we're not able to fetch the user's data, we redirect
     // back to the login page
     if (!metadata) {
-      // clear session cookies to avoid stale data
-      await signOutServerSession(ctx.req, ctx.res);
-
-      return redirectToLogin({
-        returnUrl: ctx.resolvedUrl,
-        redirectPath,
-        signOut: true,
-      });
+      return forceSignOut();
     }
 
     const userId = metadata.uid;
@@ -142,15 +146,7 @@ export async function withAppProps(
       },
     };
   } catch (e) {
-    await signOutServerSession(ctx.req, ctx.res);
-
-    // if the user is signed out, we save the requested URL
-    // so, we can redirect them to where they originally navigated to
-    return redirectToLogin({
-      returnUrl: ctx.resolvedUrl,
-      redirectPath,
-      signOut: true,
-    });
+    return forceSignOut();
   }
 }
 

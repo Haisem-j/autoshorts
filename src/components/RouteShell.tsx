@@ -1,10 +1,12 @@
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
+
 import { useSigninCheck } from 'reactfire';
 
 import configuration from '~/configuration';
 import { LayoutStyle } from '~/core/layout-style';
 import Layout from '~/core/ui/Layout';
+import { isBrowser } from '~/core/generic/is-browser';
 
 const FirebaseFirestoreProvider = dynamic(
   () => import('~/core/firebase/components/FirebaseFirestoreProvider'),
@@ -26,13 +28,12 @@ const RouteShellWithTopNavigation = dynamic(
 
 const Sonner = getSonner();
 
-const redirectPathWhenSignedOut = '/';
-
 const RouteShell: React.FCC<{
   title: string;
   style?: LayoutStyle;
 }> = ({ title, style, children }) => {
   const layout = style ?? configuration.navigation.style;
+  const redirectPath = useRedirectPathWhenSignedOut();
 
   return (
     <FirebaseFirestoreProvider>
@@ -40,7 +41,7 @@ const RouteShell: React.FCC<{
         <title key="title">{title}</title>
       </Head>
 
-      <GuardedPage whenSignedOut={redirectPathWhenSignedOut}>
+      <GuardedPage whenSignedOut={redirectPath}>
         <SentryProvider>
           <Layout>
             <Sonner richColors position={'top-center'} />
@@ -114,4 +115,15 @@ function getSonner() {
       ssr: false,
     },
   );
+}
+
+function useRedirectPathWhenSignedOut() {
+  const paths = configuration.paths;
+
+  const queryParam = new URLSearchParams({
+    signOut: 'true',
+    returnUrl: isBrowser() ? window.location.pathname : paths.appHome,
+  });
+
+  return `${paths.signIn}?${queryParam.toString()}`;
 }

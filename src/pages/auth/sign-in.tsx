@@ -2,7 +2,7 @@ import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from 'reactfire';
 import { useRouter } from 'next/router';
 import { Trans, useTranslation } from 'next-i18next';
@@ -20,6 +20,7 @@ import EmailPasswordSignInContainer from '~/components/auth/EmailPasswordSignInC
 import PhoneNumberSignInContainer from '~/components/auth/PhoneNumberSignInContainer';
 import EmailLinkAuth from '~/components/auth/EmailLinkAuth';
 import AuthPageLayout from '~/components/auth/AuthPageLayout';
+import PageLoadingIndicator from '~/core/ui/PageLoadingIndicator';
 
 const signUpPath = configuration.paths.signUp;
 const appHome = configuration.paths.appHome;
@@ -31,6 +32,7 @@ export const SignIn = () => {
   const router = useRouter();
   const auth = useAuth();
   const { t } = useTranslation();
+  const [signingOut, setSigningOut] = useState(false);
 
   const shouldForceSignOut = useShouldSignOut();
   const shouldVerifyEmail = useShouldVerifyEmail();
@@ -44,9 +46,17 @@ export const SignIn = () => {
   // force user signOut if the query parameter has been passed
   useEffect(() => {
     if (shouldForceSignOut) {
-      void auth.signOut();
+      setSigningOut(true);
+
+      auth.signOut().finally(() => {
+        setSigningOut(false);
+      });
     }
   }, [auth, shouldForceSignOut]);
+
+  if (signingOut) {
+    return <PageLoadingIndicator />;
+  }
 
   return (
     <AuthPageLayout heading={<Trans i18nKey={'auth:signInHeading'} />}>
@@ -95,8 +105,8 @@ export const SignIn = () => {
 
 export default SignIn;
 
-export async function getServerSideProps(ctx: GetServerSidePropsContext) {
-  return await withAuthProps(ctx);
+export function getServerSideProps(ctx: GetServerSidePropsContext) {
+  return withAuthProps(ctx);
 }
 
 function useShouldSignOut() {

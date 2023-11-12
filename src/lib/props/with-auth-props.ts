@@ -1,10 +1,12 @@
-import { GetServerSidePropsContext } from 'next';
-import configuration from '../../configuration';
+import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 
 import { getLoggedInUser } from '~/core/firebase/admin/auth/get-logged-in-user';
 import { withTranslationProps } from '~/lib/props/with-translation-props';
 import { initializeFirebaseAdminApp } from '~/core/firebase/admin/initialize-firebase-admin-app';
 import createCsrfToken from '~/core/generic/create-csrf-token';
+import { signOutServerSession } from '~/core/session/sign-out-server-session';
+
+import configuration from '~/configuration';
 
 const DEFAULT_OPTIONS = {
   redirectPath: configuration.paths.appHome,
@@ -21,17 +23,21 @@ const DEFAULT_OPTIONS = {
  */
 export async function withAuthProps(
   ctx: GetServerSidePropsContext,
-  options = DEFAULT_OPTIONS
-) {
+  options = DEFAULT_OPTIONS,
+): Promise<GetServerSidePropsResult<unknown>> {
   if (ctx.query.signOut) {
-    return continueToLoginPage(ctx, options);
+    await trySignOutServerSession(ctx);
+
+    return continueToAuthPage(ctx, options);
   }
 
   try {
     await initializeFirebaseAdminApp();
 
     // test the user is logged in
-    await getLoggedInUser(ctx);
+    const checkRevoked = true;
+
+    await getLoggedInUser(ctx, checkRevoked);
 
     // if yes, then redirect to "redirectPath"
     return {
@@ -43,14 +49,14 @@ export async function withAuthProps(
   } catch (e) {
     // if the user is NOT logged in, we redirect to the authentication page
     // as requested by the user
-    return continueToLoginPage(ctx, options);
+    return continueToAuthPage(ctx, options);
   }
 }
 
-async function continueToLoginPage(
+async function continueToAuthPage(
   ctx: GetServerSidePropsContext,
-  options: typeof DEFAULT_OPTIONS
-) {
+  options: typeof DEFAULT_OPTIONS,
+): Promise<GetServerSidePropsResult<unknown>> {
   const { props } = await withTranslationProps({
     ...options,
     locale: ctx.locale ?? options.locale,
@@ -64,4 +70,12 @@ async function continueToLoginPage(
       csrfToken,
     },
   };
+}
+
+async function trySignOutServerSession(ctx: GetServerSidePropsContext) {
+  try {
+    await signOutServerSession(ctx.req, ctx.res);
+  } catch (e) {
+    // do nothing
+  }
 }
