@@ -5,7 +5,6 @@ import {
   initializeAuth,
   indexedDBLocalPersistence,
   connectAuthEmulator,
-  inMemoryPersistence,
   User,
 } from 'firebase/auth';
 
@@ -49,9 +48,7 @@ export default function FirebaseAuthProvider({
 
   // make sure we're not using IndexedDB when SSR
   // as it is only supported on browser environments
-  const persistence = isBrowser()
-    ? indexedDBLocalPersistence
-    : inMemoryPersistence;
+  const persistence = isBrowser() ? indexedDBLocalPersistence : undefined;
 
   const sdk = initializeAuth(app, { persistence });
   const shouldConnectEmulator = useEmulator && !('emulator' in sdk.config);

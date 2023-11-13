@@ -68,7 +68,7 @@ const AppHeaderWithMenu: React.FCC = ({ children }) => {
       </div>
 
       <div>
-        <div className={'px-3'}>
+        <div className={'px-3 py-2'}>
           <AppNavigation />
         </div>
 
