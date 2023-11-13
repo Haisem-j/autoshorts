@@ -18,36 +18,27 @@ function DeleteProfileContainer() {
     <div>
       <div className={'flex flex-col space-y-4'}>
         <div className={'flex flex-col space-y-1'}>
-          <Heading type={5}>
+          <Heading type={6}>
             <Trans i18nKey={'profile:deleteAccount'} />
           </Heading>
 
-          <p className={'text-gray-500'}>
+          <p className={'text-gray-500 text-sm'}>
             <Trans i18nKey={'profile:deleteAccountDescription'} />
           </p>
         </div>
 
-        <Modal
-          heading={<Trans i18nKey={'profile:deleteAccount'} />}
-          Trigger={
-            <div className={'flex flex-col space-y-2'}>
-              <div>
-                <Button
-                  data-cy={'delete-account-button'}
-                  variant={'destructive'}
-                >
-                  <Trans i18nKey={'profile:deleteAccount'} />
-                </Button>
-              </div>
-
-              <p className={'text-sm text-gray-500 dark:text-gray-400'}>
-                <Trans i18nKey={'profile:deleteAccountConfirmationHint'} />
-              </p>
-            </div>
-          }
-        >
-          <DeleteProfileForm />
-        </Modal>
+        <div>
+          <Modal
+            heading={<Trans i18nKey={'profile:deleteAccount'} />}
+            Trigger={
+              <Button data-cy={'delete-account-button'} variant={'destructive'}>
+                <Trans i18nKey={'profile:deleteAccount'} />
+              </Button>
+            }
+          >
+            <DeleteProfileForm />
+          </Modal>
+        </div>
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
-import { Trans } from 'next-i18next';
+import { Trans, useTranslation } from 'next-i18next';
 
 import Plans from '~/components/subscriptions/Plans';
 import SettingsPageContainer from '~/components/settings/SettingsPageContainer';
@@ -21,15 +21,17 @@ enum SubscriptionStatusQueryParams {
 
 const Subscription = () => {
   const status = useSubscriptionStatus();
+  const { t } = useTranslation();
 
   return (
-    <SettingsPageContainer title={'Settings'}>
+    <SettingsPageContainer title={t(`common:settingsTabLabel`)}>
       <Head>
-        <title key="title">Subscription</title>
+        <title key="title">{t('common:subscriptionSettingsTabLabel')}</title>
       </Head>
 
       <div className={'w-full'}>
         <SettingsTile
+          className={'border-transparent !py-0 !px-2.5'}
           heading={<Trans i18nKey={'common:subscriptionSettingsTabLabel'} />}
           subHeading={
             <Trans i18nKey={'subscription:subscriptionTabSubheading'} />

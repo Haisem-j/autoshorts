@@ -45,7 +45,17 @@ const organizationPageObject = {
     return DEFAULT_ORGANIZATION_ID;
   },
   createOrganization(organizationName: string) {
-    organizationPageObject.$currentOrganization().wait(100).click();
+    organizationPageObject
+      .$currentOrganization()
+      .wait(500)
+      .click({
+        force: true,
+      })
+      .then(() => {
+        return organizationPageObject.$createOrganizationButton();
+      })
+      .should('be.visible');
+
     organizationPageObject.$createOrganizationButton().click();
 
     organizationPageObject
@@ -68,13 +78,17 @@ const organizationPageObject = {
   },
   switchToOrganization(name: string) {
     this.$currentOrganization()
-      .click()
+      .click({
+        force: true,
+      })
       .then(() => {
         return cy.contains('[data-cy="organization-selector-item"]', name);
       })
       .should('be.visible')
       .then((el) => {
-        return cy.wrap(el).click();
+        return cy.wrap(el).click({
+          force: true,
+        });
       })
       .then(() => {
         organizationPageObject.assertCurrentOrganization(name);

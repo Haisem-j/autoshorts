@@ -1,5 +1,5 @@
 import Csrf from 'csrf';
-import { setCookie } from 'nookies';
+import { parseCookies, setCookie } from 'nookies';
 import type { GetServerSidePropsContext } from 'next';
 
 const COOKIE_KEY = 'csrfSecret';
@@ -13,14 +13,24 @@ const COOKIE_KEY = 'csrfSecret';
  */
 async function createCsrfCookie(ctx: GetServerSidePropsContext) {
   const csrf = new Csrf();
-  const existingSecret = ctx.req.cookies[COOKIE_KEY];
+  const existingSecret = parseCookies()[COOKIE_KEY];
 
   if (existingSecret) {
+    setCsrfSecretCookie(ctx, existingSecret);
+
     return csrf.create(existingSecret);
   }
 
   const secret = await csrf.secret();
 
+  setCsrfSecretCookie(ctx, secret);
+
+  return csrf.create(secret);
+}
+
+export default createCsrfCookie;
+
+function setCsrfSecretCookie(ctx: GetServerSidePropsContext, secret: string) {
   // set a CSRF token secret, so we can validate it on POST requests
   setCookie(ctx, COOKIE_KEY, secret, {
     path: '/',
@@ -28,8 +38,4 @@ async function createCsrfCookie(ctx: GetServerSidePropsContext) {
     secure: process.env.NODE_ENV === `production`,
     sameSite: 'Strict',
   });
-
-  return csrf.create(secret);
 }
-
-export default createCsrfCookie;

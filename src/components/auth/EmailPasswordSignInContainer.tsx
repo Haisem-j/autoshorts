@@ -42,11 +42,11 @@ const EmailPasswordSignInContainer: React.FCC<{
     useState<Maybe<MultiFactorError>>();
 
   const [showVerificationAlert, setShowVerificationAlert] = useState<boolean>(
-    shouldVerifyEmail ?? false
+    shouldVerifyEmail ?? false,
   );
 
   const isLoading = Boolean(
-    sessionState.loading || requestState.state.loading || sessionState.success
+    sessionState.loading || requestState.state.loading || sessionState.success,
   );
 
   const signInWithCredentials = useCallback(
@@ -87,11 +87,15 @@ const EmailPasswordSignInContainer: React.FCC<{
         }
       }
     },
-    [isLoading, auth, sessionRequest, onSignIn, requestState]
+    [isLoading, auth, sessionRequest, onSignIn, requestState],
   );
 
   return (
     <>
+      <If condition={sessionState.error}>
+        <AuthErrorMessage error={sessionState.error} />
+      </If>
+
       <If condition={requestState.state.error}>
         <AuthErrorMessage
           error={getFirebaseErrorCode(requestState.state.error)}
@@ -137,7 +141,7 @@ const EmailPasswordSignInContainer: React.FCC<{
 
 async function getCredential(
   auth: Auth,
-  params: { email: string; password: string }
+  params: { email: string; password: string },
 ) {
   const { email, password } = params;
   const user = auth.currentUser;

@@ -2,17 +2,14 @@ import organizationPageObject from '../../support/organization.po';
 import configuration from '~/configuration';
 
 describe(`Change Organization`, () => {
-  const organizationName = Array.from({ length: 8 }, () =>
-    String.fromCharCode(Math.random() * 26 + 97),
-  ).join('');
-
   const originalOrganizationName = `Test`;
-
   const originalOrganizationId =
     organizationPageObject.getDefaultOrganizationId();
 
   describe(`Given the user changes organization using the organizations selector`, () => {
     it('the UI should reflect the change', () => {
+      const organizationName = createOrganizationName();
+
       cy.signIn(configuration.paths.appHome);
 
       organizationPageObject.createOrganization(organizationName);
@@ -23,8 +20,12 @@ describe(`Change Organization`, () => {
   describe(`Given the user changes organization using the URL`, () => {
     it('the UI should reflect the change', () => {
       cy.signIn(configuration.paths.appHome);
+      const organizationName = createOrganizationName();
+      organizationPageObject.createOrganization(organizationName);
 
-      organizationPageObject.switchToOrganization(organizationName);
+      cy.visit(
+        `/${organizationPageObject.getDefaultOrganizationId()}/dashboard`,
+      );
 
       cy.visit(`/${originalOrganizationId}/dashboard`);
 
@@ -52,3 +53,9 @@ describe(`Change Organization`, () => {
     });
   });
 });
+
+function createOrganizationName() {
+  return Array.from({ length: 8 }, () =>
+    String.fromCharCode(Math.random() * 26 + 97),
+  ).join('');
+}

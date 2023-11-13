@@ -9,7 +9,13 @@ const SettingsTile: React.FCC<{
   className?: string;
 }> = ({ children, heading, subHeading, actions, className }) => {
   return (
-    <div className={classNames('flex flex-col space-y-4', className)}>
+    <div
+      className={classNames(
+        'border border-gray-100 p-2 dark:border-dark-800' +
+          ' lg:p-6 flex flex-col space-y-4 rounded-md',
+        className,
+      )}
+    >
       <div className={'flex flex-col space-y-0.5'}>
         <div
           className={
@@ -19,7 +25,7 @@ const SettingsTile: React.FCC<{
         >
           <If condition={heading}>
             <Heading type={4}>
-              <span className={'font-medium'}>{heading}</span>
+              <span className={'font-semibold'}>{heading}</span>
             </Heading>
           </If>
 
@@ -37,13 +43,7 @@ const SettingsTile: React.FCC<{
         </If>
       </div>
 
-      <div
-        className={
-          'rounded-lg border border-gray-50 p-2.5 dark:border-dark-800 lg:p-6 shadow-sm'
-        }
-      >
-        {children}
-      </div>
+      <div>{children}</div>
     </div>
   );
 };

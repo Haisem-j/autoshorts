@@ -1,4 +1,6 @@
 import { Trans } from 'next-i18next';
+import { UserPlusIcon } from '@heroicons/react/24/outline';
+import { useState } from 'react';
 
 import If from '~/core/ui/If';
 import Badge from '~/core/ui/Badge';
@@ -15,11 +17,14 @@ import OrganizationMembersActionsContainer from './OrganizationMembersActionsCon
 import RoleBadge from './RoleBadge';
 import ProfileAvatar from '../ProfileAvatar';
 import Alert from '~/core/ui/Alert';
+import Button from '~/core/ui/Button';
+import { TextFieldInput } from '~/core/ui/TextField';
 
 const OrganizationMembersList: React.FCC<{
   organizationId: string;
 }> = ({ organizationId }) => {
   const userId = useUserId();
+  const [search, setSearch] = useState('');
 
   // fetch the organization members with an active listener
   // and re-render on changes
@@ -62,6 +67,21 @@ const OrganizationMembersList: React.FCC<{
 
   return (
     <div className={'w-full space-y-10'}>
+      <div className={'flex flex-col lg:flex-row justify-between lg:space-x-4'}>
+        <TextFieldInput
+          value={search}
+          placeholder={'Search member...'}
+          className={'w-full lg:w-9/12'}
+          onInput={(event: React.FormEvent<HTMLInputElement>) =>
+            setSearch(event.currentTarget.value)
+          }
+        />
+
+        <div className={'w-full lg:w-3/12 flex justify-end'}>
+          <InviteMembersButton />
+        </div>
+      </div>
+
       <div className="flex flex-col divide-y divide-gray-100 dark:divide-dark-900">
         {members.map(({ role, id: memberId }) => {
           const metadata = membersMetadata?.find((metadata) => {
@@ -69,6 +89,14 @@ const OrganizationMembersList: React.FCC<{
           });
 
           if (!metadata) {
+            return null;
+          }
+
+          if (
+            search &&
+            !metadata.displayName?.includes(search) &&
+            !metadata.email?.includes(search)
+          ) {
             return null;
           }
 
@@ -146,4 +174,23 @@ function getSortedMembers(organization: WithId<Organization>) {
     .sort((prev, next) => {
       return next.role > prev.role ? 1 : -1;
     });
+}
+
+function InviteMembersButton() {
+  return (
+    <Button
+      block
+      data-cy={'invite-form-link'}
+      type="button"
+      href={'/settings/organization/members/invite'}
+    >
+      <span className="flex items-center space-x-2">
+        <UserPlusIcon className="h-5" />
+
+        <span>
+          <Trans i18nKey={'organization:inviteMembersButtonLabel'} />
+        </span>
+      </span>
+    </Button>
+  );
 }

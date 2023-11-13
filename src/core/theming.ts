@@ -24,7 +24,9 @@ export function setTheme(theme: string | null) {
 
   switch (theme) {
     case SYSTEM_THEME_CLASSNAME:
-      setCookie(null, THEME_KEY, SYSTEM_THEME_CLASSNAME);
+      setCookie(null, THEME_KEY, SYSTEM_THEME_CLASSNAME, {
+        path: '/',
+      });
 
       if (isDarkSystemTheme()) {
         root.classList.add(DARK_THEME_CLASSNAME);
@@ -36,13 +38,17 @@ export function setTheme(theme: string | null) {
       root.classList.add(DARK_THEME_CLASSNAME);
 
       setMetaTag(DARK_THEME_META_COLOR);
-      setCookie(null, THEME_KEY, DARK_THEME_CLASSNAME);
+      setCookie(null, THEME_KEY, DARK_THEME_CLASSNAME, {
+        path: '/',
+      });
 
       return;
 
     case LIGHT_THEME_CLASSNAME:
       setMetaTag(LIGHT_THEME_META_COLOR);
-      setCookie(null, THEME_KEY, LIGHT_THEME_CLASSNAME);
+      setCookie(null, THEME_KEY, LIGHT_THEME_CLASSNAME, {
+        path: '/',
+      });
 
       return;
   }

@@ -37,13 +37,16 @@ const OrganizationInvitesPage = () => {
 
       <OrganizationSettingsTabs />
 
-      <SettingsTile
-        className={'w-full'}
-        heading={<Trans i18nKey={'organization:pendingInvitesHeading'} />}
-        subHeading={<Trans i18nKey={'organization:pendingInvitesSubheading'} />}
-      >
-        <OrganizationInvitedMembersList organizationId={id} />
-      </SettingsTile>
+      <div className={'w-full max-w-4xl'}>
+        <SettingsTile
+          heading={<Trans i18nKey={'organization:pendingInvitesHeading'} />}
+          subHeading={
+            <Trans i18nKey={'organization:pendingInvitesSubheading'} />
+          }
+        >
+          <OrganizationInvitedMembersList organizationId={id} />
+        </SettingsTile>
+      </div>
     </SettingsPageContainer>
   );
 };
