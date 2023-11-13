@@ -52,7 +52,9 @@ const organizationPageObject = {
       .$createOrganizationNameInput()
       .wait(500)
       .clear()
-      .type(organizationName);
+      .type(organizationName, {
+        delay: 100,
+      });
 
     organizationPageObject.$confirmCreateOrganizationButton().click().wait(500);
 
@@ -65,10 +67,18 @@ const organizationPageObject = {
     cy.setCookie('organizationId', DEFAULT_ORGANIZATION_ID);
   },
   switchToOrganization(name: string) {
-    this.$currentOrganization().wait(500).click({ force: true });
-
-    cy.contains('[data-cy="organization-selector-item"]', name).click();
-    organizationPageObject.assertCurrentOrganization(name);
+    this.$currentOrganization()
+      .click()
+      .then(() => {
+        return cy.contains('[data-cy="organization-selector-item"]', name);
+      })
+      .should('be.visible')
+      .then((el) => {
+        return cy.wrap(el).click();
+      })
+      .then(() => {
+        organizationPageObject.assertCurrentOrganization(name);
+      });
 
     return this;
   },
