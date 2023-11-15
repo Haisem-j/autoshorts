@@ -227,7 +227,7 @@ function FallbackOrganizationLogo(
     .reduce((acc, word) => {
       return acc + word[0];
     }, '')
-    .slice(0, 2);
+    .slice(0, 1);
 
   return (
     <Avatar className={classNames('!w-6 !h-6', props.className)}>

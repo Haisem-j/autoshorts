@@ -25,10 +25,6 @@ export async function signOutServerSession(req: Req, res: Res) {
   // we cannot delete nor sign the user out
   // so, we end the request
   if (!sessionCookie) {
-    logger.debug(
-      `Sign out requested, but no session cookie was provided. Exiting.`,
-    );
-
     return;
   }
 
@@ -38,6 +34,7 @@ export async function signOutServerSession(req: Req, res: Res) {
     destroySessionCookies(res);
   } catch (e) {
     const error = e instanceof Error ? e.message : e;
+
     logger.debug(
       `Could not destroy user's session: ${error}. Removing cookies...`,
     );
