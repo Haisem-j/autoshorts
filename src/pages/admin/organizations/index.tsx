@@ -11,6 +11,7 @@ import { Organization } from '~/lib/organizations/types/organization';
 
 import getPageFromQueryParam from '~/core/generic/get-page-query-param';
 import configuration from '~/configuration';
+import { PageBody } from '~/core/ui/Page';
 
 function OrganizationsAdminPage({
   organizations,
@@ -33,14 +34,14 @@ function OrganizationsAdminPage({
 
       <AdminHeader>Organizations</AdminHeader>
 
-      <div className={'p-3 flex flex-col flex-1'}>
+      <PageBody>
         <OrganizationsTable
           organizations={organizations}
           pageIndex={page - 1}
           pageSize={perPage}
           pageCount={pageCount}
         />
-      </div>
+      </PageBody>
     </AdminRouteShell>
   );
 }

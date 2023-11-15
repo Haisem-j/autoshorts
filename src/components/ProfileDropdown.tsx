@@ -2,18 +2,21 @@ import { useMemo } from 'react';
 import { Trans } from 'next-i18next';
 import type { UserInfo } from 'firebase/auth';
 import Link from 'next/link';
+import classNames from 'clsx';
 
 import {
   Cog8ToothIcon,
   ArrowLeftOnRectangleIcon,
   Squares2X2Icon,
-  ChevronDownIcon,
   PaintBrushIcon,
   SunIcon,
   ComputerDesktopIcon,
   MoonIcon,
   CheckCircleIcon,
+  EllipsisVerticalIcon,
 } from '@heroicons/react/24/outline';
+
+import If from '~/core/ui/If';
 
 import {
   DropdownMenu,
@@ -37,12 +40,12 @@ import {
   getStoredTheme,
 } from '~/core/theming';
 
-import If from '~/core/ui/If';
-
 const ProfileDropdown: React.FCC<{
   user: Maybe<UserInfo>;
   signOutRequested: () => void;
-}> = ({ user, signOutRequested }) => {
+  className?: string;
+  displayName?: boolean;
+}> = ({ user, signOutRequested, className, displayName }) => {
   const signedInAsLabel = useMemo(() => {
     return (
       user?.email ??
@@ -53,18 +56,40 @@ const ProfileDropdown: React.FCC<{
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className={
-          'flex cursor-pointer items-center space-x-2 focus:outline-none'
-        }
+        data-cy={'profile-dropdown-trigger'}
+        className={classNames(
+          'flex cursor-pointer focus:outline-none group items-center',
+          className,
+          {
+            ['items-center space-x-2.5 rounded-lg border border-gray-100' +
+            ' dark:border-dark-900 p-2 transition-colors' +
+            ' hover:bg-gray-50 dark:hover:bg-dark-800/40']: displayName,
+          },
+        )}
       >
         <ProfileAvatar user={user} />
 
-        <ChevronDownIcon className={'h-4'} />
+        <If condition={displayName}>
+          <div className={'flex flex-col text-left w-full truncate'}>
+            <span className={'text-sm truncate'}>{user?.displayName}</span>
+
+            <span
+              className={'text-xs text-gray-500 dark:text-gray-400 truncate'}
+            >
+              {signedInAsLabel}
+            </span>
+          </div>
+
+          <EllipsisVerticalIcon
+            className={'h-8 hidden text-gray-500 group-hover:flex'}
+          />
+        </If>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
         className={'!min-w-[15rem]'}
-        collisionPadding={{ right: 20 }}
+        collisionPadding={{ left: 25, right: 25 }}
+        sideOffset={20}
       >
         <DropdownMenuItem className={'!h-10 rounded-none py-0'}>
           <div

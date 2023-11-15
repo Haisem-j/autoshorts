@@ -10,6 +10,7 @@ import OrganizationMembersTable from '~/components/admin/organizations/Organizat
 import AdminHeader from '~/components/admin/AdminHeader';
 import AdminRouteShell from '~/components/admin/AdminRouteShell';
 import configuration from '~/configuration';
+import { PageBody } from '~/core/ui/Page';
 
 type Props = React.PropsWithChildren<{
   members: Awaited<ReturnType<typeof getOrganizationMembersByOrganizationId>>;
@@ -24,11 +25,11 @@ function AdminOrganizationMembersPage({ members }: Props) {
 
       <AdminHeader>Manage Members</AdminHeader>
 
-      <div className={'p-3 flex flex-col flex-1 space-y-4'}>
+      <PageBody className={'space-y-4'}>
         <Breadcrumbs />
 
         <OrganizationMembersTable members={members} />
-      </div>
+      </PageBody>
     </AdminRouteShell>
   );
 }

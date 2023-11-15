@@ -38,6 +38,7 @@ import {
 
 import Button from '~/core/ui/Button';
 import If from '~/core/ui/If';
+import { PageBody } from '~/core/ui/Page';
 
 import AdminRouteShell from '~/components/admin/AdminRouteShell';
 import AdminHeader from '~/components/admin/AdminHeader';
@@ -72,7 +73,7 @@ function UserAdminPage({
 
       <AdminHeader>Manage User</AdminHeader>
 
-      <div className={'p-3 flex flex-col flex-1'}>
+      <PageBody>
         <div className={'flex flex-col space-y-6'}>
           <div className={'flex justify-between'}>
             <Breadcrumbs displayName={displayName} />
@@ -165,7 +166,7 @@ function UserAdminPage({
             </Table>
           </Tile>
         </div>
-      </div>
+      </PageBody>
     </AdminRouteShell>
   );
 }

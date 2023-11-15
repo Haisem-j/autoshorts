@@ -51,6 +51,7 @@ const SiteHeader: React.FCC<{
             <If condition={userSession?.auth} fallback={<AuthButtons />}>
               {(user) => (
                 <ProfileDropdown
+                  displayName={false}
                   user={user}
                   signOutRequested={signOutRequested}
                 />

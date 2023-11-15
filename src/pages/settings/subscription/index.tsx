@@ -11,7 +11,7 @@ import { withAppProps } from '~/lib/props/with-app-props';
 
 import If from '~/core/ui/If';
 import Alert from '~/core/ui/Alert';
-import SettingsTile from '~/components/settings/SettingsTile';
+import { Section, SectionBody, SectionHeader } from '~/core/ui/Section';
 
 enum SubscriptionStatusQueryParams {
   Success = 'success',
@@ -30,14 +30,16 @@ const Subscription = () => {
       </Head>
 
       <div className={'w-full'}>
-        <SettingsTile
-          className={'border-transparent !py-0 !px-2.5'}
-          heading={<Trans i18nKey={'common:subscriptionSettingsTabLabel'} />}
-          subHeading={
-            <Trans i18nKey={'subscription:subscriptionTabSubheading'} />
-          }
-        >
-          <div className={'flex flex-col space-y-4'}>
+        <Section className={'border-transparent'}>
+          <SectionHeader
+            className={'!p-0'}
+            title={<Trans i18nKey={'common:subscriptionSettingsTabLabel'} />}
+            description={
+              <Trans i18nKey={'subscription:subscriptionTabSubheading'} />
+            }
+          />
+
+          <SectionBody>
             <If condition={status !== undefined}>
               <PlansStatusAlert
                 status={status as SubscriptionStatusQueryParams}
@@ -45,8 +47,8 @@ const Subscription = () => {
             </If>
 
             <Plans />
-          </div>
-        </SettingsTile>
+          </SectionBody>
+        </Section>
       </div>
     </SettingsPageContainer>
   );

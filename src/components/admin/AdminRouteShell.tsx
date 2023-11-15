@@ -1,14 +1,11 @@
 import AdminProviders from '~/components/admin/AdminProviders';
 import AdminSidebar from '~/components/admin/AdminSidebar';
+import { Page } from '~/core/ui/Page';
 
 function AdminRouteShell(props: React.PropsWithChildren) {
   return (
-    <AdminProviders collapsed={false}>
-      <div className={'flex flex-1'}>
-        <AdminSidebar />
-
-        <div className={'flex flex-col flex-1'}>{props.children}</div>
-      </div>
+    <AdminProviders>
+      <Page sidebar={<AdminSidebar />}>{props.children}</Page>
     </AdminProviders>
   );
 }

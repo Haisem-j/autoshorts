@@ -29,9 +29,10 @@ const RouteShellWithTopNavigation = dynamic(
 const Sonner = getSonner();
 
 const RouteShell: React.FCC<{
-  title: string;
+  title: string | React.ReactNode;
+  description?: string | React.ReactNode;
   style?: LayoutStyle;
-}> = ({ title, style, children }) => {
+}> = ({ title, style, description, children }) => {
   const layout = style ?? configuration.navigation.style;
   const redirectPath = useRedirectPathWhenSignedOut();
 
@@ -46,7 +47,11 @@ const RouteShell: React.FCC<{
           <Layout>
             <Sonner richColors position={'top-center'} />
 
-            <LayoutRenderer style={layout} title={title}>
+            <LayoutRenderer
+              style={layout}
+              title={title}
+              description={description}
+            >
               <OnAuthReady>{children}</OnAuthReady>
             </LayoutRenderer>
           </Layout>
@@ -58,14 +63,18 @@ const RouteShell: React.FCC<{
 
 function LayoutRenderer(
   props: React.PropsWithChildren<{
-    title: string;
+    title: string | React.ReactNode;
+    description?: string | React.ReactNode;
     style: LayoutStyle;
   }>,
 ) {
   switch (props.style) {
     case LayoutStyle.Sidebar: {
       return (
-        <RouteShellWithSidebar title={props.title}>
+        <RouteShellWithSidebar
+          description={props.description}
+          title={props.title}
+        >
           {props.children}
         </RouteShellWithSidebar>
       );

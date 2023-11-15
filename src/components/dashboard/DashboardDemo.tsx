@@ -2,7 +2,6 @@ import { Line, ResponsiveContainer, LineChart, XAxis } from 'recharts';
 import { useMemo } from 'react';
 
 import Tile from '~/core/ui/Tile';
-import Heading from '~/core/ui/Heading';
 
 import {
   Table,
@@ -12,8 +11,6 @@ import {
   TableHeader,
   TableRow,
 } from '~/core/ui/Table';
-
-import { useUserSession } from '~/core/hooks/use-user-session';
 
 export default function DashboardDemo() {
   const mrr = useMemo(() => generateDemoData(), []);
@@ -28,8 +25,6 @@ export default function DashboardDemo() {
 
   return (
     <div className={'flex flex-col space-y-6 pb-36'}>
-      <UserGreetings />
-
       <div
         className={
           'grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3' +
@@ -165,21 +160,6 @@ export default function DashboardDemo() {
           </Tile.Body>
         </Tile>
       </div>
-    </div>
-  );
-}
-
-function UserGreetings() {
-  const user = useUserSession();
-  const userDisplayName = user?.auth?.displayName ?? user?.auth?.email ?? '';
-
-  return (
-    <div>
-      <Heading type={4}>Welcome Back, {userDisplayName}</Heading>
-
-      <p className={'text-gray-500 dark:text-gray-400'}>
-        <span>Here&apos;s what is happening in your SaaS</span>
-      </p>
     </div>
   );
 }

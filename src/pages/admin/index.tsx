@@ -14,6 +14,7 @@ import {
 } from '~/lib/firestore-collections';
 
 import configuration from '~/configuration';
+import { PageBody } from '~/core/ui/Page';
 
 function AdminPage(
   props: React.PropsWithChildren<{
@@ -33,9 +34,9 @@ function AdminPage(
 
       <AdminHeader>Admin</AdminHeader>
 
-      <div className={'p-3'}>
+      <PageBody>
         <AdminDashboard data={props.data} />
-      </div>
+      </PageBody>
     </AdminRouteShell>
   );
 }

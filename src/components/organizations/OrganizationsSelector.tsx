@@ -1,8 +1,12 @@
 import Image from 'next/image';
 import { useRouter } from 'next/router';
+import classNames from 'clsx';
 
 import { Trans } from 'next-i18next';
-import { PlusCircleIcon } from '@heroicons/react/24/outline';
+import {
+  EllipsisVerticalIcon,
+  PlusCircleIcon,
+} from '@heroicons/react/24/outline';
 
 import { Organization } from '~/lib/organizations/types/organization';
 import { useFetchUserOrganizations } from '~/lib/organizations/hooks/use-fetch-user-organizations';
@@ -15,21 +19,25 @@ import {
   Select,
   SelectItem,
   SelectContent,
-  SelectTrigger,
   SelectSeparator,
   SelectGroup,
   SelectAction,
   SelectLabel,
   SelectValue,
+  SelectTrigger,
 } from '~/core/ui/Select';
 
 import ClientOnly from '~/core/ui/ClientOnly';
+import { Avatar, AvatarFallback } from '~/core/ui/Avatar';
 
-const OrganizationsSelector = ({ userId }: { userId: string }) => {
+import { useUserId } from '~/core/hooks/use-user-id';
+
+const OrganizationsSelector = ({ displayName }: { displayName: boolean }) => {
   const router = useRouter();
   const organization = useCurrentOrganization();
   const path = router.asPath;
   const value = getDeepLinkPath(organization?.id as string, path);
+  const userId = useUserId();
 
   return (
     <>
@@ -39,34 +47,50 @@ const OrganizationsSelector = ({ userId }: { userId: string }) => {
           return router.replace(path);
         }}
       >
-        <SelectTrigger
-          data-cy={'organization-selector'}
-          className={'!bg-transparent !h-9 w-full'}
-        >
-          <span
-            className={
-              'min-w-[5rem] block text-sm lg:max-w-[12rem] lg:text-base'
-            }
+        <SelectTrigger asChild>
+          <div
+            role={'button'}
+            className={classNames(
+              `text-sm flex lg:text-base w-full group hover:bg-gray-50 cursor-pointer border-transparent dark:hover:bg-dark-900/50 dark:hover:text-white`,
+              {
+                ['justify-between max-h-12']: displayName,
+                ['rounded-full border-none !p-0.5 mx-auto']: !displayName,
+              },
+            )}
+            data-cy={'organization-selector'}
           >
-            <OrganizationItem organization={organization} />
+            <OrganizationItem
+              organization={organization}
+              displayName={displayName}
+            />
+
+            <If condition={displayName}>
+              <EllipsisVerticalIcon
+                className={'h-5 hidden group-hover:block text-gray-500'}
+              />
+            </If>
 
             <span hidden>
               <SelectValue />
             </span>
-          </span>
+          </div>
         </SelectTrigger>
 
         <SelectContent position={'popper'}>
           <SelectGroup>
-            <SelectLabel>Your Organizations</SelectLabel>
+            <SelectLabel>
+              <Trans i18nKey={'common:yourOrganizations'} />
+            </SelectLabel>
 
             <SelectSeparator />
 
             <ClientOnly>
-              <OrganizationsOptions
-                organization={organization}
-                userId={userId}
-              />
+              {userId && (
+                <OrganizationsOptions
+                  organization={organization}
+                  userId={userId}
+                />
+              )}
             </ClientOnly>
           </SelectGroup>
 
@@ -141,10 +165,12 @@ function OrganizationsOptions({
 
 function OrganizationItem({
   organization,
+  displayName = true,
 }: {
   organization: Maybe<Organization>;
+  displayName?: boolean;
 }) {
-  const imageSize = 18;
+  const imageSize = 20;
 
   if (!organization) {
     return null;
@@ -153,28 +179,34 @@ function OrganizationItem({
   const { logoURL, name } = organization;
 
   return (
-    <span
+    <div
       data-cy={'organization-selector-item'}
-      className={`flex max-w-[12rem] items-center space-x-2`}
+      className={classNames(`flex max-w-[12rem] items-center space-x-2.5`, {
+        'w-full': !displayName,
+      })}
     >
-      <If condition={logoURL}>
-        <span className={'flex items-center'}>
-          <Image
-            style={{
-              width: imageSize,
-              height: imageSize,
-            }}
-            width={imageSize}
-            height={imageSize}
-            alt={`${name} Logo`}
-            className={'object-contain'}
-            src={logoURL as string}
+      <If
+        condition={logoURL}
+        fallback={
+          <FallbackOrganizationLogo
+            className={displayName ? '' : 'mx-auto'}
+            name={organization.name}
           />
-        </span>
+        }
+      >
+        <Image
+          width={imageSize}
+          height={imageSize}
+          alt={`${name} Logo`}
+          className={'object-contain w-6 h-6 mx-auto'}
+          src={logoURL as string}
+        />
       </If>
 
-      <span className={'w-auto truncate text-sm font-medium'}>{name}</span>
-    </span>
+      <If condition={displayName}>
+        <span className={'w-auto truncate text-sm'}>{name}</span>
+      </If>
+    </div>
   );
 }
 
@@ -183,3 +215,23 @@ function getDeepLinkPath(organizationId: string, path: string) {
 }
 
 export default OrganizationsSelector;
+
+function FallbackOrganizationLogo(
+  props: React.PropsWithChildren<{
+    name: string;
+    className?: string;
+  }>,
+) {
+  const initials = (props.name ?? '')
+    .split(' ')
+    .reduce((acc, word) => {
+      return acc + word[0];
+    }, '')
+    .slice(0, 2);
+
+  return (
+    <Avatar className={classNames('!w-6 !h-6', props.className)}>
+      <AvatarFallback>{initials}</AvatarFallback>
+    </Avatar>
+  );
+}

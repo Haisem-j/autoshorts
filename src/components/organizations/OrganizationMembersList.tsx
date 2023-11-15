@@ -67,7 +67,11 @@ const OrganizationMembersList: React.FCC<{
 
   return (
     <div className={'w-full space-y-10'}>
-      <div className={'flex flex-col lg:flex-row justify-between lg:space-x-4'}>
+      <div
+        className={
+          'flex flex-col lg:flex-row justify-between lg:space-x-4 space-y-4 lg:space-y-0'
+        }
+      >
         <TextFieldInput
           value={search}
           placeholder={'Search member...'}
@@ -77,7 +81,7 @@ const OrganizationMembersList: React.FCC<{
           }
         />
 
-        <div className={'w-full lg:w-3/12 flex justify-end'}>
+        <div className={'w-full flex justify-end lg:w-auto lg:min-w-[200px]'}>
           <InviteMembersButton />
         </div>
       </div>
@@ -92,17 +96,20 @@ const OrganizationMembersList: React.FCC<{
             return null;
           }
 
+          const userDisplayName = metadata.displayName ?? '';
+          const userEmail = metadata.email ?? '';
+
           if (
             search &&
-            !metadata.displayName?.includes(search) &&
-            !metadata.email?.includes(search)
+            !userDisplayName.toLowerCase().includes(search.toLowerCase()) &&
+            !userEmail.toLowerCase().includes(search.toLowerCase())
           ) {
             return null;
           }
 
-          const displayName = metadata.displayName
-            ? metadata.displayName
-            : metadata.email ?? metadata.phoneNumber ?? 'Anonymous';
+          const displayName = userDisplayName
+            ? userDisplayName
+            : userEmail ?? metadata.phoneNumber ?? 'Anonymous';
 
           const isCurrentUser = userId === metadata.uid;
 
@@ -122,9 +129,11 @@ const OrganizationMembersList: React.FCC<{
               }
             >
               <div className={'flex flex-auto items-center space-x-4'}>
-                <ProfileAvatar user={metadata} />
+                <div className={'flex space-x-4 items-center'}>
+                  <ProfileAvatar user={metadata} />
 
-                <div className={'block truncate text-sm'}>{displayName}</div>
+                  <div className={'block truncate text-sm'}>{displayName}</div>
+                </div>
 
                 <If condition={isCurrentUser}>
                   <Badge color={'info'} size={'small'}>
@@ -180,6 +189,7 @@ function InviteMembersButton() {
   return (
     <Button
       block
+      variant={'outline'}
       data-cy={'invite-form-link'}
       type="button"
       href={'/settings/organization/members/invite'}

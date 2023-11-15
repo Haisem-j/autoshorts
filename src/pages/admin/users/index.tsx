@@ -8,6 +8,7 @@ import { getUsers } from '~/lib/admin/queries';
 import UsersTable from '~/components/admin/users/UsersTable';
 
 import configuration from '~/configuration';
+import { PageBody } from '~/core/ui/Page';
 
 function UsersAdminPage({
   users,
@@ -24,9 +25,9 @@ function UsersAdminPage({
 
       <AdminHeader>Users</AdminHeader>
 
-      <div className={'p-3 flex flex-col flex-1'}>
+      <PageBody>
         <UsersTable pageToken={pageToken} users={users} />
-      </div>
+      </PageBody>
     </AdminRouteShell>
   );
 }
