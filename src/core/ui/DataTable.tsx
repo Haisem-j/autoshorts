@@ -16,7 +16,7 @@ import type {
   PaginationState,
 } from '@tanstack/react-table';
 
-import classNames from 'classnames';
+import classNames from 'clsx';
 import IconButton from '~/core/ui/IconButton';
 
 import {
