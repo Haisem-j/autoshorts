@@ -4,6 +4,7 @@ import { Trans } from 'next-i18next';
 
 import { withAppProps } from '~/lib/props/with-app-props';
 import RouteShell from '~/components/RouteShell';
+import { LayoutStyle } from '~/core/layout-style';
 
 const DashboardDemo = dynamic(
   () => import('~/components/dashboard/DashboardDemo'),

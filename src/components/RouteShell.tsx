@@ -28,31 +28,32 @@ const RouteShellWithTopNavigation = dynamic(
 
 const Sonner = getSonner();
 
-const RouteShell: React.FCC<{
-  title: string | React.ReactNode;
-  description?: string | React.ReactNode;
+type RouteShellProps = (
+  | {
+      title: string | React.ReactNode;
+      description?: string | React.ReactNode;
+    }
+  | {
+      header?: React.ReactNode;
+    }
+) & {
   style?: LayoutStyle;
-}> = ({ title, style, description, children }) => {
-  const layout = style ?? configuration.navigation.style;
+};
+
+const RouteShell: React.FCC<RouteShellProps> = (props) => {
   const redirectPath = useRedirectPathWhenSignedOut();
 
   return (
     <FirebaseFirestoreProvider>
-      <Head>
-        <title key="title">{title}</title>
-      </Head>
+      <PageTitle title={'title' in props && props.title} />
 
       <GuardedPage whenSignedOut={redirectPath}>
         <SentryProvider>
           <Layout>
             <Sonner richColors position={'top-center'} />
 
-            <LayoutRenderer
-              style={layout}
-              title={title}
-              description={description}
-            >
-              <OnAuthReady>{children}</OnAuthReady>
+            <LayoutRenderer {...props}>
+              <OnAuthReady>{props.children}</OnAuthReady>
             </LayoutRenderer>
           </Layout>
         </SentryProvider>
@@ -61,20 +62,13 @@ const RouteShell: React.FCC<{
   );
 };
 
-function LayoutRenderer(
-  props: React.PropsWithChildren<{
-    title: string | React.ReactNode;
-    description?: string | React.ReactNode;
-    style: LayoutStyle;
-  }>,
-) {
-  switch (props.style) {
+function LayoutRenderer(props: React.PropsWithChildren<RouteShellProps>) {
+  const layout = props.style ?? configuration.navigation.style;
+
+  switch (layout) {
     case LayoutStyle.Sidebar: {
       return (
-        <RouteShellWithSidebar
-          description={props.description}
-          title={props.title}
-        >
+        <RouteShellWithSidebar {...props}>
           {props.children}
         </RouteShellWithSidebar>
       );
@@ -82,7 +76,7 @@ function LayoutRenderer(
 
     case LayoutStyle.TopHeader: {
       return (
-        <RouteShellWithTopNavigation title={props.title}>
+        <RouteShellWithTopNavigation {...props}>
           {props.children}
         </RouteShellWithTopNavigation>
       );
@@ -135,4 +129,16 @@ function useRedirectPathWhenSignedOut() {
   });
 
   return `${paths.signIn}?${queryParam.toString()}`;
+}
+
+function PageTitle(props: { title?: string | React.ReactNode }) {
+  if (!props.title || typeof props.title !== 'string') {
+    return null;
+  }
+
+  return (
+    <Head>
+      <title key="title">{props.title}</title>
+    </Head>
+  );
 }
