@@ -22,6 +22,8 @@ const DEFAULT_OPTIONS = {
   requirePlans: <string[]>[],
 };
 
+const requireEmailVerification = configuration.auth.requireEmailVerification;
+
 /**
  * @description A server props pipe to fetch the selected user and the organization
  * @param ctx
@@ -59,18 +61,22 @@ export async function withAppProps(
     const userId = metadata.uid;
     const isEmailVerified = metadata.emailVerified;
 
-    const requireEmailVerification =
-      configuration.auth.requireEmailVerification;
+    // check if the user has an email/password provider linked to their account
+    // if they don't, we don't need to verify their email
+    const userHasProviderWithEmailVerification =
+      metadata.signInProvider === 'password';
 
-    // when the user is not yet verified and we require email verification
-    // redirect them back to the login page
-    if (!isEmailVerified && requireEmailVerification) {
-      return redirectToLogin({
-        returnUrl: ctx.resolvedUrl,
-        redirectPath,
-        needsEmailVerification: true,
-        signOut: true,
-      });
+    // we check if the user needs to verify their email
+    if (requireEmailVerification) {
+      // if the user is not yet verified, we redirect them back to the login
+      if (!isEmailVerified && userHasProviderWithEmailVerification) {
+        return redirectToLogin({
+          returnUrl: ctx.resolvedUrl,
+          redirectPath,
+          needsEmailVerification: true,
+          signOut: true,
+        });
+      }
     }
 
     const isOnboarded = Boolean(metadata?.customClaims?.onboarded);
@@ -196,8 +202,18 @@ function redirectToLogin({
 
 async function getUserAuthMetadata(ctx: GetServerSidePropsContext) {
   const user = await getLoggedInUser(ctx);
+  const data = await getUserInfoById(user.uid);
 
-  return getUserInfoById(user.uid);
+  if (!data) {
+    return;
+  }
+
+  const signInProvider = user.firebase.sign_in_provider;
+
+  return {
+    ...data,
+    signInProvider,
+  };
 }
 
 function saveOrganizationInCookies(
