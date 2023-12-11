@@ -5,7 +5,7 @@ describe(`Create Subscription`, () => {
   before(() => {
     cy.signIn(`/settings/subscription`);
 
-    organizationPo.createOrganization(`Stripe Test ${Date.now()}`);
+    organizationPo.createOrganization(`Stripe ${Date.now()}`);
   });
 
   describe('Using the UI', () => {

@@ -25,14 +25,15 @@ export async function withAuthProps(
   ctx: GetServerSidePropsContext,
   options = DEFAULT_OPTIONS,
 ): Promise<GetServerSidePropsResult<unknown>> {
-  if (ctx.query.signOut) {
-    await trySignOutServerSession(ctx);
-
-    return continueToAuthPage(ctx, options);
-  }
-
   try {
     await initializeFirebaseAdminApp();
+
+    // sign out the user if the query param "signOut" is present
+    if (ctx.query.signOut) {
+      await trySignOutServerSession(ctx);
+
+      return continueToAuthPage(ctx, options);
+    }
 
     // test the user is logged in
     const checkRevoked = true;

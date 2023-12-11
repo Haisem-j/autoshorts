@@ -66,7 +66,9 @@ const organizationPageObject = {
         delay: 100,
       });
 
-    organizationPageObject.$confirmCreateOrganizationButton().click().wait(500);
+    organizationPageObject.$confirmCreateOrganizationButton().click();
+
+    cy.wait(750);
 
     // close the select
     cy.get('body').click({
