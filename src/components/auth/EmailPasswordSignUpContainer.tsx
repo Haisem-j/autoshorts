@@ -27,7 +27,8 @@ const EmailPasswordSignUpContainer: React.FCC<{
   const [signUp, state] = useSignUpWithEmailAndPassword();
   const redirecting = useRef(false);
 
-  const loading = state.loading || sessionState.loading || redirecting.current;
+  const loading =
+    state.loading || sessionState.isMutating || redirecting.current;
 
   const callOnErrorCallback = useCallback(() => {
     if (state.error && onError) {

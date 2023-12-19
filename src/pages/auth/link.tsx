@@ -52,7 +52,7 @@ const EmailLinkAuthPage: React.FC<{
   const { state, setError } = useRequestState<void>();
   const [sessionRequest, sessionRequestState] = useCreateServerSideSession();
 
-  const loading = sessionRequestState.loading || sessionRequestState.loading;
+  const loading = sessionRequestState.isMutating;
   const organizationId = invite?.organization.id || '';
 
   const { trigger: addMemberToOrganization, isMutating: isInvitingMember } =

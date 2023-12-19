@@ -17,19 +17,10 @@ function useCreateServerSideSession() {
 
       return trigger({ idToken });
     },
-    [trigger]
+    [trigger],
   );
 
-  const state = useMemo(() => {
-    return {
-      data: mutationState.data,
-      error: mutationState.error,
-      loading: mutationState.isMutating,
-      success: !mutationState.isMutating && mutationState.data,
-    };
-  }, [mutationState]);
-
-  return [signInCallback, state] as [typeof signInCallback, typeof state];
+  return [signInCallback, mutationState] as const;
 }
 
 export default useCreateServerSideSession;

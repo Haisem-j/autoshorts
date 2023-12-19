@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
 import { Trans } from 'next-i18next';
 import { useAuth } from 'reactfire';
 
@@ -15,13 +16,13 @@ import { useSignInWithProvider } from '~/core/firebase/hooks';
 import { getFirebaseErrorCode } from '~/core/firebase/utils/get-firebase-error-code';
 
 import If from '~/core/ui/If';
+import LoadingOverlay from '~/core/ui/LoadingOverlay';
 
 import AuthErrorMessage from './AuthErrorMessage';
 import MultiFactorAuthChallengeModal from '~/components/auth/MultiFactorAuthChallengeModal';
 import { isMultiFactorError } from '~/core/firebase/utils/is-multi-factor-error';
 
 import useCreateServerSideSession from '~/core/hooks/use-create-server-side-session';
-import PageLoadingIndicator from '~/core/ui/PageLoadingIndicator';
 import configuration from '~/configuration';
 
 const OAUTH_PROVIDERS = configuration.auth.providers.oAuth;
@@ -39,24 +40,38 @@ const OAuthProviders: React.FCC<{
 
   const [sessionRequest, sessionRequestState] = useCreateServerSideSession();
   const [checkingRedirect, setCheckingRedirect] = useState(true);
+  const didCheckRedirect = useRef(false);
+  const isSigningIn = useRef(false);
 
   // we make the UI "busy" until the next page is fully loaded
   const loading =
     signInWithProviderState.loading ||
-    sessionRequestState.loading ||
-    sessionRequestState.success ||
-    checkingRedirect;
+    sessionRequestState.isMutating ||
+    sessionRequestState.data ||
+    isSigningIn.current;
+
+  const shouldDisplayLoading = loading || checkingRedirect;
 
   const [multiFactorAuthError, setMultiFactorAuthError] =
     useState<Maybe<MultiFactorError>>();
 
   const createSession = useCallback(
     async (user: User) => {
-      await sessionRequest(user);
+      if (loading || isSigningIn.current) {
+        return;
+      }
 
-      onSignIn();
+      isSigningIn.current = true;
+
+      try {
+        await sessionRequest(user);
+
+        onSignIn();
+      } finally {
+        isSigningIn.current = false;
+      }
     },
-    [sessionRequest, onSignIn],
+    [sessionRequest, loading, onSignIn],
   );
 
   const onSignInWithProvider = useCallback(
@@ -68,7 +83,9 @@ const OAuthProviders: React.FCC<{
           return Promise.reject();
         }
 
-        await createSession(credential.user);
+        if (!configuration.auth.useRedirectStrategy) {
+          await createSession(credential.user);
+        }
       } catch (error) {
         if (isMultiFactorError(error)) {
           setMultiFactorAuthError(error as MultiFactorError);
@@ -77,23 +94,30 @@ const OAuthProviders: React.FCC<{
         }
       }
     },
-    [setMultiFactorAuthError, createSession],
+    [createSession],
   );
 
   useEffect(() => {
-    (async () => {
-      const result = await getRedirectResult(
-        auth,
-        browserPopupRedirectResolver,
-      );
-
-      if (result) {
-        await createSession(result.user);
-      } else {
-        setCheckingRedirect(false);
+    async function checkRedirectSignIn() {
+      if (loading || didCheckRedirect.current) {
+        return;
       }
-    })();
-  }, [auth, createSession]);
+
+      return getRedirectResult(auth, browserPopupRedirectResolver).then(
+        async (result) => {
+          if (result) {
+            setCheckingRedirect(true);
+
+            return createSession(result.user);
+          }
+
+          setCheckingRedirect(false);
+        },
+      );
+    }
+
+    void checkRedirectSignIn();
+  }, [auth, loading, createSession]);
 
   if (!OAUTH_PROVIDERS || !OAUTH_PROVIDERS.length) {
     return null;
@@ -101,15 +125,13 @@ const OAuthProviders: React.FCC<{
 
   return (
     <>
-      <If condition={loading}>
-        <div>
-          <PageLoadingIndicator
-            displayLogo={false}
-            className={'m-0 !h-full !w-full rounded-xl'}
-          >
-            <Trans i18nKey={'auth:signingIn'} />
-          </PageLoadingIndicator>
-        </div>
+      <If condition={shouldDisplayLoading}>
+        <LoadingOverlay
+          displayLogo={false}
+          className={'m-0 !h-full !w-full rounded-xl'}
+        >
+          <Trans i18nKey={'auth:signingIn'} />
+        </LoadingOverlay>
       </If>
 
       <div className={'flex w-full flex-1 flex-col space-y-3'}>

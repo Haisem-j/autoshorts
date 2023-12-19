@@ -46,7 +46,7 @@ const EmailPasswordSignInContainer: React.FCC<{
   );
 
   const isLoading = Boolean(
-    sessionState.loading || requestState.state.loading || sessionState.success,
+    sessionState.isMutating || requestState.state.loading || sessionState.data,
   );
 
   const signInWithCredentials = useCallback(

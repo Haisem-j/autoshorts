@@ -8,6 +8,7 @@ import { useRouter } from 'next/router';
 import { Trans, useTranslation } from 'next-i18next';
 
 import If from '~/core/ui/If';
+import LoadingOverlay from '~/core/ui/LoadingOverlay';
 
 import configuration from '~/configuration';
 import { isBrowser } from '~/core/generic/is-browser';
@@ -20,7 +21,6 @@ import EmailPasswordSignInContainer from '~/components/auth/EmailPasswordSignInC
 import PhoneNumberSignInContainer from '~/components/auth/PhoneNumberSignInContainer';
 import EmailLinkAuth from '~/components/auth/EmailLinkAuth';
 import AuthPageLayout from '~/components/auth/AuthPageLayout';
-import PageLoadingIndicator from '~/core/ui/PageLoadingIndicator';
 
 const signUpPath = configuration.paths.signUp;
 const appHome = configuration.paths.appHome;
@@ -55,7 +55,7 @@ export const SignIn = () => {
   }, [auth, shouldForceSignOut]);
 
   if (signingOut) {
-    return <PageLoadingIndicator />;
+    return <LoadingOverlay />;
   }
 
   return (

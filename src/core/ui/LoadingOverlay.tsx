@@ -10,8 +10,10 @@ export default function LoadingOverlay({
   className,
   fullPage = true,
   displayLogo = false,
+  spinnerClassName,
 }: PropsWithChildren<{
   className?: string;
+  spinnerClassName?: string;
   fullPage?: boolean;
   displayLogo?: boolean;
 }>) {
@@ -32,7 +34,9 @@ export default function LoadingOverlay({
         </div>
       </If>
 
-      <Spinner className={'h-12 w-12 text-primary'} />
+      <Spinner
+        className={classNames('h-12 w-12 text-primary', spinnerClassName)}
+      />
 
       <div>{children}</div>
     </div>
