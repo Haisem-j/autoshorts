@@ -30,7 +30,7 @@ export async function withAuthProps(
 
     // sign out the user if the query param "signOut" is present
     if (ctx.query.signOut) {
-      await trySignOutServerSession(ctx);
+      await signOutServerSession(ctx.req, ctx.res);
 
       return continueToAuthPage(ctx, options);
     }
@@ -71,12 +71,4 @@ async function continueToAuthPage(
       csrfToken,
     },
   };
-}
-
-async function trySignOutServerSession(ctx: GetServerSidePropsContext) {
-  try {
-    await signOutServerSession(ctx.req, ctx.res);
-  } catch (e) {
-    // do nothing
-  }
 }

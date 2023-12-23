@@ -29,9 +29,7 @@ export default function LoadingOverlay({
       )}
     >
       <If condition={displayLogo}>
-        <div className={'my-2'}>
-          <LogoImage />
-        </div>
+        <LogoImage />
       </If>
 
       <Spinner

@@ -5,6 +5,7 @@ import { withMethodsGuard } from '~/core/middleware/with-methods-guard';
 import { withExceptionFilter } from '~/core/middleware/with-exception-filter';
 import { withAdmin } from '~/core/middleware/with-admin';
 import { signOutServerSession } from '~/core/session/sign-out-server-session';
+import configuration from '~/configuration';
 
 const SUPPORTED_HTTP_METHODS: HttpMethod[] = ['POST'];
 
@@ -17,7 +18,9 @@ const SUPPORTED_HTTP_METHODS: HttpMethod[] = ['POST'];
 async function signOut(req: NextApiRequest, res: NextApiResponse) {
   await signOutServerSession(req, res);
 
-  res.send({ success: true });
+  return res.json({
+    success: true,
+  });
 }
 
 export default function sessionSignOutHandler(

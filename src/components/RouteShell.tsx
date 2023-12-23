@@ -41,11 +41,13 @@ type RouteShellProps = (
 };
 
 const RouteShell: React.FCC<RouteShellProps> = (props) => {
+  const redirectPath = useRedirectPathWhenSignedOut();
+
   return (
     <FirebaseFirestoreProvider>
       <PageTitle title={'title' in props && props.title} />
 
-      <GuardedPage whenSignedOut={'/'}>
+      <GuardedPage whenSignedOut={redirectPath}>
         <SentryProvider>
           <Layout>
             <Sonner richColors position={'top-center'} />
@@ -116,6 +118,16 @@ function getSonner() {
       ssr: false,
     },
   );
+}
+
+function useRedirectPathWhenSignedOut() {
+  const paths = configuration.paths;
+
+  const queryParam = new URLSearchParams({
+    signOut: 'true',
+  });
+
+  return `${paths.signIn}?${queryParam.toString()}`;
 }
 
 function PageTitle(props: { title?: string | React.ReactNode }) {

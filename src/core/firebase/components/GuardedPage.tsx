@@ -6,13 +6,13 @@ import { Trans } from 'next-i18next';
 
 import { isBrowser } from '~/core/generic/is-browser';
 import useClearFirestoreCache from '~/core/hooks/use-clear-firestore-cache';
-import PageLoadingIndicator from '~/core/ui/PageLoadingIndicator';
+import LoadingOverlay from '~/core/ui/LoadingOverlay';
 
 const AuthRedirectListener: React.FCC<{
   whenSignedOut?: string;
 }> = ({ children, whenSignedOut }) => {
   const auth = useAuth();
-  const { status, data: signInCheck } = useSigninCheck({ suspense: true });
+  const { status, data: signInCheck } = useSigninCheck();
   const redirectUserAway = useRedirectUserAway();
   const clearCache = useClearFirestoreCache();
   const isSignInCheckDone = status === 'success';
@@ -68,9 +68,9 @@ const AuthRedirectListener: React.FCC<{
 
   if (isSignInCheckDone && !signInCheck.signedIn) {
     return (
-      <PageLoadingIndicator>
+      <LoadingOverlay>
         <Trans i18nKey={'auth:signingOut'} />
-      </PageLoadingIndicator>
+      </LoadingOverlay>
     );
   }
 
@@ -120,16 +120,17 @@ function useRedirectUserAway() {
     const currentPath = window.location.pathname;
     const isNotCurrentPage = currentPath !== path;
 
+    clearAuthCookies();
+
     // we then redirect the user to the page
     // specified in the props of the component
     if (isNotCurrentPage) {
-      clearAuthCookies();
-
-      return window.location.replace(path);
+      window.location.replace(path);
     }
   }, []);
 }
 
 function clearAuthCookies() {
   destroyCookie(null, 'sessionExpiresAt');
+  destroyCookie(null, 'session');
 }

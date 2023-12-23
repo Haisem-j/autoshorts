@@ -30,15 +30,13 @@ export async function signOutServerSession(req: Req, res: Res) {
 
   try {
     await revokeCookie(sessionCookie);
-
-    destroySessionCookies(res);
   } catch (e) {
     const error = e instanceof Error ? e.message : e;
 
     logger.debug(
       `Could not destroy user's session: ${error}. Removing cookies...`,
     );
-
+  } finally {
     destroySessionCookies(res);
   }
 }
