@@ -17,6 +17,7 @@ const AuthProviderLogo: React.FC<{
   if (typeof image === `string`) {
     return (
       <Image
+        priority
         src={image}
         alt={`${firebaseProviderId} logo`}
         width={width ?? DEFAULT_IMAGE_SIZE}
