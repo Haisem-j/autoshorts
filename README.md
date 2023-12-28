@@ -18,8 +18,7 @@ Please ensure you installed these before proceeding.
 Clone this repository and name it according to your preferences:
 
 ```
-git clone https://github.com/makerkit/next-firebase-saas-kit.git your-saas 
---depth=1
+git clone https://github.com/makerkit/next-firebase-saas-kit.git your-saas
 ```
 
 Move to the folder just cloned:
