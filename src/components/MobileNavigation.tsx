@@ -25,7 +25,24 @@ import OrganizationsSelector from '~/components/organizations/OrganizationsSelec
 import Heading from '~/core/ui/Heading';
 
 const MobileAppNavigation = () => {
-  const Links = NAVIGATION_CONFIG.items.map((item) => {
+  const Links = NAVIGATION_CONFIG.items.map((item, index) => {
+    if ('children' in item) {
+      return item.children.map((child) => {
+        return (
+          <DropdownLink
+            key={child.path}
+            Icon={child.Icon}
+            path={child.path}
+            label={child.label}
+          />
+        );
+      });
+    }
+
+    if ('divider' in item) {
+      return <DropdownMenuSeparator key={index} />;
+    }
+
     return (
       <DropdownLink
         key={item.path}
@@ -64,7 +81,8 @@ function SignOutDropdownItem() {
       className={'flex w-full items-center space-x-4 h-12'}
       onClick={() => auth.signOut()}
     >
-      <ArrowLeftOnRectangleIcon className={'h-5'} />
+      <ArrowLeftOnRectangleIcon className={'h-6'} />
+
       <span>
         <Trans i18nKey={'common:signOut'} defaults={'Sign out'} />
       </span>
@@ -85,7 +103,7 @@ function DropdownLink(
         href={props.path}
         className={'flex w-full items-center space-x-4 h-12'}
       >
-        <props.Icon className={'h-5'} />
+        <props.Icon className={'h-6'} />
 
         <span>
           <Trans i18nKey={props.label} defaults={props.label} />
@@ -99,9 +117,12 @@ function OrganizationsModal() {
   return (
     <Modal
       Trigger={
-        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+        <DropdownMenuItem
+          className={'h-12'}
+          onSelect={(e) => e.preventDefault()}
+        >
           <button className={'flex items-center space-x-4'}>
-            <BuildingLibraryIcon className={'h-5'} />
+            <BuildingLibraryIcon className={'h-6'} />
             <span>
               <Trans i18nKey={'common:yourOrganizations'} />
             </span>

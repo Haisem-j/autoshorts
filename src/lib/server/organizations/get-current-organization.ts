@@ -8,7 +8,7 @@ import { getOrganizationsCollection } from '~/lib/server/collections';
  */
 export async function getCurrentOrganization(
   userId: string,
-  organizationId: Maybe<string> = undefined
+  organizationId: Maybe<string> = undefined,
 ) {
   return getOrganizationByIdOrFirst(organizationId, userId);
 }
@@ -27,7 +27,7 @@ export async function getCurrentOrganization(
  */
 async function getOrganizationByIdOrFirst(
   organizationId: Maybe<string>,
-  userId: string
+  userId: string,
 ) {
   // if the organization ID was passed from the cookie, we try read that
   if (organizationId) {

@@ -96,17 +96,24 @@ function DeleteOrganizationForm({
       }}
     >
       <div className={'flex flex-col space-y-4'}>
-        <div>
-          <Trans
-            i18nKey={'organization:deleteOrganizationDisclaimer'}
-            values={{
-              organizationName: organization?.name,
-            }}
-          />
-        </div>
+        <div
+          className={
+            'border-2 border-red-500 p-4 text-sm text-red-500' +
+            ' flex flex-col space-y-2'
+          }
+        >
+          <div>
+            <Trans
+              i18nKey={'organization:deleteOrganizationDisclaimer'}
+              values={{
+                organizationName: organization?.name,
+              }}
+            />
+          </div>
 
-        <div>
-          <Trans i18nKey={'common:modalConfirmationQuestion'} />
+          <div className={'text-sm'}>
+            <Trans i18nKey={'common:modalConfirmationQuestion'} />
+          </div>
         </div>
 
         <TextFieldLabel>
@@ -172,7 +179,7 @@ function LeaveOrganizationContainer() {
           }
         >
           <div className={'flex flex-col space-y-6'}>
-            <div>
+            <div className={'text-sm'}>
               <Trans
                 i18nKey={'organization:leaveOrganizationDisclaimer'}
                 values={{
@@ -181,7 +188,7 @@ function LeaveOrganizationContainer() {
               />
             </div>
 
-            <div>
+            <div className={'text-sm'}>
               <Trans i18nKey={'common:modalConfirmationQuestion'} />
             </div>
 

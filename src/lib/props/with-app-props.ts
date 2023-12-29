@@ -12,6 +12,7 @@ import { getUserData } from '~/lib/server/queries';
 
 import createCsrfCookie from '~/core/generic/create-csrf-token';
 import { signOutServerSession } from '~/core/session/sign-out-server-session';
+import logger from '~/core/logger';
 
 const ORGANIZATION_ID_COOKIE_NAME = 'organizationId';
 
@@ -47,17 +48,30 @@ export async function withAppProps(
     });
   };
 
+  await initializeFirebaseAdminApp();
+
+  let metadata: Awaited<ReturnType<typeof getUserAuthMetadata>>;
+
   try {
-    await initializeFirebaseAdminApp();
+    metadata = await getUserAuthMetadata(ctx);
+  } catch (error) {
+    logger.debug(
+      {
+        error,
+      },
+      'Encountered an error while retrieving user metadata. Forcing sign out...',
+    );
 
-    const metadata = await getUserAuthMetadata(ctx);
+    return forceSignOut();
+  }
 
-    // if for any reason we're not able to fetch the user's data, we redirect
-    // back to the login page
-    if (!metadata) {
-      return forceSignOut();
-    }
+  // if for any reason we're not able to fetch the user's data, we redirect
+  // back to the login page
+  if (!metadata) {
+    return forceSignOut();
+  }
 
+  try {
     const userId = metadata.uid;
     const isEmailVerified = metadata.emailVerified;
 
@@ -151,7 +165,14 @@ export async function withAppProps(
         ...translationProps,
       },
     };
-  } catch (e) {
+  } catch (error) {
+    logger.warn(
+      {
+        error,
+      },
+      'Encountered an error while retrieving app data. Forcing sign out...',
+    );
+
     return forceSignOut();
   }
 }

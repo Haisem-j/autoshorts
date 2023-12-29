@@ -9,6 +9,15 @@ const AppNavigation: React.FCC = () => {
     <NavigationContainer>
       <NavigationMenu bordered>
         {NAVIGATION_CONFIG.items.map((item) => {
+          if ('children' in item) {
+            return item.children.map((child) => {
+              return <NavigationItem key={child.path} link={child} />;
+            });
+          }
+
+          // we don't render dividers
+          if ('divider' in item) return null;
+
           return <NavigationItem key={item.path} link={item} />;
         })}
       </NavigationMenu>

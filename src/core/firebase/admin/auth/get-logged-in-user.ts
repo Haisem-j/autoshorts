@@ -23,7 +23,7 @@ export async function getLoggedInUser(
   const { session } = parseCookies(ctx);
 
   if (!session) {
-    return Promise.reject(`Session ID not found`);
+    return Promise.reject(`Tried parsing session cookie - but it was empty.`);
   }
 
   const { getUserFromSessionCookie } = await import(

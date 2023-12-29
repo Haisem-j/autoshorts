@@ -33,7 +33,7 @@ describe('Auth State', () => {
         interceptSignOut(() => {
           cy.signIn(configuration.paths.appHome);
           cy.clearCookie('session');
-          cy.contains('Settings').click();
+          cy.contains('Subscription').click();
         });
 
         cy.url().should('include', configuration.paths.signIn);
@@ -42,7 +42,7 @@ describe('Auth State', () => {
         cy.url().should(
           'include',
           `returnUrl=${encodeURIComponent(
-            configuration.paths.settings.profile,
+            configuration.paths.settings.subscription,
           )}`,
         );
       });

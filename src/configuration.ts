@@ -74,6 +74,8 @@ const configuration = {
     appHome: '/dashboard',
     settings: {
       profile: '/settings/profile',
+      organization: '/settings/organization',
+      subscription: '/settings/subscription',
       authentication: '/settings/profile/authentication',
       email: '/settings/profile/email',
       password: '/settings/profile/password',
