@@ -1,16 +1,18 @@
 import stripePo from '../../support/stripe.po';
 import organizationPo from '../../support/organization.po';
+import configuration from '~/configuration';
 
 describe(`Create Subscription`, () => {
-  before(() => {
-    cy.signIn(`/settings/subscription`);
-
-    organizationPo.createOrganization(`Stripe ${Date.now()}`);
-  });
+  let organization: string;
 
   describe('Using the UI', () => {
     describe('The session should be created successfully', () => {
       it('should redirect to the success page', () => {
+        organization = `Stripe ${Date.now()}`;
+        cy.signIn(`/settings/subscription`);
+
+        organizationPo.createOrganization(organization);
+
         stripePo.selectPlan(0);
         stripePo.$fillForm();
         stripePo.$cardForm().submit();

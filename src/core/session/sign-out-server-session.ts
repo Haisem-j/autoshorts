@@ -10,6 +10,7 @@ import logger from '~/core/logger';
 const SESSION_COOKIE_NAME = 'session';
 const SESSION_EXPIRES_AT_COOKIE_NAME = 'sessionExpiresAt';
 const SESSION_CSRF_SECRET_COOKIE = `csrfSecret`;
+const ORGANIZATION_ID_COOKIE = 'organizationId';
 const COOKIE_PATH = '/';
 
 type Req = NextApiRequest | GetServerSidePropsContext['req'];
@@ -58,4 +59,5 @@ function destroySessionCookies(res: Res) {
   destroyCookie({ res }, SESSION_COOKIE_NAME, options);
   destroyCookie({ res }, SESSION_EXPIRES_AT_COOKIE_NAME, options);
   destroyCookie({ res }, SESSION_CSRF_SECRET_COOKIE, options);
+  destroyCookie({ res }, ORGANIZATION_ID_COOKIE, options);
 }

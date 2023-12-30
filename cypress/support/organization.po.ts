@@ -63,7 +63,7 @@ const organizationPageObject = {
       .wait(500)
       .clear()
       .type(organizationName, {
-        delay: 100,
+        delay: 200,
       });
 
     organizationPageObject.$confirmCreateOrganizationButton().click();

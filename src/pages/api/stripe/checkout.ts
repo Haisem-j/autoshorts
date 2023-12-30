@@ -13,10 +13,10 @@ import { getApiRefererPath } from '~/core/generic/get-api-referer-path';
 import { createStripeCheckout } from '~/lib/stripe/create-checkout';
 import { canChangeBilling } from '~/lib/organizations/permissions';
 import withCsrf from '~/core/middleware/with-csrf';
-import { getUserRoleByOrganization } from '~/lib/server/organizations/memberships';
 import { getOrganizationById } from '~/lib/server/queries';
 
 import configuration from '~/configuration';
+import { Organization } from '~/lib/organizations/types/organization';
 
 const SUPPORTED_METHODS: HttpMethod[] = ['POST'];
 
@@ -46,7 +46,7 @@ async function checkoutsSessionHandler(
 
   if (!matchesSessionOrganizationId) {
     logger.error(
-      `Organization ID mismatch: the organziation ID in the session does not match the organization ID in the request.`,
+      `Organization ID mismatch: the organization ID in the session does not match the organization ID in the request.`,
     );
 
     return redirectToErrorPage();
@@ -75,7 +75,7 @@ async function checkoutsSessionHandler(
       {
         customerId,
       },
-      `Organization has a customer ID}`,
+      `Organization has a customer ID`,
     );
   }
 
@@ -90,7 +90,7 @@ async function checkoutsSessionHandler(
 
   // check the user's role has access to the checkout
   const canChangeBilling = await getUserCanAccessCheckout({
-    organizationId,
+    organization,
     userId,
   });
 
@@ -180,17 +180,27 @@ export default withPipe(
 );
 
 async function getUserCanAccessCheckout(params: {
-  organizationId: string;
+  organization: Organization;
   userId: string;
 }) {
-  try {
-    const userRole = await getUserRoleByOrganization(params);
+  const { organization, userId } = params;
 
-    if (userRole === undefined) {
+  try {
+    if (!organization) {
       return false;
     }
 
-    return canChangeBilling(userRole);
+    if (organization.subscription) {
+      return false;
+    }
+
+    const role = organization.members[userId].role;
+
+    if (role === undefined) {
+      return false;
+    }
+
+    return canChangeBilling(role);
   } catch (e) {
     logger.error(e, `Could not retrieve user role`);
 

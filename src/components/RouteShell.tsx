@@ -6,7 +6,6 @@ import { useSigninCheck } from 'reactfire';
 import configuration from '~/configuration';
 import { LayoutStyle } from '~/core/layout-style';
 import Layout from '~/core/ui/Layout';
-import { isBrowser } from '~/core/generic/is-browser';
 
 const FirebaseFirestoreProvider = dynamic(
   () => import('~/core/firebase/components/FirebaseFirestoreProvider'),
@@ -26,7 +25,9 @@ const RouteShellWithTopNavigation = dynamic(
   () => import('./layouts/header/RouteShellWithTopNavigation'),
 );
 
-const Sonner = getSonner();
+const Toaster = dynamic(() => import('~/core/ui/Toaster'), {
+  ssr: false,
+});
 
 type RouteShellProps = (
   | {
@@ -50,7 +51,7 @@ const RouteShell: React.FCC<RouteShellProps> = (props) => {
       <GuardedPage whenSignedOut={redirectPath}>
         <SentryProvider>
           <Layout>
-            <Sonner richColors position={'top-center'} />
+            <Toaster position={'top-center'} />
 
             <LayoutRenderer {...props}>
               <OnAuthReady>{props.children}</OnAuthReady>
@@ -105,19 +106,6 @@ function OnAuthReady(props: React.PropsWithChildren) {
   }
 
   return null;
-}
-
-function getSonner() {
-  return dynamic(
-    async () => {
-      const { Toaster } = await import('sonner');
-
-      return Toaster;
-    },
-    {
-      ssr: false,
-    },
-  );
 }
 
 function useRedirectPathWhenSignedOut() {
