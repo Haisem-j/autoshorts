@@ -29,11 +29,11 @@ const AppSidebar = () => {
         <OrganizationsSelector displayName={!ctx.collapsed} />
       </SidebarContent>
 
-      <SidebarContent>
+      <SidebarContent className={`h-[calc(100%-160px)] overflow-y-auto`}>
         <AppSidebarNavigation />
       </SidebarContent>
 
-      <div className={'absolute bottom-0 w-full'}>
+      <div className={'absolute bottom-0 w-full bg-background'}>
         <SidebarContent>
           <ProfileDropdownContainer collapsed={ctx.collapsed} />
         </SidebarContent>
