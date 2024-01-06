@@ -48,7 +48,7 @@ function Footer() {
           >
             <div>
               <div className={'flex flex-col space-y-4'}>
-                <Heading type={6}>About</Heading>
+                <FooterSectionHeading>About</FooterSectionHeading>
 
                 <FooterSectionList>
                   <FooterLink>
@@ -66,7 +66,7 @@ function Footer() {
 
             <div>
               <div className={'flex flex-col space-y-4'}>
-                <Heading type={6}>Product</Heading>
+                <FooterSectionHeading>Product</FooterSectionHeading>
 
                 <FooterSectionList>
                   <FooterLink>
@@ -84,7 +84,7 @@ function Footer() {
 
             <div>
               <div className={'flex flex-col space-y-4'}>
-                <Heading type={6}>Legal</Heading>
+                <FooterSectionHeading>Legal</FooterSectionHeading>
 
                 <FooterSectionList>
                   <FooterLink>
@@ -105,6 +105,14 @@ function Footer() {
         </div>
       </Container>
     </footer>
+  );
+}
+
+function FooterSectionHeading(props: React.PropsWithChildren) {
+  return (
+    <p>
+      <span className={'font-semibold'}>{props.children}</span>
+    </p>
   );
 }
 

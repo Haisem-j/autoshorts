@@ -61,7 +61,7 @@ const SiteNavigation = () => {
 function MobileDropdown() {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger aria-label={'Open Menu'}>
         <Bars3Icon className={'h-9'} />
       </DropdownMenuTrigger>
 

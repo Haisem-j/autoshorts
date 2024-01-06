@@ -37,16 +37,16 @@ const NavigationMenuItem: React.FCC<{
   });
 
   return (
-    <Link
-      className={classNames(itemClassName, props.className ?? ``)}
-      aria-disabled={disabled}
-      href={disabled ? '' : link.path}
-      shallow={shallow ?? active}
-    >
-      <span className={'transition-transform duration-500'}>
+    <li className={classNames(itemClassName, props.className ?? ``)}>
+      <Link
+        className={'transition-transform duration-500'}
+        aria-disabled={disabled}
+        href={disabled ? '' : link.path}
+        shallow={shallow ?? active}
+      >
         <Trans i18nKey={label} defaults={label} />
-      </span>
-    </Link>
+      </Link>
+    </li>
   );
 };
 
@@ -55,8 +55,8 @@ export default NavigationMenuItem;
 function getNavigationMenuItemClassBuilder() {
   return cva(
     [
-      `flex items-center justify-center font-medium lg:justify-start rounded-md text-sm transition colors transform active:[&>*]:translate-y-[2px]`,
-      '[&>*]:p-1 [&>*]:lg:px-2.5 [&>*]:w-full [&>*]:h-full [&>*]:flex [&>*]:items-center',
+      `flex items-center justify-center font-medium lg:justify-start rounded-md text-sm transition colors transform active:*:translate-y-[2px]`,
+      '*:p-1 *:lg:px-2.5 *:w-full *:h-full *:flex *:items-center',
     ],
     {
       compoundVariants: [

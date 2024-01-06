@@ -3,7 +3,7 @@
 import Link from 'next/link';
 
 import {
-  ArrowLeftOnRectangleIcon,
+  ArrowLeftStartOnRectangleIcon,
   Bars3Icon,
   BuildingLibraryIcon,
 } from '@heroicons/react/24/outline';
@@ -21,8 +21,9 @@ import {
 
 import NAVIGATION_CONFIG from '../navigation.config';
 import Modal from '~/core/ui/Modal';
-import OrganizationsSelector from '~/components/organizations/OrganizationsSelector';
 import Heading from '~/core/ui/Heading';
+
+import OrganizationsSelector from '~/components/organizations/OrganizationsSelector';
 
 const MobileAppNavigation = () => {
   const Links = NAVIGATION_CONFIG.items.map((item, index) => {
@@ -55,7 +56,7 @@ const MobileAppNavigation = () => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger aria-label={'Open Menu'}>
         <Bars3Icon className={'h-9'} />
       </DropdownMenuTrigger>
 
@@ -81,7 +82,7 @@ function SignOutDropdownItem() {
       className={'flex w-full items-center space-x-4 h-12'}
       onClick={() => auth.signOut()}
     >
-      <ArrowLeftOnRectangleIcon className={'h-6'} />
+      <ArrowLeftStartOnRectangleIcon className={'h-6'} />
 
       <span>
         <Trans i18nKey={'common:signOut'} defaults={'Sign out'} />
