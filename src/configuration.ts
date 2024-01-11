@@ -1,6 +1,7 @@
 import { LayoutStyle } from '~/core/layout-style';
 import { GoogleAuthProvider } from 'firebase/auth';
 import { StripeCheckoutDisplayMode } from '~/lib/stripe/types';
+import { isBrowser } from '~/core/generic/is-browser';
 
 enum Themes {
   Light = 'light',
@@ -45,10 +46,10 @@ const configuration = {
       emailLink: false,
       oAuth: [GoogleAuthProvider],
     },
-    // use redirect or popup. By default, we use the popup strategy
-    // the redirect strategy needs additional setup:
-    // https://firebase.google.com/docs/auth/web/redirect-best-practices
-    useRedirectStrategy: true,
+    // Use Redirect or Popup strategy for oAuth.
+    // By default, we use the redirect strategy.
+    // In iOS, we use popup as users reported issues with the redirect strategy.
+    useRedirectStrategy: !isIOS(),
   },
   environment: process.env.NODE_ENV ?? 'development',
   emulatorHost: process.env.NEXT_PUBLIC_EMULATOR_HOST,
@@ -189,4 +190,10 @@ function getBoolean(value: unknown, defaultValue: boolean) {
   }
 
   return defaultValue;
+}
+
+function isIOS() {
+  if (!isBrowser()) return false;
+
+  return /iPad|iPhone|iPod/.test(navigator.userAgent);
 }
