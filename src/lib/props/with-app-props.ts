@@ -276,7 +276,7 @@ function getAppPropsOptions(
 function getUiProps(ctx: GetServerSidePropsContext) {
   const cookies = parseCookies(ctx);
   const sidebarState = cookies['sidebarState'] ?? 'expanded';
-  const theme = cookies['theme'] ?? 'light';
+  const theme = cookies['theme'] ?? configuration.theme;
 
   return {
     sidebarState,

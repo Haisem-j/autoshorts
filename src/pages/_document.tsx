@@ -1,4 +1,7 @@
 import Document, { Html, Main, Head, NextScript } from 'next/document';
+import { loadSelectedTheme } from '~/core/theming';
+import { isBrowser } from '~/core/generic/is-browser';
+import configuration from '~/configuration';
 
 export default class MyDocument extends Document {
   render() {
@@ -15,6 +18,14 @@ export default class MyDocument extends Document {
   }
 
   private getTheme() {
-    return this.props.__NEXT_DATA__.props.pageProps?.ui?.theme;
+    const defaultTheme = configuration.theme;
+
+    if (isBrowser()) {
+      const theme = loadSelectedTheme();
+
+      return theme ?? defaultTheme;
+    }
+
+    return defaultTheme;
   }
 }

@@ -14,9 +14,6 @@ import FirebaseAppShell from '~/core/firebase/components/FirebaseAppShell';
 import FirebaseAuthProvider from '~/core/firebase/components/FirebaseAuthProvider';
 import FirebaseAppCheckProvider from '~/core/firebase/components/FirebaseAppCheckProvider';
 import FirebaseAnalyticsProvider from '~/core/firebase/components/FirebaseAnalyticsProvider';
-
-import { loadSelectedTheme } from '~/core/theming';
-import { isBrowser } from '~/core/generic/is-browser';
 import useCollapsible from '~/core/hooks/use-sidebar-state';
 
 import { Organization } from '~/lib/organizations/types/organization';
@@ -149,14 +146,6 @@ function UiStateProvider(
       </ThemeContext.Provider>
     </SidebarContext.Provider>
   );
-}
-
-/**
- * Load selected theme
- * Do not add it as an effect to _app.tsx, the flashing is very visible
- */
-if (isBrowser()) {
-  loadSelectedTheme();
 }
 
 function FontFamily() {

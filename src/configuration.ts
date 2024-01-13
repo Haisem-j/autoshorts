@@ -55,7 +55,7 @@ const configuration = {
   emulatorHost: process.env.NEXT_PUBLIC_EMULATOR_HOST,
   emulator: process.env.NEXT_PUBLIC_EMULATOR === 'true',
   production: process.env.NODE_ENV === 'production',
-  theme: Themes.Dark,
+  theme: Themes.Light,
   features: {
     enableThemeSwitcher: true,
     enableAccountDeletion: getBoolean(

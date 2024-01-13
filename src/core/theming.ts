@@ -88,5 +88,9 @@ export function isDarkSystemTheme() {
 }
 
 export function loadSelectedTheme() {
-  setTheme(getStoredTheme());
+  const theme = getStoredTheme();
+
+  setTheme(theme);
+
+  return theme;
 }

@@ -13,7 +13,7 @@ const COOKIE_KEY = 'csrfSecret';
  */
 async function createCsrfCookie(ctx: GetServerSidePropsContext) {
   const csrf = new Csrf();
-  const existingSecret = parseCookies()[COOKIE_KEY];
+  const existingSecret = parseCookies(ctx)[COOKIE_KEY];
 
   if (existingSecret) {
     setCsrfSecretCookie(ctx, existingSecret);
