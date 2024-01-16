@@ -54,36 +54,47 @@ function UpdateProfileForm({
   const currentDisplayName = user?.displayName ?? '';
   const currentPhoneNumber = user?.phoneNumber ?? '';
 
-  const { register, handleSubmit, reset, setValue } = useForm({
+  const { register, handleSubmit, reset, setValue, getValues } = useForm({
     defaultValues: {
       displayName: currentDisplayName,
       photoURL: '',
     },
   });
 
-  const [avatarIsDirty, setAvatarIsDirty] = useState(false);
-
-  const onAvatarCleared = useCallback(() => {
-    setAvatarIsDirty(true);
-    setValue('photoURL', '');
-  }, [setValue]);
-
   const onSubmit = async (displayName: string, photoFile: Maybe<File>) => {
     const photoName = photoFile?.name;
+    const existingPhotoRemoved = getValues('photoURL') !== photoName;
 
-    const photoUrl = photoName
-      ? await uploadUserProfilePhoto(storage, photoFile, user.uid)
-      : currentPhotoURL;
+    let photoUrl = null;
 
-    const isAvatarRemoved = avatarIsDirty && !photoName;
+    // if photo is changed, upload the new photo and get the new url
+    if (photoName) {
+      photoUrl = await uploadUserProfilePhoto(storage, photoFile, user.uid);
+    }
+
+    // if photo is not changed, use the current photo url
+    if (!existingPhotoRemoved) {
+      photoUrl = currentPhotoURL;
+    }
+
+    let shouldRemoveAvatar = false;
+
+    // if photo is removed, set the photo url to null
+    if (!photoUrl) {
+      shouldRemoveAvatar = true;
+    }
+
+    if (currentPhotoURL && photoUrl !== currentPhotoURL) {
+      shouldRemoveAvatar = true;
+    }
 
     const info = {
       displayName,
-      photoURL: isAvatarRemoved ? '' : photoUrl,
+      photoURL: photoUrl || '',
     };
 
     // delete existing photo if different
-    if (isAvatarRemoved && currentPhotoURL) {
+    if (shouldRemoveAvatar && currentPhotoURL) {
       try {
         await deleteObject(ref(storage, currentPhotoURL));
       } catch (e) {
@@ -144,7 +155,7 @@ function UpdateProfileForm({
               <ImageUploadInput
                 {...photoURLControl}
                 multiple={false}
-                onClear={onAvatarCleared}
+                onClear={() => setValue('photoURL', '')}
                 image={currentPhotoURL}
               >
                 <Trans i18nKey={'common:imageInputLabel'} />

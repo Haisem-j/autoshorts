@@ -48,8 +48,8 @@ const ProfileDropdown: React.FCC<{
 }> = ({ user, signOutRequested, className, displayName }) => {
   const signedInAsLabel = useMemo(() => {
     return (
-      user?.email ??
-      user?.phoneNumber ?? <Trans i18nKey={'common:anonymousUser'} />
+      user?.email ||
+      user?.phoneNumber || <Trans i18nKey={'common:anonymousUser'} />
     );
   }, [user]);
 

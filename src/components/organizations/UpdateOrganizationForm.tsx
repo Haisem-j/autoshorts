@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useStorage } from 'reactfire';
 import { Trans, useTranslation } from 'next-i18next';
@@ -25,24 +25,17 @@ const UpdateOrganizationForm = () => {
   const storage = useStorage();
   const { organization, setOrganization } = useContext(OrganizationContext);
   const [updateOrganization, { loading }] = useUpdateOrganization();
-
-  const [logoIsDirty, setLogoIsDirty] = useState(false);
   const { t } = useTranslation('organization');
 
   const currentOrganizationName = organization?.name ?? '';
   const currentLogoUrl = organization?.logoURL || null;
 
-  const { register, handleSubmit, reset, setValue } = useForm({
+  const { register, handleSubmit, reset, setValue, getValues } = useForm({
     defaultValues: {
       name: currentOrganizationName,
-      logoURL: currentLogoUrl,
+      logoURL: currentLogoUrl || '',
     },
   });
-
-  const onLogoCleared = useCallback(() => {
-    setLogoIsDirty(true);
-    setValue('logoURL', '');
-  }, [setValue]);
 
   const onSubmit = useCallback(
     async (organizationName: string, logoFile: Maybe<File>) => {
@@ -53,19 +46,37 @@ const UpdateOrganizationForm = () => {
       }
 
       const logoName = logoFile?.name;
+      const existingLogoRemoved = getValues('logoURL') !== logoName;
 
-      const logoURL = logoName
-        ? await uploadLogo({
-            logo: logoFile,
-            storage,
-            organizationId,
-          })
-        : currentLogoUrl;
+      let logoUrl = null;
 
-      const isLogoRemoved = logoIsDirty && !logoName;
+      // if logo is changed, upload the new logo and get the new url
+      if (logoName) {
+        logoUrl = await uploadLogo({
+          logo: logoFile,
+          storage,
+          organizationId,
+        });
+      }
+
+      // if photo is not changed, use the current photo url
+      if (!existingLogoRemoved) {
+        logoUrl = currentLogoUrl;
+      }
+
+      let shouldRemoveLogo = false;
+
+      // if logo is removed, set the logo url to null
+      if (!logoUrl) {
+        shouldRemoveLogo = true;
+      }
+
+      if (currentLogoUrl && logoUrl !== currentLogoUrl) {
+        shouldRemoveLogo = true;
+      }
 
       // delete existing logo if different
-      if (isLogoRemoved && currentLogoUrl) {
+      if (shouldRemoveLogo && currentLogoUrl) {
         try {
           await deleteObject(ref(storage, currentLogoUrl));
         } catch (e) {
@@ -76,7 +87,7 @@ const UpdateOrganizationForm = () => {
       const organizationData: WithId<Partial<Organization>> = {
         id: organization.id,
         name: organizationName,
-        logoURL: isLogoRemoved ? null : logoURL,
+        logoURL: logoUrl,
       };
 
       const promise = updateOrganization(organizationData).then(() => {
@@ -86,15 +97,15 @@ const UpdateOrganizationForm = () => {
         });
       });
 
-      await toast.promise(promise, {
+      toast.promise(promise, {
         loading: t(`updateOrganizationLoadingMessage`),
         success: t(`updateOrganizationSuccessMessage`),
         error: t(`updateOrganizationErrorMessage`),
       });
     },
     [
-      logoIsDirty,
       currentLogoUrl,
+      getValues,
       organization,
       setOrganization,
       storage,
@@ -106,7 +117,7 @@ const UpdateOrganizationForm = () => {
   useEffect(() => {
     reset({
       name: organization?.name,
-      logoURL: organization?.logoURL,
+      logoURL: organization?.logoURL || '',
     });
   }, [organization, reset]);
 
@@ -143,7 +154,7 @@ const UpdateOrganizationForm = () => {
           <ImageUploadInput
             {...logoControl}
             image={currentLogoUrl}
-            onClear={onLogoCleared}
+            onClear={() => setValue('logoURL', '')}
           >
             <Trans i18nKey={'common:imageInputLabel'} />
           </ImageUploadInput>
