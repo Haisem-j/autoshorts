@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Trans } from 'next-i18next';
+import { Trans, useTranslation } from 'next-i18next';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 
 import { OrganizationSubscription } from '~/lib/organizations/types/organization-subscription';
@@ -18,11 +18,13 @@ const SubscriptionCard: React.FC<{
   const details = useSubscriptionDetails(subscription.priceId);
   const cancelAtPeriodEnd = subscription.cancelAtPeriodEnd;
   const isActive = subscription.status === 'active';
+  const { i18n } = useTranslation();
+  const language = i18n.language;
 
   const dates = useMemo(() => {
     return {
-      endDate: getDateFromSeconds(subscription.periodEndsAt),
-      trialEndDate: getDateFromSeconds(subscription.trialEndsAt),
+      endDate: getDateFromSeconds(subscription.periodEndsAt, language),
+      trialEndDate: getDateFromSeconds(subscription.trialEndsAt, language),
     };
   }, [subscription]);
 
@@ -141,14 +143,14 @@ function useSubscriptionDetails(priceId: string) {
   }
 }
 
-function getDateFromSeconds(seconds: Maybe<number> | null) {
+function getDateFromSeconds(seconds: Maybe<number> | null, language: string) {
   if (!seconds) {
     return '';
   }
 
   const endDateMs = seconds * 1000;
 
-  return new Date(endDateMs).toDateString();
+  return new Date(endDateMs).toLocaleDateString(language);
 }
 
 export default SubscriptionCard;
