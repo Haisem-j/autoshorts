@@ -19,13 +19,12 @@ export default class MyDocument extends Document {
 
   private getTheme() {
     const defaultTheme = configuration.theme;
+    const theme = this.props.__NEXT_DATA__.props.pageProps?.ui?.theme;
 
-    if (isBrowser()) {
-      const theme = loadSelectedTheme();
-
-      return theme ?? defaultTheme;
-    }
-
-    return defaultTheme;
+    return theme ?? defaultTheme;
   }
+}
+
+if (isBrowser()) {
+  loadSelectedTheme();
 }
