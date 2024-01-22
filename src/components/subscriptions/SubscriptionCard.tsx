@@ -26,7 +26,7 @@ const SubscriptionCard: React.FC<{
       endDate: getDateFromSeconds(subscription.periodEndsAt, language),
       trialEndDate: getDateFromSeconds(subscription.trialEndsAt, language),
     };
-  }, [subscription]);
+  }, [language, subscription.periodEndsAt, subscription.trialEndsAt]);
 
   if (!details) {
     return null;

@@ -1,6 +1,4 @@
 import Document, { Html, Main, Head, NextScript } from 'next/document';
-import { loadSelectedTheme } from '~/core/theming';
-import { isBrowser } from '~/core/generic/is-browser';
 import configuration from '~/configuration';
 
 export default class MyDocument extends Document {
@@ -23,8 +21,4 @@ export default class MyDocument extends Document {
 
     return theme ?? defaultTheme;
   }
-}
-
-if (isBrowser()) {
-  loadSelectedTheme();
 }

@@ -4,11 +4,11 @@ import { Trans } from 'next-i18next';
 import { useAuth } from 'reactfire';
 
 import {
-  MultiFactorError,
-  UserCredential,
-  User,
-  getRedirectResult,
   browserPopupRedirectResolver,
+  getRedirectResult,
+  MultiFactorError,
+  User,
+  UserCredential,
 } from 'firebase/auth';
 
 import AuthProviderButton from '~/core/ui/AuthProviderButton';
@@ -21,17 +21,17 @@ import LoadingOverlay from '~/core/ui/LoadingOverlay';
 import AuthErrorMessage from './AuthErrorMessage';
 import MultiFactorAuthChallengeModal from '~/components/auth/MultiFactorAuthChallengeModal';
 import { isMultiFactorError } from '~/core/firebase/utils/is-multi-factor-error';
-
 import useCreateServerSideSession from '~/core/hooks/use-create-server-side-session';
+
 import configuration from '~/configuration';
 
 const OAUTH_PROVIDERS = configuration.auth.providers.oAuth;
 
+let didCheckRedirect = false;
+
 const OAuthProviders: React.FCC<{
   onSignIn: () => unknown;
 }> = ({ onSignIn }) => {
-  const auth = useAuth();
-
   const {
     signInWithProvider,
     state: signInWithProviderState,
@@ -39,25 +39,21 @@ const OAuthProviders: React.FCC<{
   } = useSignInWithProvider();
 
   const [sessionRequest, sessionRequestState] = useCreateServerSideSession();
-  const [checkingRedirect, setCheckingRedirect] = useState(true);
-  const didCheckRedirect = useRef(false);
   const isSigningIn = useRef(false);
 
   // we make the UI "busy" until the next page is fully loaded
-  const loading =
+  const shouldDisplayLoading =
     signInWithProviderState.loading ||
     sessionRequestState.isMutating ||
     sessionRequestState.data ||
     isSigningIn.current;
-
-  const shouldDisplayLoading = loading || checkingRedirect;
 
   const [multiFactorAuthError, setMultiFactorAuthError] =
     useState<Maybe<MultiFactorError>>();
 
   const createSession = useCallback(
     async (user: User) => {
-      if (loading || isSigningIn.current) {
+      if (isSigningIn.current) {
         return;
       }
 
@@ -71,7 +67,7 @@ const OAuthProviders: React.FCC<{
         isSigningIn.current = false;
       }
     },
-    [sessionRequest, loading, onSignIn],
+    [sessionRequest, onSignIn],
   );
 
   const onSignInWithProvider = useCallback(
@@ -97,41 +93,16 @@ const OAuthProviders: React.FCC<{
     [createSession],
   );
 
-  useEffect(() => {
-    async function checkRedirectSignIn() {
-      if (loading || didCheckRedirect.current) {
-        return;
-      }
-
-      return getRedirectResult(auth, browserPopupRedirectResolver).then(
-        async (result) => {
-          if (result) {
-            setCheckingRedirect(true);
-
-            return createSession(result.user);
-          }
-
-          setCheckingRedirect(false);
-        },
-      );
-    }
-
-    void checkRedirectSignIn();
-  }, [auth, loading, createSession]);
-
   if (!OAUTH_PROVIDERS || !OAUTH_PROVIDERS.length) {
     return null;
   }
 
   return (
     <>
+      <RedirectCheckHandler onSignIn={createSession} />
+
       <If condition={shouldDisplayLoading}>
-        <LoadingOverlay
-          displayLogo={false}
-          className={'m-0 !h-full !w-full rounded-xl'}
-        >
-          <Trans i18nKey={'auth:signingIn'} />
-        </LoadingOverlay>
+        <LoadingIndicator />
       </If>
 
       <div className={'flex w-full flex-1 flex-col space-y-3'}>
@@ -192,6 +163,49 @@ const OAuthProviders: React.FCC<{
   );
 };
 
+function RedirectCheckHandler({
+  onSignIn,
+}: {
+  onSignIn: (user: User) => unknown;
+}) {
+  const auth = useAuth();
+  const [checkingRedirect, setCheckingRedirect] = useState(false);
+
+  useEffect(() => {
+    async function checkRedirectSignIn() {
+      if (didCheckRedirect) {
+        return;
+      }
+
+      didCheckRedirect = true;
+      setCheckingRedirect(true);
+
+      try {
+        const result = await getRedirectResult(
+          auth,
+          browserPopupRedirectResolver,
+        );
+
+        if (result) {
+          onSignIn(result.user);
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setCheckingRedirect(false);
+      }
+    }
+
+    void checkRedirectSignIn();
+  }, [auth, onSignIn]);
+
+  if (checkingRedirect) {
+    return <LoadingIndicator />;
+  }
+
+  return null;
+}
+
 function getProviderName(providerId: string) {
   const capitalize = (value: string) =>
     value.slice(0, 1).toUpperCase() + value.slice(1);
@@ -201,6 +215,17 @@ function getProviderName(providerId: string) {
   }
 
   return capitalize(providerId);
+}
+
+function LoadingIndicator() {
+  return (
+    <LoadingOverlay
+      displayLogo={false}
+      className={'m-0 !h-full !w-full rounded-xl'}
+    >
+      <Trans i18nKey={'auth:signingIn'} />
+    </LoadingOverlay>
+  );
 }
 
 export default OAuthProviders;

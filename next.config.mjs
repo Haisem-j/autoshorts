@@ -41,12 +41,11 @@ const config = {
 
     return config;
   },
-  async redirects() {
+  async rewrites() {
     return [
       {
-        source: "/__/auth/",
-        destination: `https://${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}.firebaseapp.com/__/auth/`,
-        permanent: true,
+        source: "/__/auth/:path*",
+        destination: `https://${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}.firebaseapp.com/__/auth/:path*`,
       },
     ];
   },

@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 import { Inter as SansFont } from 'next/font/google';
 
 import type { User as AuthUser } from 'firebase/auth';
-import { appWithTranslation, SSRConfig, useTranslation } from 'next-i18next';
+import { appWithTranslation, SSRConfig } from 'next-i18next';
 
 import configuration from '~/configuration';
 
@@ -24,6 +24,8 @@ import { UserSession } from '~/core/session/types/user-session';
 import { SidebarContext } from '~/core/contexts/sidebar';
 import { ThemeContext } from '~/core/contexts/theme';
 import { CsrfTokenContext } from '~/core/contexts/csrf-token';
+import { loadSelectedTheme } from '~/core/theming';
+import { isBrowser } from '~/core/generic/is-browser';
 
 const AppRouteLoadingIndicator = dynamic(
   () => import('~/core/ui/AppRouteLoadingIndicator'),
@@ -63,7 +65,6 @@ function App(
   const { Component } = props;
   const pageProps = props.pageProps as DefaultPageProps;
   const { emulator, firebase } = configuration;
-  const { i18n } = useTranslation();
 
   const userSessionContext: UserSession = useMemo(() => {
     return {
@@ -96,7 +97,6 @@ function App(
     <FirebaseAppShell config={firebase}>
       <FirebaseAppCheckProvider>
         <FirebaseAuthProvider
-          language={i18n.language}
           userSession={userSession}
           setUserSession={setUserSession}
           useEmulator={emulator}
@@ -163,4 +163,8 @@ function FontFamily() {
       `}
     </style>
   );
+}
+
+if (isBrowser()) {
+  loadSelectedTheme();
 }
