@@ -49,7 +49,7 @@ const PlanSelectionForm: React.FCC<{
                   onCheckoutCreated={setClientSecret}
                 >
                   <Trans
-                    i18nKey={'subscriptions:checkout'}
+                    i18nKey={'subscription:checkout'}
                     defaults={'Checkout'}
                   />
                 </CheckoutRedirectButton>
