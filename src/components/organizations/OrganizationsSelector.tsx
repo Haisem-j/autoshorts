@@ -31,12 +31,12 @@ import ClientOnly from '~/core/ui/ClientOnly';
 import { Avatar, AvatarFallback } from '~/core/ui/Avatar';
 
 import { useUserId } from '~/core/hooks/use-user-id';
+import configuration from '~/configuration';
 
 const OrganizationsSelector = ({ displayName }: { displayName: boolean }) => {
   const router = useRouter();
   const organization = useCurrentOrganization();
-  const path = router.asPath;
-  const value = getDeepLinkPath(organization?.id as string, path);
+  const value = getDeepLinkPath(organization?.id as string);
   const userId = useUserId();
 
   return (
@@ -99,7 +99,7 @@ const OrganizationsSelector = ({ displayName }: { displayName: boolean }) => {
           <SelectGroup>
             <CreateOrganizationModal
               onCreate={(organizationId) => {
-                return router.replace(getDeepLinkPath(organizationId, path));
+                return router.replace(getDeepLinkPath(organizationId));
               }}
             >
               <SelectAction>
@@ -131,13 +131,11 @@ function OrganizationsOptions({
   userId: string;
   organization: Maybe<WithId<Organization>>;
 }>) {
-  const router = useRouter();
   const { data, status } = useFetchUserOrganizations(userId);
-  const path = router.asPath;
   const isLoading = status === 'loading';
 
   if (isLoading && organization) {
-    const href = getDeepLinkPath(organization?.id as string, path);
+    const href = getDeepLinkPath(organization?.id as string);
 
     return (
       <SelectItem value={href} key={organization.id}>
@@ -151,7 +149,7 @@ function OrganizationsOptions({
   return (
     <>
       {organizations.map((item) => {
-        const href = getDeepLinkPath(item.id, path);
+        const href = getDeepLinkPath(item.id);
 
         return (
           <SelectItem value={href} key={item.id}>
@@ -210,8 +208,8 @@ function OrganizationItem({
   );
 }
 
-function getDeepLinkPath(organizationId: string, path: string) {
-  return ['', organizationId, path.slice(1, path.length)].join('/');
+function getDeepLinkPath(organizationId: string) {
+  return ['', organizationId, configuration.paths.appHome].join('/');
 }
 
 export default OrganizationsSelector;

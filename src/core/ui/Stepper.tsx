@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { Fragment, useCallback } from 'react';
 import { cva } from 'cva';
 import classNames from 'clsx';
 import { Trans } from 'next-i18next';
@@ -42,8 +42,8 @@ function Stepper(props: {
       const { label, number } = getStepLabel(labelOrKey, index);
 
       return (
-        <>
-          <div aria-selected={selected} key={labelOrKey} className={className}>
+        <Fragment key={labelOrKey}>
+          <div aria-selected={selected} className={className}>
             <span className={labelClassName}>
               {number}
               <If condition={!isNumberVariant}>. {label}</If>
@@ -53,7 +53,7 @@ function Stepper(props: {
           <If condition={isNumberVariant}>
             <StepDivider selected={selected}>{label}</StepDivider>
           </If>
-        </>
+        </Fragment>
       );
     });
   }, [props.steps, props.currentStep, variant]);

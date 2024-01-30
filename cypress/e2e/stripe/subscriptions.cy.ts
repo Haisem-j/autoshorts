@@ -1,6 +1,5 @@
 import stripePo from '../../support/stripe.po';
 import organizationPo from '../../support/organization.po';
-import configuration from '~/configuration';
 
 describe(`Create Subscription`, () => {
   let organization: string;
@@ -12,6 +11,7 @@ describe(`Create Subscription`, () => {
         cy.signIn(`/settings/subscription`);
 
         organizationPo.createOrganization(organization);
+        cy.contains('Subscription').click();
 
         stripePo.selectPlan(0);
         stripePo.$fillForm();

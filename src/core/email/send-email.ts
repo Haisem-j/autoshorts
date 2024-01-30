@@ -1,6 +1,3 @@
-import configuration from '../../configuration';
-import type { Options } from 'nodemailer/lib/smtp-transport';
-
 interface SendEmailParams {
   from: string;
   to: string;
@@ -25,20 +22,12 @@ async function getSMTPTransporter() {
   return nodemailer.createTransport(getSMTPConfiguration());
 }
 
-function getSMTPConfiguration(): Options {
-  if (configuration.production) {
-    return getProductionSMTPConfiguration();
-  }
-
-  return getInBucketSMTPConfiguration();
-}
-
-function getProductionSMTPConfiguration() {
+function getSMTPConfiguration() {
   const user = process.env.EMAIL_USER;
   const pass = process.env.EMAIL_PASSWORD;
   const host = process.env.EMAIL_HOST;
   const port = Number(process.env.EMAIL_PORT);
-  const secure = port === 465 && !configuration.production;
+  const secure = process.env.EMAIL_TLS !== 'false';
 
   // validate that we have all the required configuration
   if (!user || !pass || !host || !port) {
@@ -60,14 +49,5 @@ function getProductionSMTPConfiguration() {
       user,
       pass,
     },
-  };
-}
-
-function getInBucketSMTPConfiguration() {
-  return {
-    host: '0.0.0.0',
-    port: 2500,
-    secure: false,
-    auth: {},
   };
 }

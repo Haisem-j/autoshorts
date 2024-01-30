@@ -102,9 +102,8 @@ export async function inviteMembers(params: Params) {
           inviteId: ref.id,
           inviter: inviter?.uid,
           organizationId,
-          error,
         },
-        `Error while sending invite to member`,
+        `Error while sending invite to member: ${error}`,
       );
 
       return Promise.reject(error);
