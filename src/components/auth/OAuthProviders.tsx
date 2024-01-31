@@ -45,7 +45,7 @@ const OAuthProviders: React.FCC<{
   const shouldDisplayLoading =
     signInWithProviderState.loading ||
     sessionRequestState.isMutating ||
-    sessionRequestState.data ||
+    Boolean(sessionRequestState.data) ||
     isSigningIn.current;
 
   const [multiFactorAuthError, setMultiFactorAuthError] =
@@ -188,11 +188,12 @@ function RedirectCheckHandler({
 
         if (result) {
           onSignIn(result.user);
+        } else {
+          setCheckingRedirect(false);
         }
       } catch (e) {
-        console.error(e);
-      } finally {
         setCheckingRedirect(false);
+        console.error(e);
       }
     }
 
