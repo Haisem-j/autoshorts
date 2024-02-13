@@ -48,10 +48,10 @@ export function useApiRequest<Resp = unknown, Body = void>() {
         params.path,
         payload,
         params.method,
-        headersRef.current
+        headersRef.current,
       );
     },
-    [getSecurityHeaders]
+    [getSecurityHeaders],
   );
 }
 
@@ -59,7 +59,7 @@ async function executeFetchRequest<Resp = unknown>(
   url: string,
   payload: string,
   method = 'POST',
-  headers?: StringObject
+  headers?: StringObject,
 ) {
   const options: RequestInit = {
     method,
@@ -79,6 +79,14 @@ async function executeFetchRequest<Resp = unknown>(
 
   try {
     const response = await fetch(url, options);
+
+    // if the response is a redirect, we redirect the user
+    // to the new location
+    if (response.redirected) {
+      window.location.assign(response.url);
+
+      return undefined as Resp;
+    }
 
     if (response.ok) {
       return (await response.json()) as Promise<Resp>;
