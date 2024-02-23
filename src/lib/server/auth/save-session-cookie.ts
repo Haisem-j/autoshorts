@@ -26,7 +26,7 @@ export async function createSessionCookie(idToken: string, expiresIn: number) {
 export function saveSessionCookie(
   res: NextApiResponse,
   sessionCookie: string,
-  expiresIn: number
+  expiresIn: number,
 ) {
   setSessionCookie(res, SESSION_COOKIE_NAME, sessionCookie, expiresIn);
   setSessionExpiryCookie(res, expiresIn);
@@ -47,7 +47,7 @@ function setSessionCookie(
   res: NextApiResponse,
   cookieName: string,
   cookieValue: string,
-  expiresIn: number
+  expiresIn: number,
 ) {
   // only save cookie with secure flag if we're not in dev mode
   const secure = process.env.NEXT_PUBLIC_EMULATOR !== 'true';
@@ -57,7 +57,7 @@ function setSessionCookie(
     httpOnly: true,
     secure,
     path: '/',
-    sameSite: 'Lax',
+    sameSite: 'lax' as const,
   };
 
   // when the session-cookie gets created
@@ -73,7 +73,7 @@ function setSessionExpiryCookie(res: NextApiResponse, expiresIn: number) {
     httpOnly: false,
     secure,
     path: '/',
-    sameSite: 'Lax',
+    sameSite: 'lax' as const,
   };
 
   const date = new Date();
@@ -85,7 +85,7 @@ function setSessionExpiryCookie(res: NextApiResponse, expiresIn: number) {
     { res },
     SESSION_EXPIRES_AT_COOKIE_NAME,
     expiresAt.toString(),
-    options
+    options,
   );
 }
 

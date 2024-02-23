@@ -36,6 +36,6 @@ function setCsrfSecretCookie(ctx: GetServerSidePropsContext, secret: string) {
     path: '/',
     httpOnly: true,
     secure: process.env.NODE_ENV === `production`,
-    sameSite: 'Strict',
+    sameSite: 'strict',
   });
 }
