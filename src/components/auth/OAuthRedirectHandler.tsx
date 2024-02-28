@@ -10,7 +10,7 @@ import {
 import type { FirebaseError } from 'firebase/app';
 
 let didCheckRedirect = false;
-let didSignIn = false;
+let didSignIn: boolean | null = null;
 
 export default function OAuthRedirectHandler({
   onSignIn,
@@ -24,41 +24,47 @@ export default function OAuthRedirectHandler({
   const [checkingRedirect, setCheckingRedirecting] = useState(true);
 
   useLayoutEffect(() => {
-    if (didCheckRedirect) {
-      if (!didSignIn) {
-        setCheckingRedirecting(false);
+    const interval = setInterval(() => {
+      if (didCheckRedirect) {
+        if (didSignIn === false) {
+          setCheckingRedirecting(false);
+          clearInterval(interval);
+        }
       }
+    }, 250);
 
-      return;
-    }
+    return () => clearInterval(interval);
   }, []);
 
   useLayoutEffect(() => {
     async function checkRedirectSignIn() {
       // prevent multiple calls
+      if (didCheckRedirect) {
+        return;
+      }
+
       didCheckRedirect = true;
 
-      try {
-        const credential = await getRedirectResult(
-          auth,
-          browserPopupRedirectResolver,
-        );
-
-        if (credential) {
-          didSignIn = true;
-          await onSignIn(credential.user);
-        } else {
-          setCheckingRedirecting(false);
-        }
-      } catch (error) {
-        setCheckingRedirecting(false);
-
+      const credential = await getRedirectResult(
+        auth,
+        browserPopupRedirectResolver,
+      ).catch((error) => {
         onError(error as FirebaseError);
+
+        return null;
+      });
+
+      didSignIn = !!credential;
+
+      if (credential) {
+        await onSignIn(credential.user);
+      } else {
+        setCheckingRedirecting(false);
       }
     }
 
     void checkRedirectSignIn();
-  }, [auth, onSignIn, checkingRedirect, onError]);
+  }, [auth, onSignIn, checkingRedirect, onError, checkingRedirect]);
 
   if (checkingRedirect) {
     return children;
