@@ -1,15 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-
+import { useCallback, useRef, useState } from 'react';
 import { Trans } from 'next-i18next';
-import { useAuth } from 'reactfire';
+import dynamic from 'next/dynamic';
 
-import {
-  browserPopupRedirectResolver,
-  getRedirectResult,
-  MultiFactorError,
-  User,
-  UserCredential,
-} from 'firebase/auth';
+import { MultiFactorError, User, UserCredential } from 'firebase/auth';
 
 import type { FirebaseError } from 'firebase/app';
 
@@ -29,7 +22,9 @@ import configuration from '~/configuration';
 
 const OAUTH_PROVIDERS = configuration.auth.providers.oAuth;
 
-let didCheckRedirect = false;
+const OAuthRedirectHandler = dynamic(() => import('./OAuthRedirectHandler'), {
+  ssr: false,
+});
 
 const OAuthProviders: React.FCC<{
   onSignIn: () => unknown;
@@ -110,7 +105,9 @@ const OAuthProviders: React.FCC<{
         <LoadingIndicator />
       </If>
 
-      <RedirectCheckHandler onSignIn={createSession} onError={onSignInError} />
+      <OAuthRedirectHandler onSignIn={createSession} onError={onSignInError}>
+        <LoadingIndicator />
+      </OAuthRedirectHandler>
 
       <div className={'flex w-full flex-1 flex-col space-y-3'}>
         <div className={'flex-col space-y-2'}>
@@ -167,53 +164,6 @@ const OAuthProviders: React.FCC<{
     </>
   );
 };
-
-function RedirectCheckHandler({
-  onSignIn,
-  onError,
-}: {
-  onSignIn: (user: User) => unknown;
-  onError: (error: FirebaseError) => unknown;
-}) {
-  const auth = useAuth();
-  const [checkingRedirect, setCheckingRedirect] = useState(true);
-
-  useEffect(() => {
-    async function checkRedirectSignIn() {
-      if (didCheckRedirect && !checkingRedirect) {
-        return setCheckingRedirect(false);
-      }
-
-      didCheckRedirect = true;
-      setCheckingRedirect(true);
-
-      try {
-        const result = await getRedirectResult(
-          auth,
-          browserPopupRedirectResolver,
-        );
-
-        if (result) {
-          await onSignIn(result.user);
-        } else {
-          setCheckingRedirect(false);
-        }
-      } catch (error) {
-        setCheckingRedirect(false);
-
-        onError(error as FirebaseError);
-      }
-    }
-
-    void checkRedirectSignIn();
-  }, [auth, onSignIn, checkingRedirect, onError]);
-
-  if (checkingRedirect) {
-    return <LoadingIndicator />;
-  }
-
-  return null;
-}
 
 function getProviderName(providerId: string) {
   const capitalize = (value: string) =>

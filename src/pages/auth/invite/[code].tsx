@@ -22,9 +22,10 @@ import useAddMemberToOrganization from '~/lib/organizations/hooks/use-add-member
 import logger from '~/core/logger';
 import If from '~/core/ui/If';
 import Button from '~/core/ui/Button';
+import LoadingOverlay from '~/core/ui/LoadingOverlay';
+
 import { isBrowser } from '~/core/generic/is-browser';
 import OAuthProviders from '~/components/auth/OAuthProviders';
-import PageLoadingIndicator from '~/core/ui/PageLoadingIndicator';
 
 import { initializeFirebaseAdminApp } from '~/core/firebase/admin/initialize-firebase-admin-app';
 import GuardedPage from '~/core/firebase/components/GuardedPage';
@@ -100,13 +101,13 @@ const InvitePage = (
 
   if (isMutating) {
     return (
-      <PageLoadingIndicator>
+      <LoadingOverlay>
         <Trans
           i18nKey={'auth:addingToOrganization'}
           values={{ name: organization.name }}
           components={{ b: <b /> }}
         />
-      </PageLoadingIndicator>
+      </LoadingOverlay>
     );
   }
 

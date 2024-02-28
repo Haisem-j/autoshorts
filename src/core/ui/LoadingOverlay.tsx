@@ -23,7 +23,7 @@ export default function LoadingOverlay({
         'flex flex-col items-center justify-center space-y-4',
         className,
         {
-          [`fixed top-0 left-0 z-[100] h-screen w-screen bg-background`]:
+          [`fixed !m-0 top-0 left-0 z-[100] h-screen w-screen bg-background overflow-hidden`]:
             fullPage,
         },
       )}
