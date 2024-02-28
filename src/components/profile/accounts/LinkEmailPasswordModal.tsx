@@ -35,7 +35,7 @@ function LinkEmailPasswordModal({
   const auth = useAuth();
   const { t } = useTranslation();
   const { state, setLoading, setError, resetState } = useRequestState<void>();
-  const [sessionRequest] = useCreateServerSideSession();
+  const { trigger: sessionRequest } = useCreateServerSideSession();
 
   const [multiFactorAuthError, setMultiFactorAuthError] =
     useState<Maybe<MultiFactorError>>();

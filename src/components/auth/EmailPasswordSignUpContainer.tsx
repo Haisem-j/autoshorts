@@ -23,12 +23,12 @@ const EmailPasswordSignUpContainer: React.FCC<{
 }> = ({ onSignUp, onError, enforceEmailVerification = true }) => {
   const [showVerifyEmailAlert, setShowVerifyEmailAlert] = useState(false);
   const sendEmailVerification = useSendEmailConfirmation();
-  const [sessionRequest, sessionState] = useCreateServerSideSession();
+  const sessionRequest = useCreateServerSideSession();
   const [signUp, state] = useSignUpWithEmailAndPassword();
   const redirecting = useRef(false);
 
   const loading =
-    state.loading || sessionState.isMutating || redirecting.current;
+    state.loading || sessionRequest.isMutating || redirecting.current;
 
   const callOnErrorCallback = useCallback(() => {
     if (state.error && onError) {
@@ -40,7 +40,7 @@ const EmailPasswordSignUpContainer: React.FCC<{
     async (user: User) => {
       // using the ID token, we will make a request to initiate the session
       // to make SSR possible via session cookie
-      await sessionRequest(user);
+      await sessionRequest.trigger(user);
 
       // if the user is required to verify their email, we display a message
       // in case it's an invite, we don't send the verification email

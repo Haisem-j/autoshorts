@@ -24,7 +24,7 @@ import { useRequestState } from '~/core/hooks/use-request-state';
 
 const UpdatePasswordForm: React.FCC<{ user: User }> = ({ user }) => {
   const { t } = useTranslation();
-  const [createServerSideSession] = useCreateServerSideSession();
+  const { trigger: createServerSideSession } = useCreateServerSideSession();
   const requestState = useRequestState<void>();
 
   const [multiFactorAuthError, setMultiFactorAuthError] =

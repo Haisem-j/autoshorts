@@ -35,7 +35,7 @@ const EmailPasswordSignInContainer: React.FCC<{
 }> = ({ onSignIn, shouldVerifyEmail }) => {
   const auth = useAuth();
 
-  const [sessionRequest, sessionState] = useCreateServerSideSession();
+  const sessionRequest = useCreateServerSideSession();
   const requestState = useRequestState<void>();
 
   const [multiFactorAuthError, setMultiFactorAuthError] =
@@ -46,7 +46,9 @@ const EmailPasswordSignInContainer: React.FCC<{
   );
 
   const isLoading = Boolean(
-    sessionState.isMutating || requestState.state.loading || sessionState.data,
+    sessionRequest.isMutating ||
+      requestState.state.loading ||
+      sessionRequest.data,
   );
 
   const signInWithCredentials = useCallback(
@@ -73,7 +75,7 @@ const EmailPasswordSignInContainer: React.FCC<{
         if (credential) {
           // using the ID token, we will make a request to initiate the session
           // to make SSR possible via session cookie
-          await sessionRequest(credential.user);
+          await sessionRequest.trigger(credential.user);
 
           // we notify the parent component that
           // the user signed in successfully, so they can be redirected
@@ -92,8 +94,8 @@ const EmailPasswordSignInContainer: React.FCC<{
 
   return (
     <>
-      <If condition={sessionState.error}>
-        <AuthErrorMessage error={sessionState.error} />
+      <If condition={sessionRequest.error}>
+        <AuthErrorMessage error={sessionRequest.error} />
       </If>
 
       <If condition={requestState.state.error}>
@@ -126,7 +128,7 @@ const EmailPasswordSignInContainer: React.FCC<{
               }
             }}
             onSuccess={async (credential) => {
-              await sessionRequest(credential.user);
+              await sessionRequest.trigger(credential.user);
 
               // we notify the parent component that
               // the user signed in successfully, so they can be redirected

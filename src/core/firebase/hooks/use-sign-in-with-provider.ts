@@ -1,51 +1,42 @@
-import { useCallback } from 'react';
-
 import { useAuth } from 'reactfire';
-import { FirebaseError } from 'firebase/app';
-import { UserCredential, AuthProvider, Auth } from 'firebase/auth';
-
-import { useRequestState } from '~/core/hooks/use-request-state';
+import useSWRMutation from 'swr/mutation';
+import { AuthProvider, Auth } from 'firebase/auth';
 import configuration from '~/configuration';
 
-export function useSignInWithProvider() {
+export function useSignInWithProvider(params: {
+  useRedirectStrategy?: boolean;
+}) {
   const auth = useAuth();
 
-  const { state, setLoading, setData, setError, resetState } = useRequestState<
-    UserCredential,
-    FirebaseError
-  >();
-
-  const signInWithProvider = useCallback(
-    async (provider: AuthProvider) => {
-      setLoading(true);
-
+  return useSWRMutation(
+    'signInWithProvider',
+    async (_, { arg: provider }: { arg: AuthProvider }) => {
       try {
-        const credential = await getCredential(auth, provider);
-
-        setData(credential);
-
-        return credential;
+        return getCredential(auth, provider, params.useRedirectStrategy);
       } catch (error) {
-        setError(error as FirebaseError);
-
         return Promise.reject(error);
       }
     },
-    [auth, setData, setError, setLoading],
   );
-
-  return { signInWithProvider, state, resetState };
 }
 
-async function getCredential(auth: Auth, provider: AuthProvider) {
+async function getCredential(
+  auth: Auth,
+  provider: AuthProvider,
+  useRedirectStrategy = configuration.auth.useRedirectStrategy,
+) {
   const user = auth.currentUser;
-  const { useRedirectStrategy } = configuration.auth;
 
   if (user) {
     if (useRedirectStrategy) {
-      const { reauthenticateWithRedirect } = await import('firebase/auth');
+      const { browserPopupRedirectResolver, reauthenticateWithRedirect } =
+        await import('firebase/auth');
 
-      return reauthenticateWithRedirect(user, provider);
+      return reauthenticateWithRedirect(
+        user,
+        provider,
+        browserPopupRedirectResolver,
+      );
     }
 
     const { browserPopupRedirectResolver, reauthenticateWithPopup } =

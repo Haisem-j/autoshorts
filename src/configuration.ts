@@ -32,7 +32,7 @@ const configuration = {
   auth: {
     // Enable MFA. You must upgrade to GCP Identity Platform to use it.
     // see: https://cloud.google.com/identity-platform/docs/product-comparison
-    enableMultiFactorAuth: false,
+    enableMultiFactorAuth: true,
     // When enabled, users will be required to verify their email address
     // before being able to access the app
     requireEmailVerification:

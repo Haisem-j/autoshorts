@@ -7,7 +7,7 @@ import useCreateServerSideSession from '~/core/hooks/use-create-server-side-sess
 const PhoneNumberSignInContainer: React.FC<{
   onSignIn: EmptyCallback;
 }> = ({ onSignIn }) => {
-  const [createServerSideSession] = useCreateServerSideSession();
+  const { trigger: createServerSideSession } = useCreateServerSideSession();
 
   const onSuccess = useCallback(
     async (credential: UserCredential) => {
@@ -15,7 +15,7 @@ const PhoneNumberSignInContainer: React.FC<{
 
       onSignIn();
     },
-    [createServerSideSession, onSignIn]
+    [createServerSideSession, onSignIn],
   );
 
   return <PhoneNumberCredentialForm action={'signIn'} onSuccess={onSuccess} />;

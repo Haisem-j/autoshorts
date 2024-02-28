@@ -20,7 +20,7 @@ const EnrolMultiFactorAuthContainer: React.FC<{
   onComplete: (success: boolean) => void;
 }> = ({ onComplete }) => {
   const auth = useAuth();
-  const [createServerSideSession] = useCreateServerSideSession();
+  const { trigger: createServerSideSession } = useCreateServerSideSession();
   const [status, setStatus] = useState<Status>(Status.PhoneNumberForm);
   const verificationIdRef = useRef<string>();
 

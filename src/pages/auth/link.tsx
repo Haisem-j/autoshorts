@@ -50,9 +50,9 @@ const EmailLinkAuthPage: React.FC<{
     useState<Maybe<MultiFactorError>>();
 
   const { state, setError } = useRequestState<void>();
-  const [sessionRequest, sessionRequestState] = useCreateServerSideSession();
+  const sessionRequest = useCreateServerSideSession();
 
-  const loading = sessionRequestState.isMutating;
+  const isMutating = sessionRequest.isMutating;
   const organizationId = invite?.organization.id || '';
 
   const { trigger: addMemberToOrganization, isMutating: isInvitingMember } =
@@ -65,7 +65,7 @@ const EmailLinkAuthPage: React.FC<{
   const onSignInSuccess = useCallback(
     async (user: User) => {
       // we can create the session and store a cookie to make SSR work
-      await sessionRequest(user);
+      await sessionRequest.trigger(user);
 
       // if we found an invite code, we try add the member to the organization
       if (invite) {
@@ -145,7 +145,7 @@ const EmailLinkAuthPage: React.FC<{
     })();
   }, [
     auth,
-    loading,
+    isMutating,
     onSignInSuccess,
     redirectToAppHome,
     sessionRequest,
@@ -154,7 +154,7 @@ const EmailLinkAuthPage: React.FC<{
 
   return (
     <AuthPageLayout heading={``}>
-      <If condition={loading || isInvitingMember}>
+      <If condition={isMutating || isInvitingMember}>
         <LoadingState />
       </If>
 

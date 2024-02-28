@@ -25,7 +25,7 @@ import useCreateServerSideSession from '~/core/hooks/use-create-server-side-sess
 const UpdateEmailForm: React.FC<{ user: User }> = ({ user }) => {
   const [errorMessage, setErrorMessage] = useState<Maybe<string>>();
   const { t } = useTranslation();
-  const [createServerSideSession] = useCreateServerSideSession();
+  const { trigger: createServerSideSession } = useCreateServerSideSession();
   const requestState = useRequestState<void>();
 
   const [multiFactorAuthError, setMultiFactorAuthError] =
