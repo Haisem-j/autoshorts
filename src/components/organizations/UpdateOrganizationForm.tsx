@@ -41,12 +41,14 @@ const UpdateOrganizationForm = () => {
         return toast.error(t(`updateOrganizationErrorMessage`));
       }
 
-      const promise = updateOrganizationMutation.trigger({ name, id: organizationId }).then(() => {
-        setOrganization({
-          ...organization,
-          name,
+      const promise = updateOrganizationMutation
+        .trigger({ name, id: organizationId })
+        .then(() => {
+          setOrganization({
+            ...organization,
+            name,
+          });
         });
-      });
 
       toast.promise(promise, {
         loading: t(`updateOrganizationLoadingMessage`),
@@ -84,9 +86,7 @@ const UpdateOrganizationForm = () => {
         }}
       />
 
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className={'flex flex-col space-y-4'}>
           <TextField.Label>
             <Trans i18nKey={'organization:organizationNameInputLabel'} />
@@ -136,7 +136,19 @@ function UploadLogoForm(props: {
 
   const onValueChange = useCallback(
     async (file: File | null) => {
+      const removeExistingStorageFile = () => {
+        if (props.currentLogoUrl) {
+          const reference = ref(storage, props.currentLogoUrl);
+
+          return deleteObject(reference);
+        }
+
+        return Promise.resolve();
+      };
+
       if (file) {
+        await removeExistingStorageFile();
+
         const promise = uploadLogo({
           storage,
           organizationId: props.organizationId,
@@ -153,9 +165,7 @@ function UploadLogoForm(props: {
         createToaster(promise);
       } else {
         if (props.currentLogoUrl) {
-          const reference = ref(storage, props.currentLogoUrl);
-
-          const promise = deleteObject(reference).then(async () => {
+          const promise = removeExistingStorageFile().then(async () => {
             await updateOrganizatioMutation.trigger({
               logoURL: '',
               id: props.organizationId,

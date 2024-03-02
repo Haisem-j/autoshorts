@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useStorage } from 'reactfire';
-import type { User } from 'firebase/auth';
+import { useStorage, useUser } from 'reactfire';
 import { Trans, useTranslation } from 'next-i18next';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
@@ -28,6 +27,7 @@ import TextField from '~/core/ui/TextField';
 import If from '~/core/ui/If';
 import Modal from '~/core/ui/Modal';
 import ImageUploader from '~/core/ui/ImageUploader';
+import { UserSession } from '~/core/session/types/user-session';
 
 interface ProfileData {
   photoURL?: string | null;
@@ -36,10 +36,10 @@ interface ProfileData {
 }
 
 function UpdateProfileForm({
-  user,
+  userSession,
   onUpdate,
 }: {
-  user: User;
+  userSession: UserSession;
   onUpdate: (user: ProfileData) => void;
 }) {
   const updateProfileMutation = useUpdateProfile();
@@ -49,9 +49,13 @@ function UpdateProfileForm({
 
   const { t } = useTranslation();
 
-  const currentPhotoURL = user?.photoURL ?? '';
-  const currentDisplayName = user?.displayName ?? '';
-  const currentPhoneNumber = user?.phoneNumber ?? '';
+  const authData = userSession.auth;
+  const userId = authData?.uid as string;
+
+  const currentPhotoURL = authData?.photoURL ?? '';
+  const currentDisplayName = authData?.displayName ?? '';
+  const currentPhoneNumber = authData?.phoneNumber ?? '';
+  const userEmail = authData?.email ?? '';
 
   const { register, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -89,7 +93,7 @@ function UpdateProfileForm({
     <div className={'flex flex-col space-y-8'}>
       <UploadProfileAvatarForm
         currentPhotoURL={currentPhotoURL}
-        userId={user.uid}
+        userId={userId}
         onAvatarUpdated={(photoURL) => {
           return onUpdate({
             photoURL,
@@ -121,10 +125,10 @@ function UpdateProfileForm({
             <TextField.Label>
               <Trans i18nKey={'profile:emailLabel'} />
 
-              <TextField.Input disabled value={user.email ?? ''} />
+              <TextField.Input disabled value={userEmail} />
             </TextField.Label>
 
-            <If condition={user.email}>
+            <If condition={userEmail}>
               <div>
                 <Button
                   type={'button'}
@@ -139,7 +143,7 @@ function UpdateProfileForm({
               </div>
             </If>
 
-            <If condition={!user.email}>
+            <If condition={!userEmail}>
               <div>
                 <Button
                   type={'button'}
@@ -169,7 +173,6 @@ function UpdateProfileForm({
                   condition={!currentPhoneNumber}
                   fallback={
                     <RemovePhoneNumberButton
-                      user={user}
                       onSuccess={() => {
                         onUpdate({
                           phoneNumber: null,
@@ -234,7 +237,21 @@ function UploadProfileAvatarForm(props: {
 
   const onValueChange = useCallback(
     async (file: File | null) => {
+      const removeExistingStorageFile = () => {
+        console.log(props.currentPhotoURL);
+
+        if (props.currentPhotoURL) {
+          const reference = ref(storage, props.currentPhotoURL);
+
+          return deleteObject(reference);
+        }
+
+        return Promise.resolve();
+      };
+
       if (file) {
+        await removeExistingStorageFile();
+
         const promise = uploadUserProfilePhoto(
           storage,
           file,
@@ -249,19 +266,15 @@ function UploadProfileAvatarForm(props: {
 
         createToaster(promise);
       } else {
-        if (props.currentPhotoURL) {
-          const reference = ref(storage, props.currentPhotoURL);
+        const promise = removeExistingStorageFile().finally(() => {
+          props.onAvatarUpdated('');
 
-          const promise = deleteObject(reference).finally(() => {
-            props.onAvatarUpdated('');
-
-            return updateProfileMutation.trigger({
-              photoURL: '',
-            });
+          return updateProfileMutation.trigger({
+            photoURL: '',
           });
+        });
 
-          createToaster(promise);
-        }
+        createToaster(promise);
       }
     },
     [createToaster, props, storage, updateProfileMutation],
@@ -299,17 +312,20 @@ async function uploadUserProfilePhoto(
 }
 
 function RemovePhoneNumberButton({
-  user,
   onSuccess,
 }: React.PropsWithChildren<{
-  user: User;
   onSuccess: () => void;
 }>) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { data: user } = useUser();
   const requestState = useRequestState();
   const { t } = useTranslation();
 
   const onUnlinkPhoneNumber = useCallback(() => {
+    if (!user) {
+      throw new Error(`User is not logged in`);
+    }
+
     const promise = unlink(user, PhoneAuthProvider.PROVIDER_ID)
       .then(() => {
         setIsModalOpen(false);

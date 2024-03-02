@@ -61,9 +61,16 @@ const Profile = () => {
             heading={<Trans i18nKey={'profile:generalTab'} />}
             subHeading={<Trans i18nKey={'profile:generalTabSubheading'} />}
           >
-            <FirebaseStorageProvider>
-              <UpdateProfileForm user={user} onUpdate={onUpdate} />
-            </FirebaseStorageProvider>
+            <If condition={userSession}>
+              {(session) => (
+                <FirebaseStorageProvider>
+                  <UpdateProfileForm
+                    userSession={session}
+                    onUpdate={onUpdate}
+                  />
+                </FirebaseStorageProvider>
+              )}
+            </If>
           </SettingsTile>
 
           <If condition={configuration.features.enableAccountDeletion}>
