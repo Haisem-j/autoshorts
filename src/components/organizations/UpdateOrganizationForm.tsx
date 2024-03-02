@@ -14,86 +14,37 @@ import {
 
 import { OrganizationContext } from '~/lib/contexts/organization';
 import { useUpdateOrganization } from '~/lib/organizations/hooks/use-update-organization';
-import { Organization } from '~/lib/organizations/types/organization';
 
 import Button from '~/core/ui/Button';
 import TextField from '~/core/ui/TextField';
-import ImageUploadInput from '~/core/ui/ImageUploadInput';
-import Label from '~/core/ui/Label';
+import ImageUploader from '~/core/ui/ImageUploader';
 
 const UpdateOrganizationForm = () => {
-  const storage = useStorage();
   const { organization, setOrganization } = useContext(OrganizationContext);
-  const [updateOrganization, { loading }] = useUpdateOrganization();
+  const updateOrganizationMutation = useUpdateOrganization();
   const { t } = useTranslation('organization');
 
   const currentOrganizationName = organization?.name ?? '';
   const currentLogoUrl = organization?.logoURL || null;
 
-  const { register, handleSubmit, reset, setValue, getValues } = useForm({
+  const { register, handleSubmit, reset } = useForm({
     defaultValues: {
       name: currentOrganizationName,
-      logoURL: currentLogoUrl || '',
     },
   });
 
   const onSubmit = useCallback(
-    async (organizationName: string, logoFile: Maybe<File>) => {
+    async ({ name }: { name: string }) => {
       const organizationId = organization?.id;
 
       if (!organizationId) {
         return toast.error(t(`updateOrganizationErrorMessage`));
       }
 
-      const logoName = logoFile?.name;
-      const existingLogoRemoved = getValues('logoURL') !== logoName;
-
-      let logoUrl = null;
-
-      // if logo is changed, upload the new logo and get the new url
-      if (logoName) {
-        logoUrl = await uploadLogo({
-          logo: logoFile,
-          storage,
-          organizationId,
-        });
-      }
-
-      // if photo is not changed, use the current photo url
-      if (!existingLogoRemoved) {
-        logoUrl = currentLogoUrl;
-      }
-
-      let shouldRemoveLogo = false;
-
-      // if logo is removed, set the logo url to null
-      if (!logoUrl) {
-        shouldRemoveLogo = true;
-      }
-
-      if (currentLogoUrl && logoUrl !== currentLogoUrl) {
-        shouldRemoveLogo = true;
-      }
-
-      // delete existing logo if different
-      if (shouldRemoveLogo && currentLogoUrl) {
-        try {
-          await deleteObject(ref(storage, currentLogoUrl));
-        } catch (e) {
-          // old logo not found
-        }
-      }
-
-      const organizationData: WithId<Partial<Organization>> = {
-        id: organization.id,
-        name: organizationName,
-        logoURL: logoUrl,
-      };
-
-      const promise = updateOrganization(organizationData).then(() => {
+      const promise = updateOrganizationMutation.trigger({ name, id: organizationId }).then(() => {
         setOrganization({
           ...organization,
-          ...organizationData,
+          name,
         });
       });
 
@@ -103,21 +54,12 @@ const UpdateOrganizationForm = () => {
         error: t(`updateOrganizationErrorMessage`),
       });
     },
-    [
-      currentLogoUrl,
-      getValues,
-      organization,
-      setOrganization,
-      storage,
-      t,
-      updateOrganization,
-    ],
+    [organization, setOrganization, t, updateOrganizationMutation],
   );
 
   useEffect(() => {
     reset({
       name: organization?.name,
-      logoURL: organization?.logoURL || '',
     });
   }, [organization, reset]);
 
@@ -125,17 +67,27 @@ const UpdateOrganizationForm = () => {
     required: true,
   });
 
-  const logoControl = register('logoURL');
+  if (!organization) {
+    return null;
+  }
 
   return (
-    <form
-      onSubmit={handleSubmit((value) => {
-        return onSubmit(value.name, getLogoFile(value.logoURL));
-      })}
-      className={'space-y-4'}
-    >
-      <div className={'flex flex-col space-y-4'}>
-        <TextField>
+    <div className={'flex flex-col space-y-8'}>
+      <UploadLogoForm
+        organizationId={organization.id}
+        currentLogoUrl={currentLogoUrl}
+        onLogoUpdated={(logoURL) => {
+          setOrganization({
+            ...organization,
+            logoURL,
+          });
+        }}
+      />
+
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div className={'flex flex-col space-y-4'}>
           <TextField.Label>
             <Trans i18nKey={'organization:organizationNameInputLabel'} />
 
@@ -146,40 +98,94 @@ const UpdateOrganizationForm = () => {
               placeholder={'ex. IndieCorp'}
             />
           </TextField.Label>
-        </TextField>
 
-        <Label>
-          <Trans i18nKey={'organization:organizationLogoInputLabel'} />
-
-          <ImageUploadInput
-            {...logoControl}
-            image={currentLogoUrl}
-            onClear={() => setValue('logoURL', '')}
-          >
-            <Trans i18nKey={'common:imageInputLabel'} />
-          </ImageUploadInput>
-        </Label>
-
-        <div>
-          <Button
-            className={'w-full md:w-auto'}
-            data-cy={'update-organization-submit-button'}
-            loading={loading}
-          >
-            <Trans i18nKey={'organization:updateOrganizationSubmitLabel'} />
-          </Button>
+          <div>
+            <Button
+              className={'w-full md:w-auto'}
+              data-cy={'update-organization-submit-button'}
+              loading={updateOrganizationMutation.isMutating}
+            >
+              <Trans i18nKey={'organization:updateOrganizationSubmitLabel'} />
+            </Button>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 };
 
-/**
- * @description Upload file to Storage
- * @param storage
- * @param organizationId
- * @param logo
- */
+function UploadLogoForm(props: {
+  currentLogoUrl: string | null | undefined;
+  organizationId: string;
+  onLogoUpdated: (url: string | null) => void;
+}) {
+  const storage = useStorage();
+  const updateOrganizatioMutation = useUpdateOrganization();
+  const { t } = useTranslation('organization');
+
+  const createToaster = useCallback(
+    (promise: Promise<unknown>) => {
+      return toast.promise(promise, {
+        loading: t(`updateOrganizationLoadingMessage`),
+        success: t(`updateOrganizationSuccessMessage`),
+        error: t(`updateOrganizationErrorMessage`),
+      });
+    },
+    [t],
+  );
+
+  const onValueChange = useCallback(
+    async (file: File | null) => {
+      if (file) {
+        const promise = uploadLogo({
+          storage,
+          organizationId: props.organizationId,
+          logo: file,
+        }).then(async (logoURL) => {
+          await updateOrganizatioMutation.trigger({
+            logoURL,
+            id: props.organizationId,
+          });
+
+          props.onLogoUpdated(logoURL);
+        });
+
+        createToaster(promise);
+      } else {
+        if (props.currentLogoUrl) {
+          const reference = ref(storage, props.currentLogoUrl);
+
+          const promise = deleteObject(reference).then(async () => {
+            await updateOrganizatioMutation.trigger({
+              logoURL: '',
+              id: props.organizationId,
+            });
+
+            props.onLogoUpdated(null);
+          });
+
+          createToaster(promise);
+        }
+      }
+    },
+    [createToaster, props, storage, updateOrganizatioMutation],
+  );
+
+  return (
+    <ImageUploader value={props.currentLogoUrl} onValueChange={onValueChange}>
+      <div className={'flex flex-col space-y-1'}>
+        <span className={'text-sm'}>
+          <Trans i18nKey={'organization:organizationLogoInputHeading'} />
+        </span>
+
+        <span className={'text-xs'}>
+          <Trans i18nKey={'organization:organizationLogoInputSubheading'} />
+        </span>
+      </div>
+    </ImageUploader>
+  );
+}
+
 async function uploadLogo({
   storage,
   organizationId,
@@ -202,21 +208,8 @@ async function uploadLogo({
   return await getDownloadURL(fileRef);
 }
 
-/**
- *
- * @param organizationId
- * @param fileName
- */
 function getLogoStoragePath(organizationId: string, fileName: string) {
   return [`/organizations`, organizationId, fileName].join('/');
-}
-
-function getLogoFile(value: string | null | FileList) {
-  if (!value || typeof value === 'string') {
-    return;
-  }
-
-  return value.item(0) ?? undefined;
 }
 
 export default UpdateOrganizationForm;

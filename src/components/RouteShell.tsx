@@ -51,7 +51,7 @@ const RouteShell: React.FCC<RouteShellProps> = (props) => {
       <GuardedPage whenSignedOut={redirectPath}>
         <SentryProvider>
           <Layout>
-            <Toaster position={'top-center'} />
+            <Toaster richColors={false} position={'top-center'} />
 
             <LayoutRenderer {...props}>
               <OnAuthReady>{props.children}</OnAuthReady>

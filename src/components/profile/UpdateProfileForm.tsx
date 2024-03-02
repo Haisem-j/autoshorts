@@ -25,9 +25,9 @@ import AuthErrorMessage from '~/components/auth/AuthErrorMessage';
 
 import Button from '~/core/ui/Button';
 import TextField from '~/core/ui/TextField';
-import ImageUploadInput from '~/core/ui/ImageUploadInput';
 import If from '~/core/ui/If';
 import Modal from '~/core/ui/Modal';
+import ImageUploader from '~/core/ui/ImageUploader';
 
 interface ProfileData {
   photoURL?: string | null;
@@ -42,67 +42,29 @@ function UpdateProfileForm({
   user: User;
   onUpdate: (user: ProfileData) => void;
 }) {
-  const [updateProfile, { loading }] = useUpdateProfile();
+  const updateProfileMutation = useUpdateProfile();
 
   const [displayUpdatePhoneNumber, setDisplayUpdatePhoneNumber] =
     useState(false);
 
-  const storage = useStorage();
   const { t } = useTranslation();
 
   const currentPhotoURL = user?.photoURL ?? '';
   const currentDisplayName = user?.displayName ?? '';
   const currentPhoneNumber = user?.phoneNumber ?? '';
 
-  const { register, handleSubmit, reset, setValue, getValues } = useForm({
+  const { register, handleSubmit, reset } = useForm({
     defaultValues: {
       displayName: currentDisplayName,
-      photoURL: '',
     },
   });
 
-  const onSubmit = async (displayName: string, photoFile: Maybe<File>) => {
-    const photoName = photoFile?.name;
-    const existingPhotoRemoved = getValues('photoURL') !== photoName;
-
-    let photoUrl = null;
-
-    // if photo is changed, upload the new photo and get the new url
-    if (photoName) {
-      photoUrl = await uploadUserProfilePhoto(storage, photoFile, user.uid);
-    }
-
-    // if photo is not changed, use the current photo url
-    if (!existingPhotoRemoved) {
-      photoUrl = currentPhotoURL;
-    }
-
-    let shouldRemoveAvatar = false;
-
-    // if photo is removed, set the photo url to null
-    if (!photoUrl) {
-      shouldRemoveAvatar = true;
-    }
-
-    if (currentPhotoURL && photoUrl !== currentPhotoURL) {
-      shouldRemoveAvatar = true;
-    }
-
+  const onSubmit = async (displayName: string) => {
     const info = {
       displayName,
-      photoURL: photoUrl || '',
     };
 
-    // delete existing photo if different
-    if (shouldRemoveAvatar && currentPhotoURL) {
-      try {
-        await deleteObject(ref(storage, currentPhotoURL));
-      } catch (e) {
-        // old photo not found
-      }
-    }
-
-    const promise = updateProfile(info).then(() => {
+    const promise = updateProfileMutation.trigger(info).then(() => {
       onUpdate(info);
     });
 
@@ -117,21 +79,28 @@ function UpdateProfileForm({
     value: currentDisplayName,
   });
 
-  const photoURLControl = register('photoURL');
-
   useEffect(() => {
     reset({
       displayName: currentDisplayName ?? '',
-      photoURL: currentPhotoURL ?? '',
     });
   }, [currentDisplayName, currentPhotoURL, reset]);
 
   return (
-    <>
+    <div className={'flex flex-col space-y-8'}>
+      <UploadProfileAvatarForm
+        currentPhotoURL={currentPhotoURL}
+        userId={user.uid}
+        onAvatarUpdated={(photoURL) => {
+          return onUpdate({
+            photoURL,
+          });
+        }}
+      />
+
       <form
         data-cy={'update-profile-form'}
         onSubmit={handleSubmit((value) => {
-          return onSubmit(value.displayName, getPhotoFile(value.photoURL));
+          return onSubmit(value.displayName);
         })}
       >
         <div className={'flex flex-col space-y-4'}>
@@ -145,21 +114,6 @@ function UpdateProfileForm({
                 minLength={2}
                 placeholder={''}
               />
-            </TextField.Label>
-          </TextField>
-
-          <TextField>
-            <TextField.Label>
-              <Trans i18nKey={'profile:profilePictureLabel'} />
-
-              <ImageUploadInput
-                {...photoURLControl}
-                multiple={false}
-                onClear={() => setValue('photoURL', '')}
-                image={currentPhotoURL}
-              >
-                <Trans i18nKey={'common:imageInputLabel'} />
-              </ImageUploadInput>
             </TextField.Label>
           </TextField>
 
@@ -233,7 +187,10 @@ function UpdateProfileForm({
           </TextField>
 
           <div>
-            <Button className={'w-full md:w-auto'} loading={loading}>
+            <Button
+              className={'w-full md:w-auto'}
+              loading={updateProfileMutation.isMutating}
+            >
               <Trans i18nKey={'profile:updateProfileSubmitLabel'} />
             </Button>
           </div>
@@ -251,22 +208,78 @@ function UpdateProfileForm({
           }}
         />
       </If>
-    </>
+    </div>
   );
 }
 
-/**
- * @name getPhotoFile
- * @param value
- * @description Returns the file of the photo when submitted
- * It returns undefined when the user hasn't selected a file
- */
-function getPhotoFile(value: string | null | FileList) {
-  if (!value || typeof value === 'string') {
-    return;
-  }
+function UploadProfileAvatarForm(props: {
+  currentPhotoURL: string | null;
+  userId: string;
+  onAvatarUpdated: (url: string | null) => void;
+}) {
+  const storage = useStorage();
+  const { t } = useTranslation('profile');
+  const updateProfileMutation = useUpdateProfile();
 
-  return value.item(0) ?? undefined;
+  const createToaster = useCallback(
+    (promise: Promise<unknown>) => {
+      return toast.promise(promise, {
+        success: t(`updateProfileSuccess`),
+        error: t(`updateProfileError`),
+        loading: t(`updateProfileLoading`),
+      });
+    },
+    [t],
+  );
+
+  const onValueChange = useCallback(
+    async (file: File | null) => {
+      if (file) {
+        const promise = uploadUserProfilePhoto(
+          storage,
+          file,
+          props.userId,
+        ).then((photoUrl) => {
+          props.onAvatarUpdated(photoUrl);
+
+          return updateProfileMutation.trigger({
+            photoURL: photoUrl,
+          });
+        });
+
+        createToaster(promise);
+      } else {
+        if (props.currentPhotoURL) {
+          const reference = ref(storage, props.currentPhotoURL);
+
+          const promise = deleteObject(reference).finally(() => {
+            props.onAvatarUpdated('');
+
+            return updateProfileMutation.trigger({
+              photoURL: '',
+            });
+          });
+
+          createToaster(promise);
+        }
+      }
+    },
+    [createToaster, props, storage, updateProfileMutation],
+  );
+
+  return (
+    <ImageUploader value={props.currentPhotoURL} onValueChange={onValueChange}>
+      <div className={'flex flex-col space-y-1'}>
+        <span className={'text-sm'}>
+          <Trans i18nKey={'profile:profilePictureHeading'} />
+        </span>
+
+        <span className={'text-xs'}>
+          <Trans i18nKey={'profile:profilePictureSubheading'} />
+        </span>
+      </div>
+    </ImageUploader>
+  );
 }
 
 async function uploadUserProfilePhoto(
@@ -282,7 +295,7 @@ async function uploadUserProfilePhoto(
     contentType: photoFile.type,
   });
 
-  return await getDownloadURL(fileRef);
+  return getDownloadURL(fileRef);
 }
 
 function RemovePhoneNumberButton({
