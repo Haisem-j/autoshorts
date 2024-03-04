@@ -1,6 +1,7 @@
-import Image from 'next/image';
+import Image, { ImageProps } from 'next/image';
 import classNames from 'clsx';
 import { forwardRef } from 'react';
+import type { StaticImport } from 'next/dist/shared/lib/get-img-props';
 
 import Alert from '~/core/ui/Alert';
 import configuration from '~/configuration';
@@ -10,18 +11,24 @@ import ClientOnly from '~/core/ui/ClientOnly';
 
 const NextImage = forwardRef<
   React.ElementRef<'img'>,
-  React.ComponentPropsWithoutRef<'img'> & {
-    class: string;
-  }
->(function ImageComponent(props) {
+  React.ComponentPropsWithoutRef<'img'> &
+    ImageProps & {
+      src: StaticImport | string;
+      class?: string;
+    }
+>(function ImageComponent({ width, height, src, ...props }) {
   const className = classNames(props.class, `object-cover`);
 
   return (
-    <Image
-      className={className}
-      src={props.src as string}
-      alt={props.alt as string}
-    />
+    <div className={'my-6'}>
+      <Image
+        className={className}
+        width={Number(width)}
+        height={Number(height)}
+        src={src as string}
+        {...props}
+      />
+    </div>
   );
 });
 
