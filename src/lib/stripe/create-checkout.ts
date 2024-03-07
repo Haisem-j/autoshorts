@@ -56,14 +56,21 @@ export async function createStripeCheckout(params: CreateCheckoutParams) {
     embedded: params.embedded,
   });
 
+  const customerData = customer
+    ? {
+        customer,
+      }
+    : {
+        customer_email: params.customerEmail,
+      };
+
   return stripe.checkout.sessions.create({
     ui_mode: uiMode,
     mode,
-    customer,
     line_items: [lineItem],
     client_reference_id: clientReferenceId,
     subscription_data: subscriptionData,
-    customer_email: params.customerEmail,
+    ...customerData,
     ...urls,
   });
 }

@@ -1,15 +1,14 @@
-import { Fragment } from 'react';
-
 import * as runtime from 'react/jsx-runtime';
-import { runSync } from '@mdx-js/mdx';
+import { Jsx, runSync } from '@mdx-js/mdx';
 import type { NestedMDXComponents } from 'mdx/types';
 import MDXComponents from '~/components/blog/MDXComponents';
 
 function MDXRenderer({ code }: { code: string }) {
   const MDXModule = runSync(code, {
-    ...runtime,
     baseUrl: import.meta.url,
-    Fragment,
+    Fragment: runtime.Fragment,
+    jsxs: runtime.jsxs as Jsx,
+    jsx: runtime.jsx as Jsx,
   });
 
   return (

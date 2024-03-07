@@ -4,7 +4,7 @@ import React from 'react';
 import { getStructuredData } from '~/core/blog/structured-data';
 import configuration from '~/configuration';
 
-import Post from '~/core/blog/types/post';
+import PostType from '~/core/blog/types/post';
 import Layout from '~/core/ui/Layout';
 import SectionSeparator from '~/core/ui/SectionSeparator';
 import Container from '~/core/ui/Container';
@@ -20,8 +20,8 @@ import SiteHeader from '../SiteHeader';
 import Collection from '~/core/blog/types/collection';
 
 const Post: React.FCC<{
-  post: Post;
-  morePosts: Post[];
+  post: PostType;
+  morePosts: PostType[];
   content: string;
 }> = ({ post, morePosts, content }) => {
   return (
@@ -55,7 +55,7 @@ function MorePostsList({
   posts,
   collection,
 }: React.PropsWithChildren<{
-  posts: Post[];
+  posts: PostType[];
   collection: Collection;
 }>) {
   return (
@@ -74,7 +74,7 @@ function MorePostsList({
   );
 }
 
-function PostHead({ post }: React.PropsWithChildren<{ post: Post }>) {
+function PostHead({ post }: React.PropsWithChildren<{ post: PostType }>) {
   const ogImage = post.ogImage?.url ?? post.coverImage;
   const title = post.title;
   const siteUrl = configuration.site.siteUrl;
