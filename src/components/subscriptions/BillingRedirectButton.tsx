@@ -23,7 +23,7 @@ const BillingPortalRedirectButton: React.FCC<{
 
       <Button
         data-cy={'manage-billing-redirect-button'}
-        variant={'secondary'}
+        variant={'outline'}
         className={className}
       >
         <span className={'flex items-center space-x-2'}>

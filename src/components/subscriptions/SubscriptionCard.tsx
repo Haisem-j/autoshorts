@@ -1,4 +1,3 @@
-import React, { useMemo } from 'react';
 import { Trans, useTranslation } from 'next-i18next';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 
@@ -21,12 +20,10 @@ const SubscriptionCard: React.FC<{
   const { i18n } = useTranslation();
   const language = i18n.language;
 
-  const dates = useMemo(() => {
-    return {
-      endDate: getDateFromSeconds(subscription.periodEndsAt, language),
-      trialEndDate: getDateFromSeconds(subscription.trialEndsAt, language),
-    };
-  }, [language, subscription.periodEndsAt, subscription.trialEndsAt]);
+  const dates = {
+    endDate: getDateFromSeconds(subscription.periodEndsAt, language),
+    trialEndDate: getDateFromSeconds(subscription.trialEndsAt, language),
+  };
 
   if (!details) {
     return null;
@@ -34,28 +31,39 @@ const SubscriptionCard: React.FC<{
 
   return (
     <div
-      className={'flex flex-col space-y-6'}
+      className={'flex space-x-2'}
       data-cy={'subscription-card'}
       data-cy-status={subscription.status}
     >
-      <div className={'flex flex-col space-y-2'}>
-        <div className={'flex items-center space-x-4'}>
-          <Heading type={3}>
-            <span data-cy={'subscription-name'}>{details.product.name}</span>
-          </Heading>
+      <div className={'flex flex-col space-y-4 w-9/12'}>
+        <div className={'flex flex-col space-y-1'}>
+          <div className={'flex items-center space-x-4'}>
+            <Heading type={4}>
+              <span data-cy={'subscription-name'}>{details.product.name}</span>
+            </Heading>
 
-          <SubscriptionStatusBadge subscription={subscription} />
-        </div>
+            <div>
+              <SubscriptionStatusBadge subscription={subscription} />
+            </div>
+          </div>
 
-        <Heading type={6}>
-          <span className={'text-gray-500 dark:text-gray-400'}>
+          <span className={'text-gray-500 dark:text-gray-400 text-sm'}>
             {details.product.description}
           </span>
-        </Heading>
+        </div>
+
+        <If condition={isActive}>
+          <RenewStatusDescription
+            dates={dates}
+            cancelAtPeriodEnd={cancelAtPeriodEnd}
+          />
+        </If>
+
+        <SubscriptionStatusAlert subscription={subscription} values={dates} />
       </div>
 
-      <div>
-        <span className={'flex items-end'}>
+      <div className={'w-3/12'}>
+        <span className={'flex items-center justify-end space-x-1'}>
           <PricingTable.Price>{details.plan.price}</PricingTable.Price>
 
           <span className={'lowercase text-gray-500 dark:text-gray-400'}>
@@ -63,15 +71,6 @@ const SubscriptionCard: React.FC<{
           </span>
         </span>
       </div>
-
-      <SubscriptionStatusAlert subscription={subscription} values={dates} />
-
-      <If condition={isActive}>
-        <RenewStatusDescription
-          dates={dates}
-          cancelAtPeriodEnd={cancelAtPeriodEnd}
-        />
-      </If>
     </div>
   );
 };
@@ -110,27 +109,6 @@ function RenewStatusDescription(
       </If>
     </span>
   );
-}
-
-/**
- * @name getTestingProducts
- * @description These plans are added for testing-purposes only
- */
-function getTestingProducts() {
-  return [
-    {
-      name: 'Testing Plan',
-      description: 'Description of your Testing plan',
-      features: [],
-      plans: [
-        {
-          price: '$999/year',
-          name: 'Yearly',
-          stripePriceId: 'price_1LFibmKr5l4rxPx3wWcSO8UY',
-        },
-      ],
-    },
-  ];
 }
 
 function useSubscriptionDetails(priceId: string) {

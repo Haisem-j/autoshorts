@@ -1,57 +1,49 @@
+import classNames from 'clsx';
 import { Trans } from 'next-i18next';
 
 import type { OrganizationSubscription } from '~/lib/organizations/types/organization-subscription';
-import Alert from '~/core/ui/Alert';
 
 function SubscriptionStatusAlert(
   props: React.PropsWithChildren<{
     subscription: OrganizationSubscription;
     values: {
       endDate: string;
-      trialEndDate: string;
+      trialEndDate: string | null;
     };
-  }>
+  }>,
 ) {
   const status = props.subscription.status;
 
   let message = '';
-  let heading = '';
-  let type: 'success' | 'error' | 'warn' | 'info';
+  let type: 'success' | 'error' | 'warn';
 
   switch (status) {
     case 'active':
-      heading = 'subscription:status.active.heading';
       message = 'subscription:status.active.description';
       type = 'success';
       break;
     case 'trialing':
-      heading = 'subscription:status.trialing.heading';
       message = 'subscription:status.trialing.description';
       type = 'success';
       break;
     case 'canceled':
-      heading = 'subscription:status.canceled.heading';
       message = 'subscription:status.canceled.description';
       type = 'warn';
       break;
     case 'incomplete':
-      heading = 'subscription:status.incomplete.heading';
       message = 'subscription:status.incomplete.description';
       type = 'warn';
       break;
     case 'incomplete_expired':
-      heading = 'subscription:status.incomplete_expired.heading';
       message = 'subscription:status.incomplete_expired.description';
       type = 'error';
       break;
     case 'unpaid':
-      heading = 'subscription:status.unpaid.heading';
       message = 'subscription:status.unpaid.description';
       type = 'error';
       break;
     case 'past_due':
-      heading = 'subscription:status.past_due.heading';
-      heading = 'subscription:status.past_due.description';
+      message = 'subscription:status.past_due.description';
       type = 'error';
 
       break;
@@ -60,13 +52,15 @@ function SubscriptionStatusAlert(
   }
 
   return (
-    <Alert type={type}>
-      <Alert.Heading>
-        <Trans i18nKey={heading} />
-      </Alert.Heading>
-
+    <span
+      className={classNames('text-sm', {
+        'text-orange-700 dark:text-gray-400': type === 'warn',
+        'text-red-700 dark:text-red-400': type === 'error',
+        'text-green-700 dark:text-green-400': type === 'success',
+      })}
+    >
       <Trans i18nKey={message} values={props.values} />
-    </Alert>
+    </span>
   );
 }
 

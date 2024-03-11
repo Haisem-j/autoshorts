@@ -39,7 +39,7 @@ const Subscription = () => {
             }
           />
 
-          <SectionBody>
+          <SectionBody className={'!px-0'}>
             <If condition={status !== undefined}>
               <PlansStatusAlert
                 status={status as SubscriptionStatusQueryParams}
