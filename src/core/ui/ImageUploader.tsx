@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { PhotoIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
+import { Trans } from 'next-i18next';
 
 import ImageUploadInput from '~/core/ui/ImageUploadInput';
 import Button from '~/core/ui/Button';
@@ -46,6 +47,7 @@ function ImageUploader(
   const Input = () => (
     <ImageUploadInput
       {...control}
+      accept={'image/*'}
       className={'absolute w-full h-full'}
       visible={false}
       multiple={false}
@@ -76,7 +78,7 @@ function ImageUploader(
 
       <div>
         <Button onClick={onClear} size={'small'} variant={'ghost'}>
-          Remove Image
+          <Trans i18nKey={'common:clear'}>Clear</Trans>
         </Button>
       </div>
     </div>

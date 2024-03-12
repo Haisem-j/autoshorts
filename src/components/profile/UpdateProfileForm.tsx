@@ -237,13 +237,11 @@ function UploadProfileAvatarForm(props: {
 
   const onValueChange = useCallback(
     async (file: File | null) => {
-      const removeExistingStorageFile = () => {
-        console.log(props.currentPhotoURL);
-
+      const removeExistingStorageFile = async () => {
         if (props.currentPhotoURL) {
           const reference = ref(storage, props.currentPhotoURL);
 
-          return deleteObject(reference);
+          return await deleteObject(reference);
         }
 
         return Promise.resolve();
