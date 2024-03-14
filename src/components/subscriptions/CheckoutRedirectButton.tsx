@@ -30,12 +30,12 @@ const CheckoutRedirectButton: React.FCC<{
       e.preventDefault();
     }
 
-    const data = new FormData(e.currentTarget);
-    const body = Object.fromEntries(data.entries());
-    const { clientSecret } = await createCheckout.trigger(body);
+    const formData = new FormData(e.currentTarget);
+    const body = Object.fromEntries(formData.entries());
+    const data = await createCheckout.trigger(body);
 
-    if (props.onCheckoutCreated) {
-      props.onCheckoutCreated(clientSecret);
+    if (data && props.onCheckoutCreated) {
+      props.onCheckoutCreated(data.clientSecret);
     }
   };
 
@@ -105,7 +105,7 @@ function getReturnUrl() {
 function useCreateCheckout() {
   type CreateCheckoutResponse = {
     clientSecret: string;
-  };
+  } | void;
 
   const fetcher = useApiRequest<CreateCheckoutResponse, unknown>();
 

@@ -144,6 +144,15 @@ async function checkoutsSessionHandler(
         `Using embedded checkout mode. Sending client secret back to client.`,
       );
 
+      if (!session?.client_secret) {
+        logger.error(
+          { id: session.id },
+          `Stripe Checkout session client secret is undefined.`,
+        );
+
+        return redirectToErrorPage();
+      }
+
       return res.json({
         clientSecret: session.client_secret,
       });
